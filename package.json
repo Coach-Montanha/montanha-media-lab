@@ -1,12 +1,12 @@
 {
-  "name": "montanha-studio",
+  "name": "montanha-media-lab",
   "version": "1.0.0",
-  "description": "Studio Criativo Offline, Transcrição Whisper, Mídia FFmpeg & IA Local (Helio G88 / Vercel)",
+  "description": "Montanha Media Lab - Processamento Criativo Offline, Transcrição Whisper, Mídia FFmpeg & IA Local (Helio G88 / Vercel)",
   "main": "api/index.py",
   "scripts": {
     "start": "python server.py"
   },
-  "keywords": ["ai", "local-slm", "whisper", "ffmpeg", "montanha-studio", "apple-design"],
+  "keywords": ["ai", "local-slm", "whisper", "ffmpeg", "montanha-media-lab", "apple-design"],
   "author": "Coach Montanha",
   "license": "MIT"
 }

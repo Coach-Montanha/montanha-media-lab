@@ -8,7 +8,7 @@ from PIL import Image
 
 PORT = 8080
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOWNLOADS_DIR = "/sdcard/Download/MontanhaStudio"
+DOWNLOADS_DIR = "/sdcard/Download/MontanhaMediaLab"
 os.makedirs(DOWNLOADS_DIR, exist_ok=True)
 
 PDF_CACHE = {"texto_completo": "", "secoes": []}
@@ -193,5 +193,5 @@ class H(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(resp)
 
 with socketserver.TCPServer(("", PORT), H) as s:
-    print(f"\n[+] MONTANHA STUDIO PRO (WHISPER DUPLO + FAST DL) ATIVO! Acesse: http://localhost:{PORT}")
+    print(f"\n[+] MONTANHA MEDIA LAB ATIVO! Acesse: http://localhost:{PORT}")
     s.serve_forever()

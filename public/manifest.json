@@ -1,7 +1,7 @@
 {
-  "name": "Montanha Studio",
-  "short_name": "MontanhaStudio",
-  "description": "Estúdio Criativo Offline e IA Local para Redmi 12",
+  "name": "Montanha Media Lab",
+  "short_name": "MediaLab",
+  "description": "Laboratório de Mídia, Processamento Offline & IA Local",
   "start_url": "/index.html",
   "display": "standalone",
   "orientation": "portrait",
