@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Montanha Studio</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: rgba(28, 28, 30, 0.72);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --input-bg: rgba(44, 44, 46, 0.6);
+      --input-border: rgba(255, 255, 255, 0.08);
+      --accent: #2997ff;
+      --accent-hover: #0077ed;
+      --text: #f5f5f7;
+      --text-secondary: #86868b;
+      --success: #30d158;
+      --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: env(safe-area-inset-top, 20px) 16px calc(env(safe-area-inset-bottom, 20px) + 24px);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Apple Header */
+    header {
+      text-align: center;
+      padding: 12px 0 6px;
+    }
+
+    .app-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 10px;
+      background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    p.subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* iOS Segmented Control (Pill Tabs) */
+    .segmented-control {
+      display: flex;
+      background: rgba(118, 118, 128, 0.24);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 3px;
+      border-radius: 11px;
+      border: 0.5px solid rgba(255, 255, 255, 0.04);
+      gap: 2px;
+    }
+
+    .segment-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 7px 4px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.24s var(--ease-ios);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .segment-btn.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: var(--text);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Content Area */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s var(--ease-ios); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Apple Frosted Glass Card */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    /* iOS Upload Dropzone */
+    .dropzone {
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s var(--ease-ios);
+      margin-bottom: 14px;
+    }
+
+    .dropzone:active {
+      transform: scale(0.99);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--accent);
+    }
+
+    .dropzone-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+      opacity: 0.9;
+    }
+
+    .dropzone-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .dropzone-sub {
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    input[type="file"] { display: none; }
+
+    /* Form Fields */
+    label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      padding: 13px 14px;
+      color: var(--text);
+      font-size: 0.92rem;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    /* iOS Blue Button */
+    .btn-apple {
+      width: 100%;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 14px rgba(41, 151, 255, 0.3);
+      transition: all 0.2s var(--ease-ios);
+      margin-bottom: 8px;
+    }
+
+    .btn-apple:active {
+      transform: scale(0.98);
+      background: var(--accent-hover);
+    }
+
+    .btn-apple:disabled {
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:active {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    /* Output Terminal Glass */
+    .output-box {
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: #d1d1d6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 190px;
+      overflow-y: auto;
+      margin: 6px 0 10px;
+    }
+
+    .copy-pill {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 9px 12px;
+      width: 100%;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 8px;
+    }
+
+    .copy-pill:active {
+      background: rgba(41, 151, 255, 0.12);
+    }
+
+    /* Apple Notice Pill */
+    .apple-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      color: var(--success);
+      background: rgba(48, 209, 88, 0.12);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      border: 1px solid rgba(48, 209, 88, 0.2);
+    }
+
+    .preview-img {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="app-icon">⛰️</div>
+      <h1>Montanha Studio</h1>
+      <p class="subtitle">Processamento Criativo & IA Local</p>
+    </header>
+
+    <!-- iOS Segmented Control -->
+    <nav class="segmented-control">
+      <button class="segment-btn active" onclick="tab('t-vid')">🎬 Vídeo</button>
+      <button class="segment-btn" onclick="tab('t-pdf')">📄 PDF Pro</button>
+      <button class="segment-btn" onclick="tab('t-dl')">📥 Baixar</button>
+      <button class="segment-btn" onclick="tab('t-foto')">📷 Foto</button>
+    </nav>
+
+    <!-- ABA 1: VÍDEO & LEGENDAS -->
+    <div id="t-vid" class="tab-content active">
+      <div class="card">
+        <div class="dropzone" onclick="document.getElementById('f3').click()">
+          <span class="dropzone-icon">🎬</span>
+          <div class="dropzone-title" id="l3">Selecionar Vídeo</div>
+          <div class="dropzone-sub">Galeria ou Arquivos Locais</div>
+        </div>
+        <input type="file" id="f3" accept="video/*" onchange="pvVid(event)">
+
+        <button class="btn-apple" id="b4" onclick="envTrans()">
+          <span>🎙️</span> Gerar Transcrição + Legendas .SRT
+        </button>
+        <button class="btn-apple btn-secondary" id="b3" onclick="envAud()">
+          <span>🎵</span> Extrair Áudio MP3
+        </button>
+      </div>
+
+      <div class="card" id="r3" style="display:none">
+        <span class="apple-badge">✓ Processado pelo Whisper Local</span>
+        <label>1. Prompt para Legendas Dinâmicas:</label>
+        <div class="output-box" id="oPromptLeg" style="color: var(--accent);"></div>
+        <button class="copy-pill" onclick="cp('oPromptLeg')">Copiar Prompt de Legendas</button>
+
+        <label>2. Transcrição Marcada (.SRT com Timestamps):</label>
+        <div class="output-box" id="oSrt"></div>
+        <button class="copy-pill" onclick="cp('oSrt')">Copiar Legenda .SRT</button>
+
+        <label>3. Texto Limpo da Fala:</label>
+        <div class="output-box" id="oTxtLimpo"></div>
+        <button class="copy-pill" onclick="cp('oTxtLimpo')">Copiar Texto Limpo</button>
+      </div>
+    </div>
+
+    <!-- ABA 2: PDF INTELLIGENCE PRO -->
+    <div id="t-pdf" class="tab-content">
+      <div class="card">
+        <div class="dropzone" onclick="document.getElementById('f2').click()">
+          <span class="dropzone-icon">📄</span>
+          <div class="dropzone-title" id="l2">Selecionar Livro ou Artigo PDF</div>
+          <div class="dropzone-sub">Indexação automática de seções</div>
+        </div>
+        <input type="file" id="f2" accept="application/pdf" onchange="indexarPdf(event)">
+
+        <div id="areaCapitulos" style="display:none">
+          <label>Selecione o Capítulo ou Trecho:</label>
+          <select id="selCap"></select>
+          <button class="btn-apple" id="b2" onclick="gerarPromptPdf()">
+            <span>🚀</span> Gerar Suíte Completa do Trecho
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="r2" style="display:none">
+        <span class="apple-badge">✓ Suíte Editorial Pronta</span>
+        <label>Prompt Mestre (Resumo + Carrossel + Reels + Stories):</label>
+        <div class="output-box" id="opp" style="color: var(--accent);"></div>
+        <button class="copy-pill" onclick="cp('opp')">Copiar Prompt Mestre</button>
+
+        <label>Transcrição Integral do Trecho:</label>
+        <div class="output-box" id="opt"></div>
+        <button class="copy-pill" onclick="cp('opt')">Copiar Transcrição</button>
+      </div>
+    </div>
+
+    <!-- ABA 3: DOWNLOADER RÁPIDO -->
+    <div id="t-dl" class="tab-content">
+      <div class="card">
+        <div class="apple-badge">📁 Salvo em Download/MontanhaStudio</div>
+        <label>Link (TikTok, Instagram, YouTube):</label>
+        <input type="text" id="udl" placeholder="Cole o link do vídeo aqui...">
+
+        <label>Formato:</label>
+        <select id="fdl">
+          <option value="video">Vídeo Nativo (MP4 Rápido)</option>
+          <option value="audio">Apenas Áudio (MP3)</option>
+        </select>
+
+        <button class="btn-apple" id="bdl" onclick="baixar()">
+          <span>⚡</span> Download com Aceleração
+        </button>
+      </div>
+
+      <div class="card" id="rdl" style="display:none">
+        <label>Status:</label>
+        <div class="output-box" id="odl"></div>
+      </div>
+    </div>
+
+    <!-- ABA 4: FOTO / VISUAL NEEDLE -->
+    <div id="t-foto" class="tab-content">
+      <div class="card">
+        <div class="dropzone" onclick="document.getElementById('f1').click()">
+          <span class="dropzone-icon">📷</span>
+          <div class="dropzone-title" id="l1">Foto de Referência Visual</div>
+          <div class="dropzone-sub">Galeria ou Câmera</div>
+          <img id="th" class="preview-img">
+        </div>
+        <input type="file" id="f1" accept="image/*" onchange="pvImg(event)">
+
+        <label>Sujeito da Cena:</label>
+        <input type="text" id="suj" value="Coach Montanha">
+
+        <button class="btn-apple" id="b1" onclick="envFoto()">
+          <span>⚡</span> Extrair JSON & Prompt
+        </button>
+      </div>
+
+      <div class="card" id="r1" style="display:none">
+        <span class="apple-badge">✓ Estilo Mapeado Localmente</span>
+        <label>JSON de Composição Visual:</label>
+        <div class="output-box" id="oj"></div>
+        <button class="copy-pill" onclick="cp('oj')">Copiar JSON</button>
+
+        <label>Prompt para Antigravity / Midjourney:</label>
+        <div class="output-box" id="op" style="color: var(--accent);"></div>
+        <button class="copy-pill" onclick="cp('op')">Copiar Prompt Completo</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let aV=null, aP=null, aF=null;
+
+    function tab(id){
+      document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    function pvVid(e){ aV=e.target.files[0]; if(aV) document.getElementById('l3').innerText=aV.name; }
+    function pvImg(e){
+      aF=e.target.files[0]; if(!aF) return;
+      document.getElementById('l1').innerText=aF.name;
+      let th=document.getElementById('th'); th.src=URL.createObjectURL(aF); th.style.display='block';
+    }
+
+    async function envTrans(){
+      if(!aV){ alert('Escolha um vídeo primeiro.'); return; }
+      let b=document.getElementById('b4'); b.innerText='Transcrevendo no Whisper...'; b.disabled=true;
+      let fd=new FormData(); fd.append('acao','transcrever'); fd.append('f',aV);
+      try {
+        let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+        document.getElementById('oPromptLeg').innerText=d.prompt_legendas;
+        document.getElementById('oSrt').innerText=d.transcricao_marcada;
+        document.getElementById('oTxtLimpo').innerText=d.transcricao_pura;
+        document.getElementById('r3').style.display='block';
+      } catch(e){ alert('Erro: '+e.message); }
+      finally { b.innerHTML='<span>🎙️</span> Gerar Transcrição + Legendas .SRT'; b.disabled=false; }
+    }
+
+    async function envAud(){
+      if(!aV){ alert('Escolha um vídeo primeiro.'); return; }
+      let b=document.getElementById('b3'); b.innerText='Extraindo MP3...'; b.disabled=true;
+      let fd=new FormData(); fd.append('acao','audio'); fd.append('f',aV);
+      try {
+        let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+        alert(d.status);
+      } catch(e){ alert('Erro: '+e.message); }
+      finally { b.innerHTML='<span>🎵</span> Extrair Áudio MP3'; b.disabled=false; }
+    }
+
+    async function indexarPdf(e){
+      aP=e.target.files[0]; if(!aP) return;
+      document.getElementById('l2').innerText=aP.name+' (Indexando...)';
+      let fd=new FormData(); fd.append('acao','pdf_indexar'); fd.append('f',aP);
+      let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+      let sel=document.getElementById('selCap'); sel.innerHTML='';
+      d.capitulos.forEach(c => {
+        let opt=document.createElement('option'); opt.value=c.idx; opt.innerText=c.titulo; sel.appendChild(opt);
+      });
+      document.getElementById('areaCapitulos').style.display='block';
+      document.getElementById('l2').innerText=aP.name+' ('+d.capitulos.length+' seções)';
+    }
+
+    async function gerarPromptPdf(){
+      let b=document.getElementById('b2'); b.innerText='Gerando Suíte...'; b.disabled=true;
+      let fd=new FormData(); fd.append('acao','pdf_gerar'); fd.append('idx_secao',document.getElementById('selCap').value);
+      try {
+        let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+        document.getElementById('opp').innerText=d.prompt_suite;
+        document.getElementById('opt').innerText=d.transcricao_trecho;
+        document.getElementById('r2').style.display='block';
+      } catch(e){ alert('Erro: '+e.message); }
+      finally { b.innerHTML='<span>🚀</span> Gerar Suíte Completa do Trecho'; b.disabled=false; }
+    }
+
+    async function baixar(){
+      let u=document.getElementById('udl').value.trim(); if(!u){ alert('Cole um link válido.'); return; }
+      let b=document.getElementById('bdl'); b.innerText='Baixando...'; b.disabled=true;
+      let fd=new FormData(); fd.append('acao','download_url'); fd.append('url_midia',u); fd.append('formato_midia',document.getElementById('fdl').value);
+      try {
+        let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+        document.getElementById('odl').innerText=d.status; document.getElementById('rdl').style.display='block';
+      } catch(e){ alert('Erro: '+e.message); }
+      finally { b.innerHTML='<span>⚡</span> Download com Aceleração'; b.disabled=false; }
+    }
+
+    async function envFoto(){
+      let b=document.getElementById('b1'); b.innerText='Processando...'; b.disabled=true;
+      let fd=new FormData(); fd.append('acao','needle');
+      if(aF) fd.append('img',aF);
+      fd.append('sujeito',document.getElementById('suj').value);
+      try {
+        let r=await fetch('/processar',{method:'POST',body:fd}); let d=await r.json();
+        document.getElementById('oj').innerText=JSON.stringify(d.json,null,2);
+        document.getElementById('op').innerText=d.prompt;
+        document.getElementById('r1').style.display='block';
+      } catch(e){ alert('Erro: '+e.message); }
+      finally { b.innerHTML='<span>⚡</span> Extrair JSON & Prompt'; b.disabled=false; }
+    }
+
+    function cp(id){
+      navigator.clipboard.writeText(document.getElementById(id).innerText);
+      alert('Copiado para a Área de Transferência');
+    }
+  </script>
+</body>
+</html>
