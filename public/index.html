@@ -912,21 +912,88 @@
                 <!-- 2. CENTER PANEL: VIDEO CANVAS (DIRECT DRAG / PAN / SCALE / RATIO) -->
                 <div class="flex-1 canvas-bg flex flex-col items-center justify-center p-3 relative min-w-0 overflow-hidden" id="canvasContainer">
                     
-                    <!-- Proporções & Segmented Aspect Control (Top Floating) -->
-                    <div class="absolute top-3 floating-blur px-3 py-1 flex items-center space-x-2 text-xs z-30">
-                        <span class="text-[var(--text-muted)] font-semibold text-[10px] uppercase tracking-wider flex items-center">
-                            <i class="fa-solid fa-crop-simple mr-1 text-[var(--accent)]"></i>Formato:
-                        </span>
-                        <div class="segmented-control">
-                            <button onclick="setPlayerRatio('9/16')" id="ratio_9_16" class="segmented-item active">9:16</button>
-                            <button onclick="setPlayerRatio('16/9')" id="ratio_16_9" class="segmented-item">16:9</button>
-                            <button onclick="setPlayerRatio('1/1')" id="ratio_1_1" class="segmented-item">1:1</button>
-                            <button onclick="setPlayerRatio('4/5')" id="ratio_4_5" class="segmented-item">4:5</button>
-                            <button onclick="setPlayerRatio('3/4')" id="ratio_3_4" class="segmented-item">3:4</button>
-                            <button onclick="setPlayerRatio('2.35/1')" id="ratio_235_1" class="segmented-item">2.35:1</button>
+                    <!-- Proporções & Controle Discreto de Tamanho Estilo Clipchamp (Top Floating) -->
+                    <div class="absolute top-3 floating-blur px-2.5 py-1 flex items-center space-x-2 text-xs z-30 select-none">
+                        <!-- Dropdown Discreto de Tamanho (Clipchamp) -->
+                        <div class="relative">
+                            <button id="btnAspectDropdown" onclick="toggleAspectDropdown(event)" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] border border-[var(--border)] hover:border-cyan-400 text-xs text-white transition active:scale-95" title="Alterar Proporção do Vídeo">
+                                <i class="fa-regular fa-square text-cyan-400 text-xs"></i>
+                                <span id="lblCurrentAspect" class="font-medium text-xs">Vertical 9:16</span>
+                                <i class="fa-solid fa-chevron-down text-[8px] text-[var(--text-muted)] ml-0.5"></i>
+                            </button>
+                            <!-- Dropdown Menu Suspenso -->
+                            <div id="aspectDropdownMenu" class="hidden absolute top-full left-0 mt-1.5 w-60 bg-[#16181D] border border-[var(--border)] rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-0.5">
+                                <button onclick="selectPlayerRatio('16/9', 'Largo 16:9')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_16_9"></span>
+                                        <span class="w-3.5 h-2 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <div>
+                                            <div class="font-semibold text-xs text-white">Largo 16:9</div>
+                                            <div class="text-[9px] text-[var(--text-muted)]">YouTube e sites de streaming</div>
+                                        </div>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('9/16', 'Vertical 9:16')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_9_16">✓</span>
+                                        <span class="w-2 h-3.5 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <div>
+                                            <div class="font-semibold text-xs text-white">Vertical 9:16</div>
+                                            <div class="text-[9px] text-[var(--text-muted)]">Reels do Instagram e TikTok</div>
+                                        </div>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('1/1', 'Quadrado 1:1')" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_1_1"></span>
+                                        <span class="w-2.5 h-2.5 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <div>
+                                            <div class="font-semibold text-xs text-white">Quadrado 1:1</div>
+                                            <div class="text-[9px] text-[var(--text-muted)]">Postagens no Instagram</div>
+                                        </div>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('4/3', 'Clássico 4:3')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_4_3"></span>
+                                        <span class="w-3 h-2.2 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <span class="text-xs">Clássico 4:3</span>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('4/5', 'Redes Sociais 4:5')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_4_5"></span>
+                                        <span class="w-2.2 h-3 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <span class="text-xs">Redes Sociais 4:5</span>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('2.35/1', 'Cinema 21:9')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_235_1"></span>
+                                        <span class="w-4 h-1.5 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <span class="text-xs">Cinema 21:9</span>
+                                    </div>
+                                </button>
+                                <button onclick="selectPlayerRatio('2/3', 'Retrato 2:3')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[var(--bg-hover)] text-left text-white transition">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-4 text-center text-cyan-400 aspect-check" id="check_2_3"></span>
+                                        <span class="w-2 h-3 border border-current rounded-[1px] inline-block shrink-0"></span>
+                                        <span class="text-xs">Retrato 2:3</span>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
+
+                        <!-- Botão Discreto de Legendas com IA [CC] logo acima do vídeo -->
+                        <button onclick="openAiTranscribeModal()" id="btnTopCcTranscribe" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] border border-[var(--border)] hover:border-amber-400 text-xs text-white transition active:scale-95" title="Transcrever com IA (Legendas Automáticas)">
+                            <i class="fa-solid fa-closed-captioning text-amber-400 text-xs"></i>
+                            <span class="font-medium text-xs">CC Legendas</span>
+                        </button>
+
                         <div class="h-3 w-px bg-[var(--border)]"></div>
-                        <button onclick="toggleFitCover()" id="btnFitCover" title="Alternar Ajustar / Preencher Tela" class="px-2 py-0.5 rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--accent)] font-mono">
+
+                        <!-- Preencher / Ajustar -->
+                        <button onclick="toggleFitCover()" id="btnFitCover" title="Alternar Ajustar / Preencher Tela" class="px-2 py-1 rounded-md bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--accent)] font-medium">
                             Preencher
                         </button>
                     </div>
@@ -1017,7 +1084,7 @@
                 <div id="resizerRight" class="resizer-v" title="Arraste para redimensionar o inspetor"></div>
 
                 <!-- 3. RIGHT PANEL (RESIZABLE): INSPECTOR (ESCALA, VELOCIDADE, ÁUDIO, LEGENDAS) -->
-                <div id="rightInspectorPanel" class="panel-container border-l flex flex-col shrink-0 text-xs select-none relative transition-all duration-200" style="width: 280px; min-width: 220px; max-width: 500px;">
+                <div id="rightInspectorPanel" class="panel-container border-l hidden flex-col shrink-0 text-xs select-none relative transition-all duration-200" style="width: 280px; min-width: 240px; max-width: 500px;">
                     <!-- Inspector Header with Tabs and Retract Button -->
                     <div class="flex items-center justify-between border-b border-[var(--border)] text-[11px] font-semibold px-2 bg-[var(--bg-panel)] h-9 shrink-0">
                         <div class="flex items-center space-x-1 overflow-x-auto">
@@ -1169,6 +1236,27 @@
                     </div>
                 </div>
 
+
+                <!-- CLIPCHAMP RIGHT SLIM DOCK (48PX) -->
+                <nav id="clipchampRightDock" class="w-12 bg-[#121317] border-l border-[var(--border)] flex flex-col items-center py-2 space-y-1.5 z-30 shrink-0 select-none">
+                    <button onclick="toggleRightDockTool('captions')" id="rightDockBtn_captions" class="right-dock-btn" title="Legendas">
+                        <i class="fa-solid fa-closed-captioning text-sm"></i>
+                        <span class="text-[8px] mt-0.5 font-medium">Legendas</span>
+                    </button>
+                    <button onclick="toggleRightDockTool('audio')" id="rightDockBtn_audio" class="right-dock-btn" title="Áudio e Volume">
+                        <i class="fa-solid fa-volume-high text-sm"></i>
+                        <span class="text-[8px] mt-0.5 font-medium">Áudio</span>
+                    </button>
+                    <button onclick="toggleRightDockTool('speed')" id="rightDockBtn_speed" class="right-dock-btn" title="Velocidade">
+                        <i class="fa-solid fa-gauge-high text-sm"></i>
+                        <span class="text-[8px] mt-0.5 font-medium">Velocidade</span>
+                    </button>
+                    <button onclick="toggleRightDockTool('video')" id="rightDockBtn_video" class="right-dock-btn" title="Ajuste e Enquadramento">
+                        <i class="fa-solid fa-crop-simple text-sm"></i>
+                        <span class="text-[8px] mt-0.5 font-medium">Ajustes</span>
+                    </button>
+                </nav>
+
             </div>
 
             <!-- ============================================================== -->
@@ -1234,6 +1322,15 @@
 
                 <!-- Interactive Multi-Track Scroll Area -->
                 <div class="flex-1 overflow-x-auto overflow-y-auto px-3 py-2 space-y-2 relative" id="timelineTracksArea" onclick="seekByTimelineClick(event)">
+
+                    <!-- Linha Visual do Ponto de Contato Magnético entre Artefatos (Clipchamp Style) -->
+                    <div id="magneticContactGuide" class="hidden absolute top-0 bottom-0 w-[2px] bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,1)] z-50 pointer-events-none transition-opacity duration-75">
+                        <div class="absolute -top-6 -translate-x-1/2 px-2 py-0.5 rounded bg-[#101216] border border-cyan-400 text-[9px] font-mono font-bold text-cyan-300 shadow-xl whitespace-nowrap flex items-center space-x-1">
+                            <i class="fa-solid fa-magnet text-[8px] text-cyan-400"></i>
+                            <span>Ponto de Contato (0.00s)</span>
+                        </div>
+                    </div>
+
                     
                     <!-- HIGH-VISIBILITY DA VINCI PLAYHEAD -->
                     <div id="playheadContainer" style="left: 164px;">
@@ -2659,11 +2756,8 @@
 
         // Initialize Responsive Mode on Load
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
-                setUIMode('mobile');
-            } else {
-                setUIMode('desktop');
-            }
+            // Unificado: Sempre utiliza a interface profissional do Clipchamp com responsividade fluida
+            setUIMode('desktop');
             initCanvasDirectDrag();
             setupVideoEventListeners();
             setupKeyboardShortcuts();
@@ -3346,18 +3440,53 @@
             const startX = e.clientX || (e.touches && e.touches[0].clientX);
             const initialStart = clips[clipIdx].start;
             const initialEnd = clips[clipIdx].end;
+            const trackArea = document.getElementById('timelineTracksArea');
+            const offset = getTrackStartOffset();
+            const availableWidth = Math.max(300, (trackArea.clientWidth - offset - 40) * timelineZoom);
+            const total = currentVideoDuration || 1;
 
             function onMove(me) {
                 const curX = me.clientX || (me.touches && me.touches[0].clientX);
                 const deltaX = curX - startX;
                 const timeDelta = (deltaX / 300) * 2;
+                let snapped = false;
 
                 if (side === 'left') {
-                    const newStart = Math.max(0, Math.min(initialEnd - 0.2, initialStart + timeDelta));
+                    let newStart = Math.max(0, Math.min(initialEnd - 0.2, initialStart + timeDelta));
+                    
+                    // Snapping magnético contra outros clipes e agulha
+                    const snapThresholdTime = 0.25;
+                    clips.forEach((other, oIdx) => {
+                        if (oIdx !== clipIdx) {
+                            if (Math.abs(newStart - other.end) < snapThresholdTime) {
+                                newStart = other.end; // Snap magnético
+                                snapped = true;
+                                const snapPx = offset + (other.end / total) * availableWidth;
+                                showMagneticContactGuide(snapPx, `Encaixe Magnético (${other.end.toFixed(1)}s)`);
+                            }
+                        }
+                    });
+
+                    if (!snapped) hideMagneticContactGuide();
                     clips[clipIdx].start = newStart;
                     document.getElementById('studioVideo').currentTime = newStart;
                 } else {
-                    const newEnd = Math.max(initialStart + 0.2, Math.min(currentVideoDuration, initialEnd + timeDelta));
+                    let newEnd = Math.max(initialStart + 0.2, Math.min(currentVideoDuration, initialEnd + timeDelta));
+                    
+                    // Snapping magnético contra início de clipes vizinhos
+                    const snapThresholdTime = 0.25;
+                    clips.forEach((other, oIdx) => {
+                        if (oIdx !== clipIdx) {
+                            if (Math.abs(newEnd - other.start) < snapThresholdTime) {
+                                newEnd = other.start; // Snap magnético
+                                snapped = true;
+                                const snapPx = offset + (other.start / total) * availableWidth;
+                                showMagneticContactGuide(snapPx, `Encaixe Magnético (${other.start.toFixed(1)}s)`);
+                            }
+                        }
+                    });
+
+                    if (!snapped) hideMagneticContactGuide();
                     clips[clipIdx].end = newEnd;
                     document.getElementById('studioVideo').currentTime = newEnd;
                 }
@@ -3365,6 +3494,7 @@
             }
 
             function onUp() {
+                hideMagneticContactGuide();
                 window.removeEventListener('mousemove', onMove);
                 window.removeEventListener('mouseup', onUp);
                 window.removeEventListener('touchmove', onMove);
@@ -5486,13 +5616,34 @@
                     const data = await res.json();
                     if (data.status === 'success') {
                         uploadedCount++;
-                        if (!firstVideoData && file.type.startsWith('video/')) {
+                        const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|avi|mkv|webm)$/i.test(file.name);
+                        const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name);
+                        const mediaPath = data.server_path || data.path || '';
+                        const mediaUrl = data.download_url || data.url || '';
+                        const mediaName = data.filename || file.name;
+                        const mediaDur = (data.info && data.info.duration) ? data.info.duration : (isVideo ? 10 : 5);
+
+                        if (!firstVideoData && (isVideo || isImage)) {
                             firstVideoData = {
-                                path: data.server_path || data.path,
-                                url: data.download_url || data.url,
-                                name: data.filename || file.name,
-                                duration: (data.info && data.info.duration) ? data.info.duration : 0
+                                path: mediaPath,
+                                url: mediaUrl,
+                                name: mediaName,
+                                duration: mediaDur,
+                                isImage: isImage
                             };
+                        } else if (isVideo || isImage) {
+                            // Adicionar como clipe subsequente na timeline
+                            const lastEnd = clips.length > 0 ? clips[clips.length - 1].end : 0;
+                            clips.push({
+                                id: 'clip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                                start: lastEnd,
+                                end: lastEnd + mediaDur,
+                                label: mediaName,
+                                path: mediaPath,
+                                url: mediaUrl,
+                                isImage: isImage
+                            });
+                            currentVideoDuration = Math.max(currentVideoDuration, lastEnd + mediaDur);
                         }
                     } else {
                         showToast(`Erro ao enviar ${file.name}: ${data.message || 'Falha'}`, true);
@@ -6262,6 +6413,178 @@
                 showToast('✓ Conteúdo copiado!');
             }
         }
+
+        // =========================================================================
+        // CLIPCHAMP EXPERT SUITE: DROPDOWN, RIGHT DOCK, TRANSCRIBE & MAGNETIC SNAP
+        // =========================================================================
+
+        // 1. Aspect Ratio Dropdown Logic
+        function toggleAspectDropdown(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('aspectDropdownMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function selectPlayerRatio(ratio, label) {
+            setPlayerRatio(ratio);
+            const lbl = document.getElementById('lblCurrentAspect');
+            if (lbl) lbl.textContent = label;
+
+            // Update checks
+            document.querySelectorAll('.aspect-check').forEach(el => el.textContent = '');
+            const activeCheckId = 'check_' + ratio.replace('/', '_').replace('.', '');
+            const activeEl = document.getElementById(activeCheckId);
+            if (activeEl) activeEl.textContent = '✓';
+
+            const menu = document.getElementById('aspectDropdownMenu');
+            if (menu) menu.classList.add('hidden');
+            showToast(`Formato definido para [${label}]`);
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e && e.target && e.target.closest && e.target.closest('#btnAspectDropdown')) return;
+            const menu = document.getElementById('aspectDropdownMenu');
+            if (menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // 2. Transcribe Modal with AI
+        function openAiTranscribeModal() {
+            const modal = document.getElementById('aiTranscribeModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeAiTranscribeModal() {
+            const modal = document.getElementById('aiTranscribeModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        async function executeAiTranscribe() {
+            closeAiTranscribeModal();
+            const showOnVideo = document.getElementById('chkShowSubsOnVideo') ? document.getElementById('chkShowSubsOnVideo').checked : true;
+            showToast("Iniciando Transcrição Neural com IA...");
+            if (typeof triggerAutoCaptions === 'function') {
+                await triggerAutoCaptions();
+            }
+        }
+
+        // 3. Right Slim Dock Controls (Toggles the properties drawer)
+        let activeRightTool = null;
+        function toggleRightDockTool(toolName) {
+            const panel = document.getElementById('rightInspectorPanel');
+            const resizer = document.getElementById('resizerRight');
+            const btns = document.querySelectorAll('.right-dock-btn');
+
+            if (activeRightTool === toolName && panel && !panel.classList.contains('hidden')) {
+                // Close
+                panel.classList.add('hidden');
+                if (resizer) resizer.style.display = 'none';
+                btns.forEach(b => b.classList.remove('active'));
+                activeRightTool = null;
+                return;
+            }
+
+            // Open or Switch Tool
+            activeRightTool = toolName;
+            btns.forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`rightDockBtn_${toolName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (panel) {
+                panel.classList.remove('hidden');
+                panel.classList.add('flex');
+                panel.style.width = '280px';
+                if (resizer) resizer.style.display = 'block';
+            }
+
+            // Switch Tab in Inspector
+            if (typeof setInspectorTab === 'function') {
+                setInspectorTab(toolName);
+            }
+        }
+
+        // 4. Magnetic Snapping Line between Clips
+        function showMagneticContactGuide(pixelX, label = "Ponto de Contato (0.00s)") {
+            const guide = document.getElementById('magneticContactGuide');
+            if (!guide) return;
+            guide.style.left = `${pixelX}px`;
+            const badge = guide.querySelector('span');
+            if (badge) badge.textContent = label;
+            guide.classList.remove('hidden');
+        }
+
+        function hideMagneticContactGuide() {
+            const guide = document.getElementById('magneticContactGuide');
+            if (guide) guide.classList.add('hidden');
+        }
+
     </script>
+
+    <!-- ============================================================== -->
+    <!-- MODAL: TRANSCREVER COM IA (CLIPCHAMP BENCHMARK)                -->
+    <!-- ============================================================== -->
+    <div id="aiTranscribeModal" class="fixed inset-0 modal-backdrop z-[9999] hidden flex items-center justify-center p-4 select-none">
+        <div class="bg-[#1A1D24] border border-[var(--border)] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-scaleIn">
+            <!-- Modal Header -->
+            <div class="px-6 pt-6 pb-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <span>Transcrever com IA</span>
+                    </h3>
+                    <button onclick="closeAiTranscribeModal()" class="w-7 h-7 rounded-full bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] hover:text-white flex items-center justify-center text-xs transition">✕</button>
+                </div>
+                <p class="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">
+                    Habilite legendas automáticas de forma rápida e fácil, localize destaques e remova silêncios e palavras de preenchimento de sua mídia. <a href="javascript:void(0)" class="text-indigo-400 hover:underline">Saiba mais</a>
+                </p>
+            </div>
+
+            <!-- Modal Form Body -->
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="label-caps block mb-1.5 text-xs">Selecione qual idioma será usado em todo o seu projeto:</label>
+                    <select id="transcribeLangSelect" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-xl px-3 py-2.5 text-xs text-white focus:border-indigo-500 focus:outline-none">
+                        <option value="pt" selected>Português (Brasil)</option>
+                        <option value="en">Inglês (Estados Unidos)</option>
+                        <option value="es">Espanhol</option>
+                        <option value="auto">Detecção Automática</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2.5 pt-1">
+                    <label class="flex items-center space-x-2.5 text-xs text-[var(--text-secondary)] cursor-pointer">
+                        <input type="checkbox" id="chkFilterProfanity" class="w-4 h-4 rounded bg-[var(--bg-elevated)] border-[var(--border)] text-indigo-500 focus:ring-0">
+                        <span>Filtrar palavrões e linguagem ofensiva</span>
+                        <i class="fa-regular fa-circle-question text-[10px] text-[var(--text-muted)] ml-0.5"></i>
+                    </label>
+
+                    <label class="flex items-center space-x-2.5 text-xs text-white cursor-pointer">
+                        <input type="checkbox" id="chkShowSubsOnVideo" checked class="w-4 h-4 rounded bg-[var(--bg-elevated)] border-[var(--border)] text-indigo-500 focus:ring-0">
+                        <span>Mostrar legendas no vídeo</span>
+                        <i class="fa-regular fa-circle-question text-[10px] text-[var(--text-muted)] ml-0.5"></i>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-[#14161B] border-t border-[var(--border)] flex items-center justify-end space-x-3">
+                <button type="button" onclick="closeAiTranscribeModal()" class="px-4 py-2 rounded-xl bg-transparent hover:bg-[var(--bg-hover)] text-xs font-semibold text-[var(--text-secondary)] hover:text-white transition">
+                    Cancelar
+                </button>
+                <button type="button" onclick="executeAiTranscribe()" id="btnConfirmTranscribe" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg transition active:scale-95 flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                    <span>Transcrever mídia</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

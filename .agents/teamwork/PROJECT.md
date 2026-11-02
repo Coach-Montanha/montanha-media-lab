@@ -17,6 +17,9 @@
 - `public/index.html`: Studio UI markup, Clipchamp layout elements, TTS configuration panel, context menu, modal drawers, and timeline client logic.
 - `public/theme.css`: Clipchamp-style styling, 56px dock, floating context menu, minimalist buttons, responsive layout.
 - `tests/test_e2e_edge.py`: Playwright on Microsoft Edge E2E test suite (Tiers 1-4).
+- `tests/test_m1_backend.py`: Backend and engine unit tests.
+- `tests/test_m1_challenger.py`: Concurrency and edge case stress tests.
+- `tests/test_m1_adversarial.py`: Directory traversal and port resolution security tests.
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source |
@@ -41,10 +44,10 @@
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Backend Neural TTS & Engine Services | `server.py`, `engine.py`, `edge-tts` integration, `POST /api/tts`, `detect_silence_points`, port auto-bind | none | PLANNED |
-| M2 | Clipchamp-Style Frontend Editor Redesign | `public/index.html`, `public/theme.css`: 56px dock, drawer, TTS panel, minimalist toolbar, context menu, shortcuts, right dock | M1 | PLANNED |
-| M3 | E2E Testing Suite (Playwright on Edge) | `TEST_INFRA.md`, `tests/test_e2e_edge.py` (Tiers 1-4), `TEST_READY.md` | M1, M2 | PLANNED |
-| M4 | Final Integration, Audit & Git Sync | Run 100% E2E tests, forensic audit gate, git commit and `git push origin main` | M1, M2, M3 | PLANNED |
+| M1 | Backend Neural TTS & Engine Services | `server.py`, `engine.py`, `edge-tts` integration, `POST /api/tts`, `detect_silence_points`, port auto-bind | none | DONE |
+| M2 | Clipchamp-Style Frontend Editor Redesign | `public/index.html`, `public/theme.css`: 56px dock, drawer, TTS panel, minimalist toolbar, context menu, shortcuts, right dock | M1 | DONE |
+| M3 | E2E Testing Suite (Playwright on Edge) | `TEST_INFRA.md`, `tests/test_e2e_edge.py` (Tiers 1-4), `TEST_READY.md` | M1, M2 | DONE |
+| M4 | Final Integration, Audit & Git Sync | Run 100% E2E tests, forensic audit gate, git commit and `git push origin main` | M1, M2, M3 | DONE |
 
 ## Interface Contracts
 ### Frontend ↔ Backend: `POST /api/tts`
@@ -61,10 +64,10 @@
   ```json
   {
     "status": "success",
-    "filename": "tts_francisca_1730578800.mp3",
-    "server_path": "C:\\Users\\Administrator\\Downloads\\MontanhaMediaLab\\tts_francisca_1730578800.mp3",
+    "filename": "tts_francisca_1730578800_a1b2c3.mp3",
+    "server_path": "C:\\Users\\Administrator\\Downloads\\MontanhaMediaLab\\tts_francisca_1730578800_a1b2c3.mp3",
     "download_url": "/stream?file=...",
-    "media_url": "/media/tts_francisca_1730578800.mp3",
+    "media_url": "/media/tts_francisca_1730578800_a1b2c3.mp3",
     "duration": 4.12,
     "voice": "pt-BR-FranciscaNeural",
     "text": "Texto a ser falado"

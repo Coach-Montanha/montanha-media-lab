@@ -843,3 +843,36 @@ input:checked + .slider-toggle:before {
     cursor: pointer;
 }
 
+
+
+/* Clipchamp Right Slim Dock */
+.right-dock-btn {
+    width: 40px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+.right-dock-btn:hover {
+    color: #FFFFFF;
+    background: var(--bg-hover);
+}
+.right-dock-btn.active {
+    color: #FFFFFF;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-accent);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.15);
+}
+
+/* Magnetic Snap Guide Line */
+#magneticContactGuide {
+    pointer-events: none;
+    z-index: 100;
+}
