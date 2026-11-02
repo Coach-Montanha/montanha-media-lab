@@ -114,7 +114,11 @@
                 display: flex !important;
             }
         }
-    </style>
+    
+        .app-tab-panel.hidden { display: none !important; }
+        body.mode-mobile header.header-bar { display: flex !important; }
+        body.mode-mobile.in-video-mobile header.header-bar { display: none !important; }
+</style>
 </head>
 <body class="h-[100dvh] w-screen flex flex-col overflow-hidden select-none">
 
@@ -141,105 +145,7 @@
                     <i class="fa-solid fa-camera text-xs"></i>
                 </button>
 
-                <div class="h-3.5 w-px bg-[var(--border)] mx-0.5"></div>
 
-                <!-- Mega Menu Trigger Button -->
-                <div class="relative">
-                    <button onclick="toggleMegaMenu(event)" id="btnMegaMenu" class="tool-pill-btn" title="Todas as Ferramentas & Módulos">
-                        <i class="fa-solid fa-bars text-xs"></i>
-                    </button>
-
-                    <!-- ArtCraft 2-Column Mega Menu Dropdown -->
-                    <div id="megaMenuDropdown" class="hidden absolute left-0 mt-2.5 w-[460px] bg-[#14161C] border border-[#2B2F3A] rounded-2xl shadow-2xl p-4 z-50">
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Coluna CRIAR -->
-                            <div>
-                                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 px-1 flex items-center space-x-1.5">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
-                                    <span>Criar</span>
-                                </div>
-                                <div class="space-y-1">
-                                    <div onclick="switchAppTab('video'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-film"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-amber-400">Criar Vídeo</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Editor timeline multi-trilhas</div>
-                                        </div>
-                                    </div>
-                                    <div onclick="switchAppTab('pdf'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-file-pdf"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-red-400">PDF Intelligence</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Suíte editorial 5 em 1</div>
-                                        </div>
-                                    </div>
-                                    <div onclick="switchAppTab('downloader'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-download"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-emerald-400">Baixar da Web</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">TikTok, Instagram, YouTube</div>
-                                        </div>
-                                    </div>
-                                    <div onclick="switchAppTab('foto'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-camera"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-purple-400">Foto & Estilo</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Prompt cinematográfico 32x32</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Coluna EDITAR -->
-                            <div class="border-l border-[var(--border)] pl-4">
-                                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 px-1 flex items-center space-x-1.5">
-                                    <i class="fa-solid fa-sliders text-amber-400"></i>
-                                    <span>Editar</span>
-                                </div>
-                                <div class="space-y-1">
-                                    <div onclick="switchAppTab('video'); setLeftTab('captions'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-closed-captioning"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-yellow-400 flex items-center space-x-1">
-                                                <span>Legendas CapCut</span>
-                                                <span class="text-[8px] bg-yellow-400/20 text-yellow-300 px-1 rounded font-bold">WHISPER</span>
-                                            </div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Presets neon e arrasto livre</div>
-                                        </div>
-                                    </div>
-                                    <div onclick="switchAppTab('video'); triggerAutoCut(); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-scissors"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-pink-400">AutoCut Silêncios</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Corte automático de pausas</div>
-                                        </div>
-                                    </div>
-                                    <div onclick="openLibraryModal('audio'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
-                                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs shrink-0">
-                                            <i class="fa-solid fa-music"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-semibold text-white group-hover:text-cyan-400">Áudios & Trilhas</div>
-                                            <div class="text-[10px] text-[var(--text-muted)]">Biblioteca de MP3 local</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Project Title (Editable) -->
@@ -351,14 +257,11 @@
         <!-- TAB 0: ARTCRAFT LAUNCHER & DASHBOARD (TELA INICIAL)            -->
         <!-- ============================================================== -->
         <div id="tabContent_home" class="app-tab-panel flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 lg:p-12 bg-[var(--bg-base)]">
-            <div class="max-w-5xl mx-auto w-full space-y-8 my-auto py-6">
+            <div class="max-w-4xl mx-auto w-full space-y-6 pt-2 md:pt-4 pb-12">
 
                 <!-- Hero Section: ArtCraft Benchmark -->
                 <div class="text-center space-y-3">
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-xs text-[var(--accent)] font-medium mb-1 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                        <span>Ecossistema Montanha • Suíte Criativa Unificada</span>
-                    </div>
+
                     <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">
                         O que você vai <span class="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent">criar</span> hoje?
                     </h1>
@@ -385,7 +288,7 @@
                                 <div>
                                     <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-amber-400 transition-colors flex items-center space-x-2">
                                         <span>Criar Vídeo</span>
-                                        <span class="artcraft-badge bg-amber-500/20 text-amber-300">DaVinci / CapCut</span>
+                                        
                                     </div>
                                     <div class="text-xs text-[var(--text-muted)] mt-0.5">
                                         Editor timeline multi-trilhas, corte inteligente de silêncios e exportação acelerada
@@ -404,7 +307,7 @@
                                 <div>
                                     <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-red-400 transition-colors flex items-center space-x-2">
                                         <span>PDF Intelligence Pro</span>
-                                        <span class="artcraft-badge bg-red-500/20 text-red-300">5 em 1</span>
+                                        
                                     </div>
                                     <div class="text-xs text-[var(--text-muted)] mt-0.5">
                                         Indexe livros e apostilas para gerar Resumos, Carrosséis, Reels e Stories
@@ -423,7 +326,7 @@
                                 <div>
                                     <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors flex items-center space-x-2">
                                         <span>Baixar da Web</span>
-                                        <span class="artcraft-badge bg-emerald-500/20 text-emerald-300">yt-dlp</span>
+                                        
                                     </div>
                                     <div class="text-xs text-[var(--text-muted)] mt-0.5">
                                         Baixe vídeos do Instagram, TikTok e YouTube direto para o estúdio
@@ -442,7 +345,7 @@
                                 <div>
                                     <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-purple-400 transition-colors flex items-center space-x-2">
                                         <span>Foto & Composição Visual</span>
-                                        <span class="artcraft-badge bg-purple-500/20 text-purple-300">Needle 32x32</span>
+                                        
                                     </div>
                                     <div class="text-xs text-[var(--text-muted)] mt-0.5">
                                         Extraia paleta de iluminação e prompts cinematográficos ultra-realistas
@@ -3482,7 +3385,7 @@
 
         // Import File PC
         async function handleFileSelect(e) {
-            const file = e.target.files[0];
+            const file = e.target.files && e.target.files[0];
             if (!file) return;
 
             showToast(`Enviando ${file.name}...`);
@@ -3499,13 +3402,22 @@
                     const sPath = data.server_path || data.path;
                     const dUrl = data.download_url || data.url;
                     const dur = (data.info && data.info.duration) ? data.info.duration : 0;
-                    loadVideoFile(sPath, dUrl, file.name, dur);
-                    showToast("Vídeo importado e pronto para edição!");
+                    
+                    // Switch to video studio immediately so user sees the clip
+                    switchAppTab('video');
+                    loadVideoFile(sPath, dUrl, data.filename || file.name, dur);
+                    showToast(`✓ Arquivo [${data.filename || file.name}] carregado com sucesso!`);
+                    
+                    if (typeof loadAndRenderLibrary === 'function') {
+                        loadAndRenderLibrary();
+                    }
                 } else {
                     showToast(data.message || "Erro no upload", true);
                 }
             } catch (err) {
-                showToast("Falha ao enviar arquivo", true);
+                showToast(`Falha ao enviar arquivo: ${err.message}`, true);
+            } finally {
+                e.target.value = '';
             }
         }
 

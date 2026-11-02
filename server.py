@@ -341,10 +341,54 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "error", "message": str(err)})
                 return
 
-        # B. Multipart Form POST Requests (Media Lab: PDF Pro, Downloader, Foto)
+        # B. Multipart Form POST Requests (Media Lab: PDF Pro, Downloader, Foto & Direct Uploads)
         body = self.rfile.read(content_length)
         boundary = content_type.split("boundary=")[-1].encode() if "boundary=" in content_type else b""
         partes = body.split(b"--" + boundary) if boundary else []
+
+        # 0. DIRECT UPLOAD HANDLER (/api/upload for PC & Mobile)
+        if parsed.path == "/api/upload":
+            upload_filename = "upload_midia.mp4"
+            uploaded_bytes = None
+            for p in partes:
+                if b'filename="' in p:
+                    try:
+                        header_part = p.split(b"\r\n\r\n", 1)[0].decode("utf-8", "ignore")
+                        match = re.search(r'filename="([^"]+)"', header_part)
+                        if match:
+                            upload_filename = Path(match.group(1)).name
+                    except Exception:
+                        pass
+                    uploaded_bytes = p.split(b"\r\n\r\n", 1)[1].rsplit(b"\r\n", 1)[0]
+                    break
+
+            if uploaded_bytes:
+                safe_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', upload_filename)
+                if not safe_name:
+                    safe_name = f"upload_{int(os.times().elapsed)}.mp4"
+                target_file = DOWNLOADS_DIR / safe_name
+                with open(target_file, "wb") as f:
+                    f.write(uploaded_bytes)
+
+                dur = 0.0
+                if engine and safe_name.lower().endswith((".mp4", ".mov", ".mkv", ".webm")):
+                    try:
+                        info = engine.get_video_info(str(target_file))
+                        dur = info.get("duration", 0.0)
+                    except Exception:
+                        dur = 0.0
+
+                self._send_json({
+                    "status": "success",
+                    "filename": safe_name,
+                    "server_path": str(target_file),
+                    "download_url": f"/stream?file={urllib.parse.quote(str(target_file))}",
+                    "info": {"duration": dur}
+                })
+                return
+            else:
+                self._send_json({"status": "error", "message": "Nenhum arquivo enviado"})
+                return
 
         acao, url_midia, formato_midia, file_bytes, idx_secao = "transcrever", "", "video", None, 0
         for p in partes:
