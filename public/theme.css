@@ -619,3 +619,100 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .anim-capcut-pop { animation: capcutPop 0.22s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
 .anim-capcut-fade { animation: capcutFade 0.2s ease-out; }
 .anim-capcut-slide { animation: capcutSlideUp 0.22s ease-out; }
+
+/* ==========================================================================
+   ARTCRAFT TOP BAR, MEGA MENU, SETTINGS & MY LIBRARY
+   ========================================================================== */
+
+/* Toggle Switch (ArtCraft style) */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider-toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #262933;
+    transition: .2s;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.slider-toggle:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #9AA0AB;
+    transition: .2s;
+    border-radius: 50%;
+}
+input:checked + .slider-toggle {
+    background-color: #2563EB;
+    border-color: #3B82F6;
+}
+input:checked + .slider-toggle:before {
+    transform: translateX(18px);
+    background-color: #FFFFFF;
+}
+
+/* Tool Pill Icon Buttons */
+.tool-pill-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.tool-pill-btn:hover {
+    color: #FFFFFF;
+    background: var(--bg-hover);
+}
+.tool-pill-btn.active {
+    background: #2563EB;
+    color: #FFFFFF;
+    border-color: #3B82F6;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+/* My Library Card */
+.library-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.library-card:hover {
+    border-color: rgba(34, 211, 238, 0.5);
+    background: var(--bg-elevated);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+.library-card .action-overlay {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+.library-card:hover .action-overlay {
+    opacity: 1;
+}

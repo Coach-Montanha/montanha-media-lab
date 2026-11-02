@@ -318,6 +318,29 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "error", "message": "Engine indisponível"})
                 return
 
+            elif parsed.path == "/api/delete-media":
+                file_path = body.get("path")
+                if file_path and os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                        self._send_json({"status": "success", "message": "Arquivo removido com sucesso"})
+                    except Exception as err:
+                        self._send_json({"status": "error", "message": str(err)})
+                else:
+                    self._send_json({"status": "error", "message": "Arquivo não encontrado"})
+                return
+
+            elif parsed.path == "/api/open-folder":
+                try:
+                    if sys.platform == "win32":
+                        os.startfile(str(DOWNLOADS_DIR))
+                    else:
+                        subprocess.run(["xdg-open", str(DOWNLOADS_DIR)])
+                    self._send_json({"status": "success", "message": "Pasta aberta no explorador"})
+                except Exception as err:
+                    self._send_json({"status": "error", "message": str(err)})
+                return
+
         # B. Multipart Form POST Requests (Media Lab: PDF Pro, Downloader, Foto)
         body = self.rfile.read(content_length)
         boundary = content_type.split("boundary=")[-1].encode() if "boundary=" in content_type else b""

@@ -119,53 +119,212 @@
 <body class="h-[100dvh] w-screen flex flex-col overflow-hidden select-none">
 
     <!-- 1) TOP GLOBAL HEADER (48px DaVinci / Premiere Bar) -->
-    <header class="header-bar px-4 flex items-center justify-between shrink-0 select-none z-30">
-        <!-- Left: Logo & Editable Project Title -->
+        <!-- 1) TOP GLOBAL HEADER (ArtCraft Style Design System) -->
+    <header class="header-bar px-3 md:px-5 flex items-center justify-between shrink-0 select-none z-30 bg-[#121317] border-b border-[var(--border)]">
+        
+        <!-- Left: Tool Icons Pill + Mega Menu Dropdown (ArtCraft Standard) -->
         <div class="flex items-center space-x-3">
-            <div class="w-7 h-7 rounded-[6px] bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-sm font-extrabold shadow-sm">
-                ⛰️
+            <div class="flex items-center bg-[#181A20] border border-[#2B2F3A] rounded-xl p-1 space-x-1" id="mainSuiteTabs">
+                <button onclick="switchAppTab('home')" id="tabNav_home" class="tool-pill-btn active" title="Início / Painel Central">
+                    <i class="fa-solid fa-house text-xs"></i>
+                </button>
+                <button onclick="switchAppTab('video')" id="tabNav_video" class="tool-pill-btn" title="Vídeo Studio (Editor DaVinci / CapCut)">
+                    <i class="fa-solid fa-film text-xs"></i>
+                </button>
+                <button onclick="switchAppTab('pdf')" id="tabNav_pdf" class="tool-pill-btn" title="PDF Intelligence Pro (5 em 1)">
+                    <i class="fa-solid fa-file-pdf text-xs"></i>
+                </button>
+                <button onclick="switchAppTab('downloader')" id="tabNav_downloader" class="tool-pill-btn" title="Downloader Social (TikTok, Instagram, YouTube)">
+                    <i class="fa-solid fa-download text-xs"></i>
+                </button>
+                <button onclick="switchAppTab('foto')" id="tabNav_foto" class="tool-pill-btn" title="Foto & Composição Visual (Needle)">
+                    <i class="fa-solid fa-camera text-xs"></i>
+                </button>
+
+                <div class="h-3.5 w-px bg-[var(--border)] mx-0.5"></div>
+
+                <!-- Mega Menu Trigger Button -->
+                <div class="relative">
+                    <button onclick="toggleMegaMenu(event)" id="btnMegaMenu" class="tool-pill-btn" title="Todas as Ferramentas & Módulos">
+                        <i class="fa-solid fa-bars text-xs"></i>
+                    </button>
+
+                    <!-- ArtCraft 2-Column Mega Menu Dropdown -->
+                    <div id="megaMenuDropdown" class="hidden absolute left-0 mt-2.5 w-[460px] bg-[#14161C] border border-[#2B2F3A] rounded-2xl shadow-2xl p-4 z-50">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Coluna CRIAR -->
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 px-1 flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+                                    <span>Criar</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div onclick="switchAppTab('video'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-film"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-amber-400">Criar Vídeo</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Editor timeline multi-trilhas</div>
+                                        </div>
+                                    </div>
+                                    <div onclick="switchAppTab('pdf'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-file-pdf"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-red-400">PDF Intelligence</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Suíte editorial 5 em 1</div>
+                                        </div>
+                                    </div>
+                                    <div onclick="switchAppTab('downloader'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-download"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-emerald-400">Baixar da Web</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">TikTok, Instagram, YouTube</div>
+                                        </div>
+                                    </div>
+                                    <div onclick="switchAppTab('foto'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-camera"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-purple-400">Foto & Estilo</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Prompt cinematográfico 32x32</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coluna EDITAR -->
+                            <div class="border-l border-[var(--border)] pl-4">
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2 px-1 flex items-center space-x-1.5">
+                                    <i class="fa-solid fa-sliders text-amber-400"></i>
+                                    <span>Editar</span>
+                                </div>
+                                <div class="space-y-1">
+                                    <div onclick="switchAppTab('video'); setLeftTab('captions'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-closed-captioning"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-yellow-400 flex items-center space-x-1">
+                                                <span>Legendas CapCut</span>
+                                                <span class="text-[8px] bg-yellow-400/20 text-yellow-300 px-1 rounded font-bold">WHISPER</span>
+                                            </div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Presets neon e arrasto livre</div>
+                                        </div>
+                                    </div>
+                                    <div onclick="switchAppTab('video'); triggerAutoCut(); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-scissors"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-pink-400">AutoCut Silêncios</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Corte automático de pausas</div>
+                                        </div>
+                                    </div>
+                                    <div onclick="openLibraryModal('audio'); toggleMegaMenu();" class="flex items-center space-x-2.5 p-2 rounded-xl hover:bg-[#20232C] cursor-pointer transition group">
+                                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs shrink-0">
+                                            <i class="fa-solid fa-music"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs font-semibold text-white group-hover:text-cyan-400">Áudios & Trilhas</div>
+                                            <div class="text-[10px] text-[var(--text-muted)]">Biblioteca de MP3 local</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-baseline space-x-1.5">
-                <span class="font-bold text-sm tracking-wide text-[var(--text-primary)]">MONTANHA</span>
-                <span class="font-semibold text-xs text-[var(--accent)] tracking-wider">MEDIA LAB</span>
-            </div>
-            <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
+
+            <!-- Project Title (Editable) -->
             <div class="flex items-center space-x-2 text-xs">
-                <span id="currentVideoTitle" class="text-[var(--text-secondary)] font-medium truncate max-w-[200px]">Projeto Sem Nome</span>
-                <button onclick="renameProjectPrompt()" title="Renomear Projeto" class="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition">
+                <span id="currentVideoTitle" class="text-[var(--text-secondary)] font-medium truncate max-w-[170px]">Projeto Sem Nome</span>
+                <button onclick="renameProjectPrompt()" title="Renomear Projeto" class="text-[var(--text-muted)] hover:text-white transition">
                     <i class="fa-solid fa-pen text-[10px]"></i>
                 </button>
             </div>
-            <div id="deviceBadge" class="hidden md:flex items-center space-x-1.5 px-2 py-0.5 rounded-[6px] bg-[var(--bg-elevated)] border border-[var(--border)] text-[10px] text-[var(--text-secondary)] font-mono">
-                <div class="pulsing-dot"></div>
-                <span id="deviceBadgeText">Redmi 12</span>
+        </div>
+
+        <!-- Center: ArtCraft Style Clean Logo -->
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="switchAppTab('home')" title="Ir para a Tela Inicial">
+            <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
+                ⛰️
+            </div>
+            <div class="flex items-baseline space-x-1">
+                <span class="font-bold text-sm tracking-wide text-white">MONTANHA</span>
+                <span class="font-semibold text-xs text-[var(--accent)] tracking-wider">MEDIA LAB</span>
             </div>
         </div>
 
-        <!-- Center: 4-in-1 Creative Suite Tabs + Viewport Switcher -->
+        <!-- Right: ArtCraft Controls (Status, Single Upload Dropdown, Settings, My Library, Viewport, Export) -->
         <div class="flex items-center space-x-2">
-            <div class="segmented-control" id="mainSuiteTabs">
-                <button onclick="switchAppTab('home')" id="tabNav_home" class="segmented-item active" title="Início / Launcher ArtCraft">
-                    <i class="fa-solid fa-house text-xs text-blue-400"></i>
-                    <span>Início</span>
-                </button>
-                <button onclick="switchAppTab('video')" id="tabNav_video" class="segmented-item" title="Video Studio (Editor de Vídeo & Timeline)">
-                    <i class="fa-solid fa-film text-xs text-amber-400"></i>
-                    <span>Vídeo Studio</span>
-                </button>
-                <button onclick="switchAppTab('pdf')" id="tabNav_pdf" class="segmented-item" title="PDF Intelligence Pro (Resumos, Carrosséis, Roteiros)">
-                    <i class="fa-solid fa-file-pdf text-xs text-red-400"></i>
-                    <span>PDF Pro</span>
-                </button>
-                <button onclick="switchAppTab('downloader')" id="tabNav_downloader" class="segmented-item" title="Downloader Social (TikTok, Instagram, YouTube)">
-                    <i class="fa-solid fa-download text-xs text-emerald-400"></i>
-                    <span>Baixar</span>
-                </button>
-                <button onclick="switchAppTab('foto')" id="tabNav_foto" class="segmented-item" title="Foto & Iluminação (Análise Visual)">
-                    <i class="fa-solid fa-camera text-xs text-purple-400"></i>
-                    <span>Foto</span>
-                </button>
+
+            <!-- 100% Local Badge (Informação limpa sem poluição de Redmi) -->
+            <div class="hidden lg:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[#181A20] border border-[var(--border)] text-[11px] text-[var(--text-secondary)]">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="font-medium text-emerald-300">100% Local</span>
             </div>
+
+            <!-- UNIFIED UPLOAD BUTTON (Substitui os botões separados de Nuvem, Câmera e Importar PC) -->
+            <div class="relative">
+                <button onclick="toggleUploadDropdown(event)" id="btnUploadDropdown" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#181A20] border border-[var(--border)] hover:border-cyan-400 text-xs font-semibold text-white transition active:scale-95" title="Opções de Importação e Upload">
+                    <i class="fa-solid fa-arrow-up-from-bracket text-cyan-400 text-xs"></i>
+                    <span>Upload</span>
+                    <i class="fa-solid fa-chevron-down text-[9px] text-[var(--text-muted)] ml-0.5"></i>
+                </button>
+
+                <!-- Dropdown de Upload -->
+                <div id="uploadDropdownMenu" class="hidden absolute right-0 mt-2 w-64 bg-[#181A20] border border-[#2B2F3A] rounded-xl shadow-2xl p-1.5 z-50 space-y-1">
+                    <div onclick="document.getElementById('fileInput').click(); toggleUploadDropdown();" class="flex items-center space-x-3 p-2.5 rounded-lg hover:bg-[#252934] cursor-pointer transition">
+                        <div class="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Do Computador</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">Vídeos (MP4, MOV), Áudios e Imagens</div>
+                        </div>
+                    </div>
+                    <div onclick="pullLatestRedmiVideo(); toggleUploadDropdown();" class="flex items-center space-x-3 p-2.5 rounded-lg hover:bg-[#252934] cursor-pointer transition">
+                        <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Câmera do Celular</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">Puxar gravação USB (Redmi 12)</div>
+                        </div>
+                    </div>
+                    <div onclick="openCloudImportModal(); toggleUploadDropdown();" class="flex items-center space-x-3 p-2.5 rounded-lg hover:bg-[#252934] cursor-pointer transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-sm shrink-0">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">Nuvem / Google Drive</div>
+                            <div class="text-[10px] text-[var(--text-muted)]">Link do Drive, Dropbox ou URL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden native file input -->
+            <input type="file" id="fileInput" accept="video/*,audio/*,image/*" class="hidden" onchange="handleFileSelect(event)">
+
+            <!-- SETTINGS BUTTON (Abre modal de configurações estilo ArtCraft) -->
+            <button onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-[#181A20] border border-[var(--border)] hover:border-cyan-400 flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition active:scale-95" title="Configurações do Sistema">
+                <i class="fa-solid fa-gear text-xs"></i>
+            </button>
+
+            <!-- MY LIBRARY BUTTON (Abre modal Minha Biblioteca estilo ArtCraft) -->
+            <button onclick="openLibraryModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#181A20] border border-[var(--border)] hover:border-cyan-400 text-xs font-semibold text-white transition active:scale-95" title="Minha Biblioteca de Arquivos">
+                <i class="fa-solid fa-layer-group text-blue-400 text-xs"></i>
+                <span class="hidden sm:inline">Minha Biblioteca</span>
+                <span id="headerLibraryBadge" class="px-1.5 py-0.2 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-mono">0</span>
+            </button>
 
             <!-- Viewport Mode Switcher (Visible when Video Studio is active) -->
             <div class="segmented-control ml-1" id="viewportSwitcherContainer" style="display: none;">
@@ -176,34 +335,11 @@
                     <i class="fa-solid fa-mobile-screen text-xs"></i>
                 </button>
             </div>
-        </div>
 
-        <!-- Right: Actions & High-contrast Export Button -->
-        <div class="flex items-center space-x-2">
-            <button onclick="openCloudImportModal()" class="btn-secondary" title="Importar da Nuvem (Google Drive, Dropbox, Fotos, URL)">
-                <i class="fa-solid fa-cloud-arrow-down text-blue-400"></i>
-                <span>Nuvem / Drive</span>
-            </button>
-
-            <button onclick="pullLatestRedmiVideo()" id="btnPullCamera" class="btn-secondary" title="Importar vídeo gravado no celular via ADB">
-                <i class="fa-solid fa-mobile-screen text-cyan-400"></i>
-                <span>Câmera Redmi</span>
-            </button>
-
-            <button onclick="document.getElementById('fileInput').click()" class="btn-secondary" title="Carregar vídeo local (MP4, MOV, MKV)">
-                <i class="fa-solid fa-folder-open text-amber-400"></i>
-                <span>Importar PC</span>
-            </button>
-            <input type="file" id="fileInput" accept="video/*" class="hidden" onchange="handleFileSelect(event)">
-
-            <button onclick="openCapCutToolsModal()" class="btn-ai" title="Todas as Ferramentas e IA">
-                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-                <span>Todas as Ferramentas</span>
-            </button>
-
-            <button onclick="openExportModal()" class="btn-primary" title="Renderizar e exportar vídeo final">
+            <!-- Export Button -->
+            <button onclick="openExportModal()" class="btn-primary py-1.5 px-3 text-xs" title="Renderizar e exportar vídeo final">
                 <i class="fa-solid fa-download text-xs"></i>
-                <span>Exportar</span>
+                <span class="hidden md:inline">Exportar</span>
             </button>
         </div>
     </header>
@@ -1530,6 +1666,287 @@
                 </div>
             </div>
         </div>
+
+
+    <!-- ============================================================== -->
+    <!-- ARTCRAFT BENCHMARK: MODAL DE CONFIGURAÇÕES (SETTINGS)          -->
+    <!-- ============================================================== -->
+    <div id="settingsModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-4 select-none">
+        <div class="bg-[#15171D] border border-[#2B2F3A] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between bg-[#121317]">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-gear text-cyan-400 text-sm"></i>
+                    <h3 class="font-bold text-sm text-white">Configurações</h3>
+                </div>
+                <button onclick="closeSettingsModal()" class="btn-icon text-xs text-[var(--text-muted)] hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Two-Column Layout: Left Tabs, Right Options) -->
+            <div class="flex-1 flex overflow-hidden">
+                
+                <!-- Left Sidebar Tabs -->
+                <div class="w-48 border-r border-[var(--border)] p-2 space-y-1 bg-[#121317]/50 text-xs shrink-0">
+                    <button onclick="setSettingsTab('general')" id="setTab_general" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-white bg-[var(--bg-elevated)] font-semibold transition">
+                        <i class="fa-solid fa-sliders text-xs w-4 text-cyan-400"></i>
+                        <span>Geral</span>
+                    </button>
+                    <button onclick="setSettingsTab('downloads')" id="setTab_downloads" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-solid fa-download text-xs w-4 text-emerald-400"></i>
+                        <span>Downloads & Mídia</span>
+                    </button>
+                    <button onclick="setSettingsTab('device')" id="setTab_device" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-solid fa-mobile-screen text-xs w-4 text-blue-400"></i>
+                        <span>Celular & USB</span>
+                    </button>
+                    <button onclick="setSettingsTab('export')" id="setTab_export" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-solid fa-microchip text-xs w-4 text-purple-400"></i>
+                        <span>Exportação & GPU</span>
+                    </button>
+                    <button onclick="setSettingsTab('keybinds')" id="setTab_keybinds" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-solid fa-keyboard text-xs w-4 text-yellow-400"></i>
+                        <span>Atalhos de Teclado</span>
+                    </button>
+                    <button onclick="setSettingsTab('about')" id="setTab_about" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-solid fa-circle-info text-xs w-4 text-gray-400"></i>
+                        <span>Sobre</span>
+                    </button>
+                </div>
+
+                <!-- Right Content Area -->
+                <div class="flex-1 p-5 overflow-y-auto space-y-4 text-xs">
+                    
+                    <!-- TAB 1: GERAL -->
+                    <div id="setPanel_general" class="space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                            <div>
+                                <div class="font-bold text-white text-xs">Alinhar Playhead ao Zero Inicial (00:00)</div>
+                                <div class="text-[10px] text-[var(--text-muted)] mt-0.5">O zero da régua começa exatamente no primeiro frame da mídia</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cfgZeroAlign" checked onchange="saveAppSetting('cfgZeroAlign', this.checked)">
+                                <span class="slider-toggle"></span>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                            <div>
+                                <div class="font-bold text-white text-xs">Guias de Segurança do Instagram</div>
+                                <div class="text-[10px] text-[var(--text-muted)] mt-0.5">Exibe margens automáticas para Stories e Reels no reprodutor</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cfgSafeAreas" checked onchange="saveAppSetting('cfgSafeAreas', this.checked)">
+                                <span class="slider-toggle"></span>
+                            </label>
+                        </div>
+
+                        <div class="space-y-1.5 pb-3 border-b border-[var(--border)]">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white text-xs">Sensibilidade de Corte de Silêncio (AutoCut):</span>
+                                <span class="font-mono text-cyan-400 font-semibold" id="valCfgSilence">-30 dB</span>
+                            </div>
+                            <input type="range" min="-50" max="-10" value="-30" class="w-full accent-cyan-400" oninput="document.getElementById('valCfgSilence').textContent = this.value + ' dB'; saveAppSetting('cfgSilence', this.value)">
+                            <div class="text-[10px] text-[var(--text-muted)]">Valores menores cortam até sussurros; valores maiores mantêm pausas naturais.</div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: DOWNLOADS & MÍDIA -->
+                    <div id="setPanel_downloads" class="hidden space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-white text-xs block">Pasta de Armazenamento Local:</label>
+                            <div class="p-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-secondary)] break-all select-all">
+                                ~/Downloads/MontanhaMediaLab
+                            </div>
+                            <button onclick="openSystemDownloadsFolder()" class="btn-secondary px-3 py-1.5 text-xs flex items-center space-x-1.5 mt-2">
+                                <i class="fa-solid fa-folder-open text-amber-400"></i>
+                                <span>Abrir Pasta no Computador</span>
+                            </button>
+                        </div>
+
+                        <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
+                            <label class="font-bold text-white text-xs block">Formato Padrão do Downloader Social:</label>
+                            <select id="cfgDefaultFormat" onchange="saveAppSetting('cfgDefaultFormat', this.value)" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-lg p-2 text-white">
+                                <option value="video">Vídeo Completo Alta Resolução (MP4)</option>
+                                <option value="audio">Apenas Áudio (MP3 192kbps)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: CELULAR & USB -->
+                    <div id="setPanel_device" class="hidden space-y-4">
+                        <div class="p-3 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] space-y-2">
+                            <div class="flex items-center space-x-2 text-cyan-400 font-bold">
+                                <i class="fa-solid fa-mobile-screen"></i>
+                                <span>Conexão USB com Celular (ADB)</span>
+                            </div>
+                            <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+                                Permite transferir vídeos da câmera do celular diretamente para o projeto com taxa máxima de transferência e sem usar internet.
+                            </p>
+                            <div class="flex space-x-2 pt-1">
+                                <button onclick="pullLatestRedmiVideo()" class="btn-primary py-1 px-3 text-xs">
+                                    <i class="fa-solid fa-arrow-down mr-1"></i> Puxar Último Vídeo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: EXPORTAÇÃO & GPU -->
+                    <div id="setPanel_export" class="hidden space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-white text-xs block">Resolução Padrão de Exportação:</label>
+                            <select id="cfgExportRes" onchange="saveAppSetting('cfgExportRes', this.value)" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-lg p-2 text-white">
+                                <option value="1080x1920">1080 x 1920 (9:16 Vertical - Instagram Reels / TikTok)</option>
+                                <option value="1920x1080">1920 x 1080 (16:9 Horizontal - YouTube / TV)</option>
+                                <option value="1080x1080">1080 x 1080 (1:1 Quadrado - Feed)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
+                            <label class="font-bold text-white text-xs block">Motor de Renderização:</label>
+                            <div class="p-2.5 rounded-lg bg-[var(--bg-base)] border border-[var(--border)] text-[11px] text-emerald-400 font-mono">
+                                ✓ FFmpeg Acelerado por Hardware (Zero Cloud Latency)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 5: ATALHOS DE TECLADO -->
+                    <div id="setPanel_keybinds" class="hidden space-y-2">
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Play / Pausa</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-cyan-400 font-mono font-bold">Espaço</kbd>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Cortar na Agulha</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-cyan-400 font-mono font-bold">Ctrl + X</kbd>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Copiar Clipe</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-cyan-400 font-mono font-bold">Ctrl + C</kbd>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Colar na Agulha</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-cyan-400 font-mono font-bold">Ctrl + V</kbd>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Excluir Clipe</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-rose-400 font-mono font-bold">Del</kbd>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-base)] border border-[var(--border)]">
+                                <span class="text-[var(--text-secondary)]">Avanço Rápido</span>
+                                <kbd class="px-2 py-0.5 rounded bg-[var(--bg-hover)] text-cyan-400 font-mono font-bold">L</kbd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 6: SOBRE -->
+                    <div id="setPanel_about" class="hidden space-y-3 text-center py-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-extrabold mx-auto shadow-lg">
+                            ⛰️
+                        </div>
+                        <div>
+                            <div class="font-extrabold text-white text-sm">Montanha Media Lab</div>
+                            <div class="text-[11px] text-[var(--accent)] mt-0.5 font-mono">Versão 2.0 • Ultra-Efficiency Suite</div>
+                        </div>
+                        <p class="text-[11px] text-[var(--text-muted)] max-w-sm mx-auto leading-relaxed">
+                            Desenvolvido para máxima velocidade de produção de conteúdo, legendas virais e zero consumo de tokens desnecessários.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 border-t border-[var(--border)] flex justify-end bg-[#121317]">
+                <button onclick="closeSettingsModal()" class="btn-primary py-1.5 px-4 text-xs">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- ARTCRAFT BENCHMARK: MODAL MINHA BIBLIOTECA (MY LIBRARY)        -->
+    <!-- ============================================================== -->
+    <div id="libraryModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-3 md:p-6 select-none">
+        <div class="bg-[#15171D] border border-[#2B2F3A] rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            
+            <!-- Library Header -->
+            <div class="px-5 py-3.5 border-b border-[var(--border)] flex flex-wrap items-center justify-between gap-3 bg-[#121317]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white">Minha Biblioteca</h3>
+                        <div class="text-[10px] text-[var(--text-muted)]" id="libraryPathIndicator">Arquivos salvos localmente</div>
+                    </div>
+                </div>
+
+                <!-- Search & Actions -->
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-[10px] text-[var(--text-muted)]"></i>
+                        <input type="text" id="inputLibrarySearch" placeholder="Buscar arquivo..." oninput="filterLibrarySearch(this.value)" class="bg-[var(--bg-base)] border border-[var(--border)] rounded-lg pl-7 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400 w-36 sm:w-48">
+                    </div>
+                    <button onclick="loadAndRenderLibrary()" class="btn-secondary px-2.5 py-1.5 text-xs" title="Atualizar Lista">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <button onclick="openSystemDownloadsFolder()" class="btn-secondary px-2.5 py-1.5 text-xs" title="Abrir Pasta no Computador">
+                        <i class="fa-solid fa-folder-open text-amber-400"></i>
+                    </button>
+                    <button onclick="closeLibraryModal()" class="btn-icon text-xs text-[var(--text-muted)] hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Library Sub-bar: Filter Tabs -->
+            <div class="px-5 py-2 border-b border-[var(--border)] flex items-center justify-between bg-[#14161C] text-xs">
+                <div class="flex items-center space-x-1" id="libraryFilterTabs">
+                    <button onclick="filterLibraryType('all')" id="libFilter_all" class="px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] text-white font-medium text-[11px] transition">
+                        Todos (<span id="libCount_all">0</span>)
+                    </button>
+                    <button onclick="filterLibraryType('video')" id="libFilter_video" class="px-2.5 py-1 rounded-md text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] text-[11px] transition">
+                        Vídeos (<span id="libCount_video">0</span>)
+                    </button>
+                    <button onclick="filterLibraryType('audio')" id="libFilter_audio" class="px-2.5 py-1 rounded-md text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] text-[11px] transition">
+                        Áudios (<span id="libCount_audio">0</span>)
+                    </button>
+                    <button onclick="filterLibraryType('image')" id="libFilter_image" class="px-2.5 py-1 rounded-md text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] text-[11px] transition">
+                        Imagens (<span id="libCount_image">0</span>)
+                    </button>
+                </div>
+
+                <button onclick="document.getElementById('fileInput').click()" class="btn-primary py-1 px-2.5 text-[11px] flex items-center space-x-1">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>Adicionar Arquivo</span>
+                </button>
+            </div>
+
+            <!-- Library Content Grid -->
+            <div class="flex-1 p-4 overflow-y-auto max-h-[65vh]">
+                <div id="libraryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="libraryEmptyState" class="hidden flex-col items-center justify-center p-12 text-center text-[var(--text-muted)]">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-20"></i>
+                    <div class="font-bold text-sm text-[var(--text-secondary)]">Nenhum arquivo encontrado</div>
+                    <div class="text-xs text-[var(--text-muted)] mt-1">Clique em "Adicionar Arquivo" ou faça upload pelo botão superior.</div>
+                </div>
+            </div>
+
+            <!-- Library Footer -->
+            <div class="px-5 py-2.5 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--text-muted)] bg-[#121317]">
+                <span id="libraryTotalCount">Carregando mídias...</span>
+                <span>Armazenamento local seguro • Zero buffer</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Hidden native file input for mobile uploads -->
     <input type="file" id="mobileNativeFileInput" accept="video/*,image/*" class="hidden" onchange="handleFileSelect(event)">
@@ -4286,9 +4703,244 @@
         // SUITE MEDIA LAB UNIFICADA: HANDLERS DAS ABAS (PDF, DOWNLOADER, FOTO)
         // =========================================================================
 
+
+        // =========================================================================
+        // ARTCRAFT DASHBOARD, SETTINGS & MY LIBRARY LOGIC
+        // =========================================================================
+
+        let libraryMediaList = [];
+        let currentLibraryFilter = 'all';
+
+        // Dropdowns Toggle Logic
+        function toggleUploadDropdown(e) {
+            if (e) e.stopPropagation();
+            const d = document.getElementById('uploadDropdownMenu');
+            if (d) d.classList.toggle('hidden');
+            const m = document.getElementById('megaMenuDropdown');
+            if (m) m.classList.add('hidden');
+        }
+
+        function toggleMegaMenu(e) {
+            if (e) e.stopPropagation();
+            const m = document.getElementById('megaMenuDropdown');
+            if (m) m.classList.toggle('hidden');
+            const d = document.getElementById('uploadDropdownMenu');
+            if (d) d.classList.add('hidden');
+        }
+
+        // Close dropdowns on click outside
+        window.addEventListener('click', () => {
+            const d = document.getElementById('uploadDropdownMenu');
+            if (d && !d.classList.contains('hidden')) d.classList.add('hidden');
+            const m = document.getElementById('megaMenuDropdown');
+            if (m && !m.classList.contains('hidden')) m.classList.add('hidden');
+        });
+
+        // Settings Modal
+        function openSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            if (m) m.classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            if (m) m.classList.add('hidden');
+        }
+
+        function setSettingsTab(tabName) {
+            const tabs = ['general', 'downloads', 'device', 'export', 'keybinds', 'about'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`setTab_${t}`);
+                const panel = document.getElementById(`setPanel_${t}`);
+                if (btn) {
+                    if (t === tabName) {
+                        btn.className = 'w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-white bg-[var(--bg-elevated)] font-semibold transition';
+                    } else {
+                        btn.className = 'w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition';
+                    }
+                }
+                if (panel) {
+                    panel.classList.toggle('hidden', t !== tabName);
+                }
+            });
+        }
+
+        function saveAppSetting(key, val) {
+            localStorage.setItem(`mml_${key}`, JSON.stringify(val));
+            showToast('Configuração salva!');
+        }
+
+        async function openSystemDownloadsFolder() {
+            try {
+                const res = await fetch('/api/open-folder', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast('✓ Pasta aberta no computador!');
+                } else {
+                    showToast(data.message || 'Não foi possível abrir a pasta');
+                }
+            } catch (e) {
+                showToast(`Erro ao abrir pasta: ${e.message}`, true);
+            }
+        }
+
+        // My Library Modal
+        async function openLibraryModal(initialFilter = 'all') {
+            const m = document.getElementById('libraryModal');
+            if (m) m.classList.remove('hidden');
+            currentLibraryFilter = initialFilter;
+            await loadAndRenderLibrary();
+        }
+
+        function closeLibraryModal() {
+            const m = document.getElementById('libraryModal');
+            if (m) m.classList.add('hidden');
+        }
+
+        async function loadAndRenderLibrary() {
+            const grid = document.getElementById('libraryGrid');
+            const empty = document.getElementById('libraryEmptyState');
+            if (!grid) return;
+
+            try {
+                const res = await fetch('/api/list-media');
+                const data = await res.json();
+                libraryMediaList = data.media || [];
+
+                // Update counter badges
+                const total = libraryMediaList.length;
+                const vCount = libraryMediaList.filter(x => x.type === 'video').length;
+                const aCount = libraryMediaList.filter(x => x.type === 'audio').length;
+                const iCount = libraryMediaList.filter(x => x.type === 'image').length;
+
+                document.getElementById('libCount_all').textContent = total;
+                document.getElementById('libCount_video').textContent = vCount;
+                document.getElementById('libCount_audio').textContent = aCount;
+                document.getElementById('libCount_image').textContent = iCount;
+                document.getElementById('headerLibraryBadge').textContent = total;
+                document.getElementById('libraryTotalCount').textContent = `${total} itens na sua biblioteca`;
+
+                filterLibraryType(currentLibraryFilter);
+            } catch (err) {
+                showToast(`Erro ao listar mídias: ${err.message}`, true);
+            }
+        }
+
+        function filterLibraryType(type) {
+            currentLibraryFilter = type;
+            const tabs = ['all', 'video', 'audio', 'image'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`libFilter_${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = 'px-2.5 py-1 rounded-md bg-[var(--bg-elevated)] text-white font-medium text-[11px] transition';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded-md text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] text-[11px] transition';
+                    }
+                }
+            });
+
+            const query = document.getElementById('inputLibrarySearch')?.value?.toLowerCase() || '';
+            renderLibraryItems(query);
+        }
+
+        function filterLibrarySearch(query) {
+            renderLibraryItems(query.toLowerCase());
+        }
+
+        function renderLibraryItems(query = '') {
+            const grid = document.getElementById('libraryGrid');
+            const empty = document.getElementById('libraryEmptyState');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            let filtered = libraryMediaList;
+
+            if (currentLibraryFilter !== 'all') {
+                filtered = filtered.filter(x => x.type === currentLibraryFilter);
+            }
+            if (query) {
+                filtered = filtered.filter(x => x.name.toLowerCase().includes(query));
+            }
+
+            if (filtered.length === 0) {
+                if (empty) empty.classList.remove('hidden');
+                return;
+            }
+            if (empty) empty.classList.add('hidden');
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'library-card group';
+
+                const sizeMb = (item.size_bytes / (1024 * 1024)).toFixed(1);
+                const durStr = item.duration > 0 ? formatTime(item.duration) : '';
+
+                let iconClass = 'fa-solid fa-file-video text-amber-400';
+                if (item.type === 'audio') iconClass = 'fa-solid fa-file-audio text-emerald-400';
+                if (item.type === 'image') iconClass = 'fa-solid fa-file-image text-purple-400';
+
+                card.innerHTML = `
+                    <div class="h-24 bg-black/60 flex items-center justify-center relative overflow-hidden">
+                        ${item.type === 'image' 
+                            ? `<img src="${item.download_url}" class="w-full h-full object-cover" alt="${item.name}">`
+                            : `<i class="${iconClass} text-2xl opacity-70 group-hover:scale-110 transition-transform"></i>`
+                        }
+                        ${durStr ? `<span class="absolute bottom-1 right-1 px-1.5 py-0.2 rounded bg-black/80 font-mono text-[9px] text-cyan-300 font-bold">${durStr}</span>` : ''}
+                        
+                        <!-- Hover Action Bar -->
+                        <div class="action-overlay absolute inset-0 bg-black/75 flex items-center justify-center space-x-2">
+                            <button onclick="useMediaInStudio('${item.server_path.replace(/\\/g, '/')}', '${item.download_url}', '${item.name}', ${item.duration || 0})" class="px-2 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-[10px] transition" title="Abrir no Vídeo Studio">
+                                <i class="fa-solid fa-film mr-1"></i> Usar
+                            </button>
+                            <button onclick="deleteMediaFromLibrary('${item.server_path.replace(/\\/g, '/')}', '${item.name}')" class="p-1 rounded bg-rose-600/80 hover:bg-rose-500 text-white text-[10px] transition" title="Excluir arquivo">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-2 bg-[var(--bg-panel)] flex-1 flex flex-col justify-between">
+                        <div class="text-xs font-semibold text-white truncate" title="${item.name}">${item.name}</div>
+                        <div class="flex justify-between items-center text-[10px] text-[var(--text-muted)] mt-1 font-mono">
+                            <span class="uppercase">${item.type}</span>
+                            <span>${sizeMb} MB</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function useMediaInStudio(serverPath, downloadUrl, filename, duration) {
+            closeLibraryModal();
+            switchAppTab('video');
+            loadVideoFile(serverPath, downloadUrl, filename, duration);
+            showToast(`✓ [${filename}] carregado no Vídeo Studio!`);
+        }
+
+        async function deleteMediaFromLibrary(serverPath, filename) {
+            if (!confirm(`Deseja realmente excluir permanentemente o arquivo [${filename}]?`)) return;
+
+            try {
+                const res = await fetch('/api/delete-media', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: serverPath })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast('✓ Arquivo excluído com sucesso!');
+                    await loadAndRenderLibrary();
+                } else {
+                    showToast(data.message || 'Falha ao excluir arquivo', true);
+                }
+            } catch (err) {
+                showToast(`Erro na exclusão: ${err.message}`, true);
+            }
+        }
+
         function switchAppTab(tabKey) {
             document.querySelectorAll('.app-tab-panel').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('#mainSuiteTabs .segmented-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#mainSuiteTabs .tool-pill-btn, #mainSuiteTabs .segmented-item').forEach(b => b.classList.remove('active'));
             const targetPanel = document.getElementById(`tabContent_${tabKey}`);
             const targetBtn = document.getElementById(`tabNav_${tabKey}`);
             if (targetPanel) targetPanel.classList.remove('hidden');
