@@ -1,0 +1,564 @@
+/* ==========================================================================
+   OPENCUT STUDIO - PROFESSIONAL EDITING SUITE DESIGN SYSTEM (theme.css)
+   Style Benchmark: DaVinci Resolve 19 / Premiere Pro / CapCut Desktop
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+    /* 1) DESIGN TOKENS */
+    --bg-base: #0D0E11;        /* Fundo ultra-escuro da aplicação */
+    --bg-panel: #15171C;       /* Painéis laterais, topo, timeline */
+    --bg-elevated: #1D2027;    /* Cards, caixas de input, botões secundários */
+    --bg-hover: #252932;       /* Hover em listas, itens e botões */
+    --border: rgba(255, 255, 255, 0.07);
+    --border-subtle: rgba(255, 255, 255, 0.04);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --border-accent: rgba(34, 211, 238, 0.5);
+
+    --text-primary: #E8EAED;   /* Títulos, botões ativos, texto principal */
+    --text-secondary: #9AA0AB; /* Rótulos, descrições secundárias */
+    --text-muted: #5F6672;     /* Dicas, atalhos, estados vazios */
+
+    --accent: #22D3EE;         /* Ciano DaVinci/CapCut: playhead, foco, seleção */
+    --accent-hover: #06B6D4;
+    --accent-glow: rgba(34, 211, 238, 0.25);
+    --accent-ai: linear-gradient(135deg, #8B5CF6, #22D3EE); /* Gradiente IA */
+    --accent-ai-hover: linear-gradient(135deg, #7C3AED, #06B6D4);
+
+    --danger: #F43F5E;         /* Exclusão, gravação, alertas */
+    --danger-hover: #E11D48;
+    --success: #10B981;        /* Confirmações, status ativo ADB */
+
+    /* Trilhas de Edição */
+    --track-video: #3B82F6;    /* Azul DaVinci */
+    --track-audio: #10B981;    /* Verde Áudio */
+    --track-subtitle: #F59E0B; /* Âmbar Legendas */
+    --track-music: #EC4899;    /* Rosa Trilha Sonora / Beat */
+
+    /* Raios de Borda */
+    --radius-sm: 6px;          /* Controles, inputs, botões */
+    --radius-md: 10px;         /* Cards, painéis flutuantes, thumbnails */
+    --radius-lg: 14px;         /* Modais, bottom sheets */
+
+    /* Sombras e Transições */
+    --shadow-floating: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 16px var(--accent-glow);
+    --transition: 140ms ease-out;
+}
+
+/* Base Reset & Typography */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    letter-spacing: -0.01em;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Form Controls & Labels */
+.label-caps {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+}
+
+/* Custom Thin Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: var(--radius-sm);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #323742;
+}
+
+/* Tooltips */
+[title] {
+    position: relative;
+}
+
+/* Standard Buttons & Component Styles */
+.btn-primary {
+    background: var(--accent);
+    color: #0D0E11;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background var(--transition), transform var(--transition);
+}
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background var(--transition), border-color var(--transition);
+}
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+}
+
+.btn-ai {
+    background: var(--accent-ai);
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 12px;
+    border-radius: var(--radius-sm);
+    padding: 6px 14px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.25);
+    transition: filter var(--transition), transform var(--transition);
+}
+.btn-ai:hover {
+    filter: brightness(1.1);
+}
+.btn-ai:active {
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.btn-icon:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+/* Tabs & Segmented Controls */
+.nav-tab {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+.nav-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.02);
+}
+.nav-tab.tab-active {
+    color: var(--accent) !important;
+    background: var(--bg-elevated);
+    border-bottom: 2px solid var(--accent);
+    font-weight: 600;
+}
+
+.resizer-v {
+    width: 6px;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 45;
+    flex-shrink: 0;
+    transition: background 150ms ease;
+    position: relative;
+}
+.resizer-v:hover, .resizer-v:active {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Keypad-Style Tool Grid (Estilo Teclado Numérico com ícone acima e texto abaixo) */
+.keypad-tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: center;
+    user-select: none;
+    min-height: 52px;
+}
+.keypad-tool-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+.keypad-tool-btn.active {
+    background: rgba(34, 211, 238, 0.15) !important;
+    border-color: var(--accent) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.2);
+}
+
+/* Track Header Unified Width (144px) */
+.track-header-col {
+    width: 144px !important;
+    min-width: 144px !important;
+    max-width: 144px !important;
+}
+
+.segmented-control {
+    background: var(--bg-elevated);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+.segmented-item {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.segmented-item:hover {
+    color: var(--text-primary);
+}
+.segmented-item.active {
+    background: var(--bg-hover);
+    color: var(--accent);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Input Fields & Sliders */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--bg-elevated);
+    border-radius: 2px;
+    outline: none;
+    border: 1px solid var(--border-subtle);
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: ew-resize;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    transition: transform var(--transition);
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.18);
+}
+
+/* Timeline Ruler & Playhead */
+.timeline-ruler-bar {
+    height: 24px;
+    background-color: var(--bg-panel);
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 20px),
+                      repeating-linear-gradient(90deg, rgba(255,255,255,0.12) 0px, rgba(255,255,255,0.12) 1px, transparent 1px, transparent 100px);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    position: relative;
+}
+
+#playheadContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    z-index: 70;
+    pointer-events: none;
+    transition: left 0.03s linear;
+}
+
+#playheadNeedleLine {
+    width: 1px;
+    height: 100%;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 6px var(--accent), 0 0 12px var(--accent);
+}
+
+#playheadScrubberHead {
+    position: absolute;
+    top: 1px;
+    left: -14px;
+    width: 28px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(34, 211, 238, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: ew-resize;
+    font-size: 9px;
+    font-weight: 700;
+    color: #0D0E11;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+#playheadScrubberHead::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--accent);
+}
+
+/* Timeline Clips */
+.timeline-clip {
+    height: 100%;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(59, 130, 246, 0.25);
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    color: var(--text-primary);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+.timeline-clip:hover {
+    border-color: rgba(59, 130, 246, 0.7);
+}
+
+.clip-selected {
+    outline: 2px solid var(--accent) !important;
+    border-color: transparent !important;
+    box-shadow: 0 0 14px var(--accent-glow) !important;
+    z-index: 20;
+    background: rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Trimming Handles */
+.trim-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    background: var(--accent);
+    cursor: ew-resize;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    font-weight: 700;
+    color: #0D0E11;
+    transition: transform var(--transition), background var(--transition);
+}
+.trim-handle:hover, .trim-handle:active {
+    background: #FFFFFF;
+    box-shadow: 0 0 8px var(--accent);
+}
+.trim-handle-left {
+    left: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.trim-handle-right {
+    right: 0;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* Dropzone & Media List */
+.dropzone-container {
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    transition: border-color var(--transition), background var(--transition);
+}
+.dropzone-container:hover, .dropzone-container.drag-over {
+    border-color: var(--accent);
+    background: rgba(34, 211, 238, 0.04);
+}
+
+/* Modais & Floating Controls */
+.modal-backdrop {
+    background: rgba(10, 11, 15, 0.85);
+    backdrop-filter: blur(8px);
+}
+.modal-box {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-floating);
+}
+
+/* Status Dot Animation (Pulsing Green) */
+.pulsing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--success);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+/* Responsive side drawer toggle below 1100px */
+@media (max-width: 1100px) {
+    .drawer-collapsible {
+        position: absolute;
+        top: 48px;
+        bottom: 272px;
+        z-index: 50;
+        box-shadow: var(--shadow-floating);
+    }
+}
+
+/* Subtitle Direct On-Screen Resizer Handles & Animations */
+.subtitle-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border: 1.5px solid #0D0E11;
+    border-radius: 50%;
+    z-index: 35;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    touch-action: none;
+}
+#subtitleDraggableWrapper:hover .subtitle-handle,
+#subtitleDraggableWrapper.is-resizing .subtitle-handle,
+#subtitleDraggableWrapper.is-active .subtitle-handle,
+#mobileSubtitleDraggableWrapper .subtitle-handle {
+    opacity: 1;
+}
+.subtitle-handle:hover {
+    transform: scale(1.3);
+}
+.subtitle-handle.top-left { top: -5px; left: -5px; cursor: nwse-resize; }
+.subtitle-handle.top-right { top: -5px; right: -5px; cursor: nesw-resize; }
+.subtitle-handle.bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.subtitle-handle.bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+/* Subtitle CapCut Animations */
+/* Subtitle CapCut Animations & Typography Utility Classes */
+.font-anton { font-family: 'Anton', sans-serif; }
+.font-bebas { font-family: 'Bebas Neue', cursive; letter-spacing: 1px; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+.font-outfit { font-family: 'Outfit', sans-serif; }
+.font-bangers { font-family: 'Bangers', cursive; letter-spacing: 1.5px; }
+
+#resizerTimeline:hover {
+    background-color: rgba(34, 211, 238, 0.35);
+}
+#resizerTimeline:active {
+    background-color: var(--accent);
+}
+
+@keyframes capcutPop {
+    0% { transform: scale(0.7); opacity: 0; }
+    70% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes capcutFade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@keyframes capcutSlideUp {
+    0% { transform: translateY(16px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+.anim-capcut-pop { animation: capcutPop 0.22s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
+.anim-capcut-fade { animation: capcutFade 0.2s ease-out; }
+.anim-capcut-slide { animation: capcutSlideUp 0.22s ease-out; }
