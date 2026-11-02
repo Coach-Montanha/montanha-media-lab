@@ -1,43 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <!-- Background Gradient (Apple Onyx Glass) -->
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1c1c1e" />
-      <stop offset="100%" stop-color="#09090b" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121317"/>
+      <stop offset="100%" stop-color="#1E2129"/>
     </linearGradient>
-
-    <!-- Mountain Peak Cyan Glow -->
-    <linearGradient id="peakGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
-      <stop offset="100%" stop-color="#0066cc" />
+    <linearGradient id="m1" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
     </linearGradient>
-
-    <!-- Neural Mountain Core -->
-    <linearGradient id="coreGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
-      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.3" />
+    <linearGradient id="m2" x1="50%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
     </linearGradient>
   </defs>
-
-  <!-- Squircle Base (Apple App Icon Curve) -->
-  <rect width="512" height="512" rx="115" fill="url(#bgGrad)" stroke="rgba(255,255,255,0.12)" stroke-width="8" />
-
-  <!-- Background Mountain (Secondary Range) -->
-  <polygon points="120,380 230,220 340,380" fill="rgba(255,255,255,0.08)" />
-
-  <!-- Primary Foreground Mountain (Montanha Peak) -->
-  <polygon points="180,390 320,160 440,390" fill="url(#peakGlow)" />
-
-  <!-- Cybernetic / Studio Shading Facet -->
-  <polygon points="320,160 440,390 320,390" fill="rgba(0,0,0,0.35)" />
-
-  <!-- Neural Core / Aperture Center (Intelligence Node) -->
-  <circle cx="230" cy="220" r="16" fill="#38bdf8" filter="drop-shadow(0 0 12px #38bdf8)" />
-  <circle cx="320" cy="160" r="22" fill="#ffffff" filter="drop-shadow(0 0 18px #38bdf8)" />
-
-  <!-- Constellation Connection Line (Agent Bridge) -->
-  <line x1="230" y1="220" x2="320" y2="160" stroke="#ffffff" stroke-width="4" stroke-dasharray="6,4" opacity="0.8" />
-  
-  <!-- Studio Horizon Base Beam -->
-  <line x1="80" y1="390" x2="440" y2="390" stroke="rgba(56,189,248,0.4)" stroke-width="4" stroke-linecap="round" />
+  <rect width="64" height="64" rx="14" fill="url(#bg)" stroke="#2B2F3A" stroke-width="2"/>
+  <!-- Mountain Peaks -->
+  <polygon points="10,50 30,18 44,38 54,50" fill="url(#m1)"/>
+  <polygon points="28,50 42,26 56,50" fill="url(#m2)" opacity="0.92"/>
+  <!-- Snow caps -->
+  <polygon points="30,18 25,26 31,25 35,26" fill="#FFFFFF"/>
+  <polygon points="42,26 38,32 43,31 46,32" fill="#FFFFFF"/>
+  <!-- Sparkle dot -->
+  <circle cx="50" cy="15" r="3.5" fill="#22D3EE"/>
 </svg>

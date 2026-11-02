@@ -9,6 +9,7 @@ Consolidates:
 """
 
 import os
+import time
 import sys
 import json
 import re
@@ -44,6 +45,8 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUT_DIR = BASE_DIR / "exports"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+PROJECTS_DIR = BASE_DIR / "projects"
+PROJECTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Import engine if available
 try:
@@ -151,6 +154,27 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                             })
             items.sort(key=lambda x: x["mtime"], reverse=True)
             self._send_json({"status": "success", "media": items})
+            return
+
+        # List Saved Projects
+        elif parsed.path == "/api/projects":
+            projs = []
+            for p in PROJECTS_DIR.glob("*.json"):
+                try:
+                    with open(p, "r", encoding="utf-8") as pf:
+                        pdata = json.load(pf)
+                        projs.append({
+                            "id": pdata.get("id", p.stem),
+                            "name": pdata.get("name", "Sem Nome"),
+                            "updated_at": pdata.get("updated_at", ""),
+                            "duration": pdata.get("duration", 0),
+                            "clip_count": len(pdata.get("clips", [])),
+                            "filename": pdata.get("filename", "")
+                        })
+                except Exception:
+                    pass
+            projs.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
+            self._send_json({"status": "success", "projects": projs})
             return
 
         # 3. Stream Video/Audio with HTTP 206 Byte-Range (Zero-Buffer Streaming)
@@ -316,6 +340,43 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                         self._send_json({"status": "error", "message": f"Erro na renderização: {str(err)}"})
                 else:
                     self._send_json({"status": "error", "message": "Engine indisponível"})
+                return
+
+            # Save Project
+            elif parsed.path == "/api/save-project":
+                pid = body.get("id") or f"proj_{int(time.time())}"
+                body["id"] = pid
+                body["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                target_file = PROJECTS_DIR / f"{pid}.json"
+                with open(target_file, "w", encoding="utf-8") as pf:
+                    json.dump(body, pf, ensure_ascii=False, indent=2)
+                self._send_json({"status": "success", "id": pid, "name": body.get("name")})
+                return
+
+            # Load Project
+            elif parsed.path == "/api/load-project":
+                pid = body.get("id")
+                target_file = PROJECTS_DIR / f"{pid}.json"
+                if target_file.exists():
+                    with open(target_file, "r", encoding="utf-8") as pf:
+                        pdata = json.load(pf)
+                    self._send_json({"status": "success", "project": pdata})
+                else:
+                    self._send_json({"status": "error", "message": "Projeto não encontrado"})
+                return
+
+            # Delete Project
+            elif parsed.path == "/api/delete-project":
+                pid = body.get("id")
+                target_file = PROJECTS_DIR / f"{pid}.json"
+                if target_file.exists():
+                    try:
+                        os.remove(target_file)
+                        self._send_json({"status": "success", "message": "Projeto excluído"})
+                    except Exception as err:
+                        self._send_json({"status": "error", "message": str(err)})
+                else:
+                    self._send_json({"status": "error", "message": "Projeto não encontrado"})
                 return
 
             elif parsed.path == "/api/delete-media":

@@ -7,6 +7,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;600;700;900&family=Montserrat:wght@700;900&family=Outfit:wght@700;900&family=Bangers&display=swap" rel="stylesheet">
@@ -148,11 +150,18 @@
 
             </div>
 
-            <!-- Project Title (Editable) -->
-            <div class="flex items-center space-x-2 text-xs">
-                <span id="currentVideoTitle" class="text-[var(--text-secondary)] font-medium truncate max-w-[170px]">Projeto Sem Nome</span>
-                <button onclick="renameProjectPrompt()" title="Renomear Projeto" class="text-[var(--text-muted)] hover:text-white transition">
+            <!-- Project Selector & Actions -->
+            <div class="flex items-center space-x-1.5 text-xs">
+                <button onclick="openProjectsModal()" id="btnOpenProjectsModal" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#181A20] border border-[var(--border)] hover:border-cyan-400 text-xs text-white transition active:scale-95" title="Gerenciar Projetos Salvos">
+                    <i class="fa-solid fa-folder-tree text-cyan-400 text-[11px]"></i>
+                    <span id="currentVideoTitle" class="font-semibold truncate max-w-[120px] sm:max-w-[170px]">Projeto Sem Nome</span>
+                    <i class="fa-solid fa-chevron-down text-[8px] text-[var(--text-muted)]"></i>
+                </button>
+                <button onclick="renameProjectPrompt()" title="Renomear Projeto" class="text-[var(--text-muted)] hover:text-white transition p-1">
                     <i class="fa-solid fa-pen text-[10px]"></i>
+                </button>
+                <button onclick="saveCurrentProject()" title="Salvar Projeto [Ctrl+S]" class="text-[var(--text-muted)] hover:text-emerald-400 transition p-1">
+                    <i class="fa-solid fa-floppy-disk text-[11px]"></i>
                 </button>
             </div>
         </div>
@@ -218,7 +227,7 @@
             </div>
 
             <!-- Hidden native file input -->
-            <input type="file" id="fileInput" accept="video/*,audio/*,image/*" class="hidden" onchange="handleFileSelect(event)">
+            <input type="file" id="fileInput" multiple accept="video/*,audio/*,image/*" class="hidden" onchange="handleFileSelect(event)">
 
             <!-- SETTINGS BUTTON (Abre modal de configurações estilo ArtCraft) -->
             <button onclick="openSettingsModal()" class="w-8 h-8 rounded-lg bg-[#181A20] border border-[var(--border)] hover:border-cyan-400 flex items-center justify-center text-[var(--text-secondary)] hover:text-white transition active:scale-95" title="Configurações do Sistema">
@@ -1571,6 +1580,61 @@
         </div>
 
 
+
+    <!-- ============================================================== -->
+    <!-- ARTCRAFT BENCHMARK: MODAL MEUS PROJETOS (MULTI-PROJECTS)       -->
+    <!-- ============================================================== -->
+    <div id="projectsModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-3 md:p-6 select-none">
+        <div class="bg-[#15171D] border border-[#2B2F3A] rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            
+            <!-- Projects Header -->
+            <div class="px-5 py-4 border-b border-[var(--border)] flex items-center justify-between bg-[#121317]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-folder-tree"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-white">Gerenciador de Projetos</h3>
+                        <div class="text-[10px] text-[var(--text-muted)]">Alterne entre projetos ou crie novas linhas de edição</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="createNewProject()" class="btn-primary py-1.5 px-3 text-xs flex items-center space-x-1.5">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Novo Projeto</span>
+                    </button>
+                    <button onclick="closeProjectsModal()" class="btn-icon text-xs text-[var(--text-muted)] hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Projects Grid / List -->
+            <div class="flex-1 p-5 overflow-y-auto max-h-[60vh] space-y-3">
+                <div id="projectsListGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="projectsEmptyState" class="hidden flex-col items-center justify-center p-12 text-center text-[var(--text-muted)]">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-20 text-cyan-400"></i>
+                    <div class="font-bold text-sm text-[var(--text-secondary)]">Nenhum projeto salvo ainda</div>
+                    <div class="text-xs text-[var(--text-muted)] mt-1">Clique em "Novo Projeto" ou salve o projeto atual com Ctrl+S.</div>
+                </div>
+            </div>
+
+            <!-- Projects Footer -->
+            <div class="px-5 py-3 border-t border-[var(--border)] flex items-center justify-between text-xs text-[var(--text-muted)] bg-[#121317]">
+                <span id="projectsCountIndicator">0 projetos salvos</span>
+                <button onclick="saveCurrentProject()" class="text-emerald-400 hover:underline flex items-center space-x-1">
+                    <i class="fa-solid fa-floppy-disk text-[10px]"></i>
+                    <span>Salvar Projeto Atual Agora</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ============================================================== -->
     <!-- ARTCRAFT BENCHMARK: MODAL DE CONFIGURAÇÕES (SETTINGS)          -->
     <!-- ============================================================== -->
@@ -1852,7 +1916,7 @@
     </div>
 
     <!-- Hidden native file input for mobile uploads -->
-    <input type="file" id="mobileNativeFileInput" accept="video/*,image/*" class="hidden" onchange="handleFileSelect(event)">
+    <input type="file" id="mobileNativeFileInput" multiple accept="video/*,audio/*,image/*" class="hidden" onchange="handleFileSelect(event)">
 
     <!-- Floating button to return to Mobile mode when viewing PC Studio on a mobile screen -->
     <button onclick="setUIMode('mobile')" class="mobile-pc-back-btn fixed bottom-4 right-4 z-50 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold text-xs rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.8)] border border-white/20 active:scale-95 transition hidden items-center space-x-2">
@@ -4622,6 +4686,316 @@
 
         let libraryMediaList = [];
         let currentLibraryFilter = 'all';
+
+
+        // =========================================================================
+        // MULTI-PROJECT MANAGEMENT & BATCH FILE UPLOADS
+        // =========================================================================
+
+        let currentProjectId = localStorage.getItem('mml_current_project_id') || `proj_${Date.now()}`;
+        let savedProjectsList = [];
+
+        // --- BATCH MULTI-FILE UPLOAD ---
+        async function handleFileSelect(e) {
+            const files = Array.from(e.target.files || []);
+            if (files.length === 0) return;
+
+            showToast(`Iniciando upload de ${files.length} arquivo(s)...`);
+
+            let uploadedCount = 0;
+            let firstVideoData = null;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                showToast(`Enviando [${i + 1}/${files.length}]: ${file.name}...`);
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const res = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        uploadedCount++;
+                        if (!firstVideoData && file.type.startsWith('video/')) {
+                            firstVideoData = {
+                                path: data.server_path || data.path,
+                                url: data.download_url || data.url,
+                                name: data.filename || file.name,
+                                duration: (data.info && data.info.duration) ? data.info.duration : 0
+                            };
+                        }
+                    } else {
+                        showToast(`Erro ao enviar ${file.name}: ${data.message || 'Falha'}`, true);
+                    }
+                } catch (err) {
+                    showToast(`Falha na conexão ao enviar ${file.name}`, true);
+                }
+            }
+
+            e.target.value = '';
+            showToast(`✓ ${uploadedCount} de ${files.length} arquivo(s) enviados com sucesso!`);
+
+            if (typeof loadAndRenderLibrary === 'function') {
+                loadAndRenderLibrary();
+            }
+
+            if (firstVideoData) {
+                switchAppTab('video');
+                loadVideoFile(firstVideoData.path, firstVideoData.url, firstVideoData.name, firstVideoData.duration);
+                saveCurrentProject(false);
+            }
+        }
+
+        // --- PROJECT MANAGER (MULTI-PROJECTS) ---
+        function openProjectsModal() {
+            const m = document.getElementById('projectsModal');
+            if (m) m.classList.remove('hidden');
+            loadAndRenderProjects();
+        }
+
+        function closeProjectsModal() {
+            const m = document.getElementById('projectsModal');
+            if (m) m.classList.add('hidden');
+        }
+
+        async function loadAndRenderProjects() {
+            const grid = document.getElementById('projectsListGrid');
+            const empty = document.getElementById('projectsEmptyState');
+            if (!grid) return;
+
+            try {
+                const res = await fetch('/api/projects');
+                const data = await res.json();
+                savedProjectsList = data.projects || [];
+
+                document.getElementById('projectsCountIndicator').textContent = `${savedProjectsList.length} projeto(s) salvos no computador`;
+
+                if (savedProjectsList.length === 0) {
+                    grid.innerHTML = '';
+                    if (empty) empty.classList.remove('hidden');
+                    return;
+                }
+                if (empty) empty.classList.add('hidden');
+
+                grid.innerHTML = '';
+                savedProjectsList.forEach(p => {
+                    const isCurrent = p.id === currentProjectId;
+                    const card = document.createElement('div');
+                    card.className = `p-3.5 rounded-xl border transition-all flex flex-col justify-between ${isCurrent ? 'bg-[var(--bg-elevated)] border-cyan-400/60 shadow-[0_0_16px_rgba(34,211,238,0.15)]' : 'bg-[var(--bg-panel)] border-[var(--border)] hover:border-[var(--border-hover)]'}`;
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="font-bold text-xs text-white truncate max-w-[200px]" title="${p.name}">
+                                    ${p.name}
+                                </div>
+                                ${isCurrent ? '<span class="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-bold text-[9px]">ATIVO</span>' : ''}
+                            </div>
+                            <div class="text-[10px] text-[var(--text-muted)] space-y-0.5 font-mono">
+                                <div>Mídia: <span class="text-[var(--text-secondary)]">${p.filename || 'Sem vídeo'}</span></div>
+                                <div class="flex justify-between">
+                                    <span>${p.clip_count} corte(s)</span>
+                                    <span>${p.duration > 0 ? formatTime(p.duration) : '00:00'}</span>
+                                </div>
+                                <div class="text-[9px] text-[var(--text-muted)] mt-1">${p.updated_at || ''}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-3 mt-2 border-t border-[var(--border)]">
+                            <button onclick="loadProjectById('${p.id}')" class="btn-primary py-1 px-3 text-[11px] flex items-center space-x-1">
+                                <i class="fa-solid fa-folder-open text-[10px]"></i>
+                                <span>${isCurrent ? 'Continuar' : 'Abrir'}</span>
+                            </button>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="duplicateProjectById('${p.id}')" class="btn-secondary p-1.5 text-xs text-[var(--text-muted)] hover:text-white" title="Duplicar Projeto">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                                <button onclick="deleteProjectById('${p.id}', '${p.name}')" class="btn-secondary p-1.5 text-xs text-[var(--text-muted)] hover:text-rose-400" title="Excluir Projeto">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {
+                showToast(`Erro ao carregar projetos: ${err.message}`, true);
+            }
+        }
+
+        async function saveCurrentProject(notify = true) {
+            const titleEl = document.getElementById('currentVideoTitle');
+            const projectName = titleEl ? titleEl.textContent.trim() : 'Projeto Sem Nome';
+
+            const projectData = {
+                id: currentProjectId,
+                name: projectName,
+                video_path: videoSourcePath || '',
+                download_url: videoDownloadUrl || '',
+                filename: videoFileName || '',
+                duration: totalVideoDuration || 0,
+                clips: videoClips || [],
+                subtitles: {
+                    items: subtitleItems || [],
+                    fontSize: currentSubtitleFontSize || 20,
+                    fontFamily: currentSubtitleFontFamily || 'Anton',
+                    color: currentSubtitleColor || '#FFE600',
+                    posY: currentSubtitlePosY || 75
+                }
+            };
+
+            try {
+                const res = await fetch('/api/save-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    localStorage.setItem('mml_current_project_id', currentProjectId);
+                    await loadAndRenderProjects();
+                    if (notify) showToast(`✓ Projeto [${projectName}] salvo com sucesso!`);
+                }
+            } catch (e) {
+                if (notify) showToast(`Erro ao salvar projeto: ${e.message}`, true);
+            }
+        }
+
+        async function createNewProject() {
+            // Save current first
+            if (videoClips && videoClips.length > 0) {
+                await saveCurrentProject(false);
+            }
+
+            currentProjectId = `proj_${Date.now()}`;
+            localStorage.setItem('mml_current_project_id', currentProjectId);
+
+            // Reset state
+            videoClips = [];
+            subtitleItems = [];
+            videoSourcePath = '';
+            videoDownloadUrl = '';
+            videoFileName = '';
+            totalVideoDuration = 0;
+
+            const titleEl = document.getElementById('currentVideoTitle');
+            if (titleEl) titleEl.textContent = 'Novo Projeto';
+
+            // Reset video element
+            const v = document.getElementById('mainVideo');
+            if (v) { v.src = ''; v.load(); }
+            const mobV = document.getElementById('mobileVideo');
+            if (mobV) { mobV.src = ''; mobV.load(); }
+
+            renderTimelineClips();
+            closeProjectsModal();
+            switchAppTab('video');
+            showToast('✓ Novo projeto iniciado!');
+        }
+
+        async function loadProjectById(id) {
+            try {
+                showToast('Carregando projeto...');
+                const res = await fetch('/api/load-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.status === 'success' && data.project) {
+                    const p = data.project;
+                    currentProjectId = p.id;
+                    localStorage.setItem('mml_current_project_id', currentProjectId);
+
+                    const titleEl = document.getElementById('currentVideoTitle');
+                    if (titleEl) titleEl.textContent = p.name || 'Projeto Sem Nome';
+
+                    if (p.video_path && p.download_url) {
+                        loadVideoFile(p.video_path, p.download_url, p.filename || 'video.mp4', p.duration || 0);
+                    }
+                    if (p.clips && Array.isArray(p.clips)) {
+                        videoClips = p.clips;
+                        renderTimelineClips();
+                    }
+                    if (p.subtitles && p.subtitles.items) {
+                        subtitleItems = p.subtitles.items;
+                        if (p.subtitles.fontSize) setSubtitleFontSize(p.subtitles.fontSize);
+                        if (p.subtitles.fontFamily) setSubtitleFontFamily(p.subtitles.fontFamily);
+                        if (p.subtitles.color) setSubtitleColor(p.subtitles.color);
+                    }
+
+                    closeProjectsModal();
+                    switchAppTab('video');
+                    showToast(`✓ Projeto [${p.name}] carregado!`);
+                } else {
+                    showToast(data.message || 'Projeto não encontrado', true);
+                }
+            } catch (err) {
+                showToast(`Erro ao carregar projeto: ${err.message}`, true);
+            }
+        }
+
+        async function duplicateProjectById(id) {
+            try {
+                const res = await fetch('/api/load-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.status === 'success' && data.project) {
+                    const p = data.project;
+                    p.id = `proj_${Date.now()}`;
+                    p.name = `${p.name} (Cópia)`;
+
+                    await fetch('/api/save-project', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(p)
+                    });
+
+                    showToast(`✓ Projeto duplicado como [${p.name}]!`);
+                    await loadAndRenderProjects();
+                }
+            } catch (err) {
+                showToast(`Erro ao duplicar projeto: ${err.message}`, true);
+            }
+        }
+
+        async function deleteProjectById(id, name) {
+            if (!confirm(`Deseja realmente excluir permanentemente o projeto [${name}]?`)) return;
+
+            try {
+                const res = await fetch('/api/delete-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast('✓ Projeto excluído!');
+                    if (id === currentProjectId) {
+                        createNewProject();
+                    } else {
+                        await loadAndRenderProjects();
+                    }
+                }
+            } catch (err) {
+                showToast(`Erro ao excluir: ${err.message}`, true);
+            }
+        }
+
+        // Global Shortcut: Ctrl+S to save project
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveCurrentProject(true);
+            }
+        });
 
         // Dropdowns Toggle Logic
         function toggleUploadDropdown(e) {

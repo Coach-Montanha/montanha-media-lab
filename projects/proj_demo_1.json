@@ -1,0 +1,17 @@
+{
+  "id": "proj_demo_1",
+  "name": "Reels Transformacao",
+  "filename": "meu_video.mp4",
+  "duration": 42.5,
+  "clips": [
+    {
+      "id": 1,
+      "start": 0,
+      "end": 10
+    }
+  ],
+  "subtitles": {
+    "items": []
+  },
+  "updated_at": "2026-11-02 11:50:23"
+}
