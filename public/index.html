@@ -458,15 +458,10 @@
             <!-- ============================================================== -->
             <!-- VIEW 1: DESKTOP STUDIO (3-PANEL PROFESSIONAL ARCHITECTURE)    -->
             <!-- ============================================================== -->
-            <div id="desktopLayout" class="flex-1 flex flex-col w-full h-full overflow-hidden">
-            
-            <div class="flex-1 flex overflow-hidden">
-                
-                <!-- 1. CLIPCHAMP-STYLE LEFT CONTAINER: 56PX VERTICAL DOCK + EXPANDABLE DRAWER (340PX) -->
-                <div class="flex shrink-0 h-full select-none relative" id="leftClipchampContainer">
-                    
-                    <!-- 56px Slim Vertical Dock -->
-                    <nav id="clipchampVerticalDock" class="w-14 bg-[#121317] border-r border-[var(--border)] flex flex-col items-center py-2 space-y-2 z-30 shrink-0">
+                        <div id="desktopLayout" class="flex-1 flex w-full h-full overflow-hidden bg-[#0d0e12]">
+
+                <!-- 1. CLIPCHAMP LEFT SLIM DOCK (56PX) -->
+                <nav id="clipchampVerticalDock" class="w-14 bg-[#121317] border-r border-[var(--border)] flex flex-col items-center py-2 space-y-2 z-30 shrink-0">
                         <button onclick="selectClipchampTool('media')" id="dockBtn_media" class="dock-tool-btn active" title="Minha Mídia">
                             <i class="fa-solid fa-folder-open text-base"></i>
                             <span class="text-[9px] mt-1 font-medium">Mídia</span>
@@ -485,8 +480,8 @@
                         </button>
                     </nav>
 
-                    <!-- Expandable Tool Drawer (~340px) -->
-                    <div id="clipchampDrawer" class="w-[340px] bg-[var(--bg-panel)] border-r border-[var(--border)] flex flex-col shrink-0 overflow-hidden transition-all duration-200">
+                <!-- 2. CLIPCHAMP EXPANDABLE DRAWER (340PX) -->
+                <div id="clipchampDrawer" class="w-[340px] bg-[var(--bg-panel)] border-r border-[var(--border)] flex flex-col shrink-0 overflow-hidden transition-all duration-200">
                         <!-- Drawer Header -->
                         <div class="h-10 px-3 border-b border-[var(--border)] flex items-center justify-between bg-[#15171C] shrink-0">
                             <div class="flex items-center space-x-2">
@@ -907,10 +902,15 @@
                 </div>
 
                 <!-- Resizer: Left Panel Divider -->
+
+                <!-- Divisor Resizer Esquerdo -->
                 <div id="resizerLeft" class="resizer-v" title="Arraste para redimensionar o painel esquerdo"></div>
 
-                <!-- 2. CENTER PANEL: VIDEO CANVAS (DIRECT DRAG / PAN / SCALE / RATIO) -->
-                <div class="flex-1 canvas-bg flex flex-col items-center justify-center p-3 relative min-w-0 overflow-hidden" id="canvasContainer">
+                <!-- 3. CLIPCHAMP CENTER WORKSPACE (PLAYER TOP + TIMELINE BOTTOM 100% WIDTH) -->
+                <div class="flex-1 flex flex-col h-full min-w-0 overflow-hidden relative" id="clipchampCenterWorkspace">
+
+                    <!-- PARTE SUPERIOR: VIDEO CANVAS CENTRALIZADO -->
+                    <div class="flex-1 canvas-bg flex flex-col items-center justify-center p-3 relative min-w-0 overflow-hidden" id="canvasContainer">
                     
                     <!-- Proporções & Controle Discreto de Tamanho Estilo Clipchamp (Top Floating) -->
                     <div class="absolute top-3 floating-blur px-2.5 py-1 flex items-center space-x-2 text-xs z-30 select-none">
@@ -1008,6 +1008,7 @@
                     <div id="playerFrame" class="relative aspect-[9/16] max-h-[86%] bg-black rounded-[var(--radius-md)] overflow-hidden border border-[var(--border)] flex items-center justify-center transition-all duration-200 cursor-grab active:cursor-grabbing">
                         <video id="studioVideo" class="w-full h-full object-cover transition-transform" playsinline preload="auto">
                         </video>
+                        <img id="studioImage" class="w-full h-full object-contain hidden pointer-events-none" />
 
                         <!-- Live Interactive Bounding Box Indicator -->
                         <div id="canvasBoundingBox" class="absolute inset-0 border-2 border-[var(--accent)] opacity-0 pointer-events-none transition-opacity"></div>
@@ -1081,9 +1082,154 @@
                 </div>
 
                 <!-- Resizer: Right Inspector Divider -->
-                <div id="resizerRight" class="resizer-v" title="Arraste para redimensionar o inspetor"></div>
 
-                <!-- 3. RIGHT PANEL (RESIZABLE): INSPECTOR (ESCALA, VELOCIDADE, ÁUDIO, LEGENDAS) -->
+                    <!-- RESIZER HORIZONTAL (PLAYER VS TIMELINE) -->
+                    <div id="resizerTimeline" class="h-2 w-full bg-[#13151A] hover:bg-cyan-500/60 active:bg-cyan-400 cursor-row-resize flex items-center justify-center transition-colors z-30 select-none group border-t border-b border-[var(--border)]" title="Arraste para redimensionar o reprodutor e a timeline">
+                        <div class="w-16 h-1 rounded-full bg-[var(--text-muted)] group-hover:bg-cyan-400 transition-colors"></div>
+                    </div>
+
+                    <!-- PARTE INFERIOR: TIMELINE 100% LARGURA CENTRAL -->
+                    <div class="h-68 panel-container flex flex-col shrink-0 select-none relative" id="bottomTimeline">
+                
+                <!-- Ultra-Minimalist Timeline Toolbar (Clipchamp Standard) -->
+                <div class="h-10 border-b border-[var(--border)] bg-[var(--bg-panel)] px-4 flex items-center justify-between text-xs select-none" id="bottomTimelineToolbar">
+                    
+                    <!-- Left: 3 Essential Actions (Dividir, Desfazer, Refazer) -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Dividir / Tesoura (calls splitSelectedClip()) -->
+                        <button onclick="splitSelectedClip()" id="btnSplit" title="Dividir no Cursor [S]" class="btn-primary py-1 px-3 text-xs flex items-center space-x-1.5 shadow-sm">
+                            <i class="fa-solid fa-scissors text-xs"></i>
+                            <span class="font-semibold text-xs">Dividir</span>
+                        </button>
+
+                        <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
+
+                        <!-- Desfazer (calls undoAction()) -->
+                        <button onclick="undoAction()" id="btnUndo" title="Desfazer [Ctrl+Z]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white flex items-center space-x-1">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span id="undoCount" class="text-[9px] font-mono text-[var(--text-muted)]">0</span>
+                        </button>
+
+                        <!-- Refazer (calls redoAction()) -->
+                        <button onclick="redoAction()" id="btnRedo" title="Refazer [Ctrl+Y]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Center: Play/Pause (toggles studioVideo playback) & Timecode -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="togglePlayPause()" id="btnPlayPause" title="Reproduzir / Pausar [Espaço]" class="w-8 h-8 rounded-full bg-[var(--accent)] hover:brightness-110 text-[#0D0E11] flex items-center justify-center font-bold shadow-md transition active:scale-95">
+                            <i class="fa-solid fa-play text-xs ml-0.5"></i>
+                        </button>
+                        <div class="font-mono font-semibold text-[var(--text-primary)] text-xs tracking-wider" id="timelineTimecode">00:00:00:00</div>
+                    </div>
+
+                    <!-- Right: Clip Badge & Zoom -->
+                    <div class="flex items-center space-x-2 text-[var(--text-secondary)] text-xs">
+                        <span id="selectedClipBadge" class="text-[10px] text-[var(--text-muted)] font-mono">Nenhum clipe</span>
+                        <div class="h-3 w-px bg-[var(--border)]"></div>
+                        <button onclick="adjustTimelineZoom(-0.25)" title="Reduzir Zoom [-]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                        <span id="zoomLabel" class="font-mono text-[var(--accent)] text-[10px]">1.0x</span>
+                        <button onclick="adjustTimelineZoom(0.25)" title="Aumentar Zoom [+]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Dedicated Time Ruler Bar -->
+                <div class="timeline-ruler-bar select-none relative overflow-hidden" id="timelineRuler" onclick="seekByRulerClick(event)">
+                    <div class="absolute inset-y-0 flex items-center pointer-events-none" id="rulerLabels" style="left: 164px;">
+                    </div>
+                </div>
+
+                <!-- Interactive Multi-Track Scroll Area -->
+                <div class="flex-1 overflow-x-auto overflow-y-auto px-3 py-2 space-y-2 relative" id="timelineTracksArea" onclick="seekByTimelineClick(event)">
+
+                    <!-- Linha Visual do Ponto de Contato Magnético entre Artefatos (Clipchamp Style) -->
+                    <div id="magneticContactGuide" class="hidden absolute top-0 bottom-0 w-[2px] bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,1)] z-50 pointer-events-none transition-opacity duration-75">
+                        <div class="absolute -top-6 -translate-x-1/2 px-2 py-0.5 rounded bg-[#101216] border border-cyan-400 text-[9px] font-mono font-bold text-cyan-300 shadow-xl whitespace-nowrap flex items-center space-x-1">
+                            <i class="fa-solid fa-magnet text-[8px] text-cyan-400"></i>
+                            <span>Ponto de Contato (0.00s)</span>
+                        </div>
+                    </div>
+
+                    
+                    <!-- HIGH-VISIBILITY DA VINCI PLAYHEAD -->
+                    <div id="playheadContainer" style="left: 164px;">
+                        <div id="playheadScrubberHead" onmousedown="startNeedleDrag(event)" ontouchstart="startNeedleDrag(event)" title="Arraste para cortar no ponto exato">
+                            <span id="needleTimecode">00:00</span>
+                        </div>
+                        <div id="playheadNeedleLine"></div>
+                    </div>
+
+                    <!-- Track 1: Legendas IA (Whisper) -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
+                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-closed-captioning text-amber-400"></i><span>Legendas</span></span>
+                            <button onclick="toggleTrackMute('subs')" id="mute_subs" class="btn-icon w-5 h-5 text-xs" title="Ocultar/Exibir Legendas"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                        <div id="trackSubs" class="flex-1 h-7 rounded-[var(--radius-sm)] border track-subs-bg relative flex items-center px-2.5 text-[10px] text-amber-300 font-mono overflow-hidden">
+                            Nenhuma faixa de legenda gerada
+                        </div>
+                    </div>
+
+                    <!-- Track 2: Vídeo Principal (Vídeo 1) -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
+                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-film text-blue-400"></i><span>Vídeo 1</span></span>
+                            <div class="flex items-center space-x-0.5">
+                                <button onclick="toggleTrackMute('video_audio')" id="mute_video_audio" class="btn-icon w-5 h-5 text-xs" title="Silenciar Áudio do Vídeo"><i class="fa-solid fa-volume-high"></i></button>
+                                <button onclick="toggleTrackMute('video_display')" id="mute_video_display" class="btn-icon w-5 h-5 text-xs" title="Ocultar Vídeo"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div id="trackVideo" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'video', 'trackVideo')" class="flex-1 h-14 rounded-[var(--radius-sm)] border track-video-bg relative flex items-center overflow-x-auto p-1 space-x-1.5">
+                            <div class="text-xs text-[var(--text-muted)] px-3 font-medium">Aguardando Vídeo...</div>
+                        </div>
+                    </div>
+
+                    <!-- Track 3: Imagens e Fotos (Imagem 1) -->
+                    <div class="flex items-center space-x-2" id="row_trackImage">
+                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
+                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-image text-pink-400"></i><span>Imagem 1</span></span>
+                            <button onclick="document.getElementById('fileInput').click()" class="btn-icon w-5 h-5 text-pink-400 hover:text-pink-300 text-xs" title="Adicionar Foto / Imagem"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <div id="trackImage" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'image', 'trackImage')" class="flex-1 h-8 rounded-[var(--radius-sm)] border bg-[var(--bg-elevated)] border-[var(--border)] relative flex items-center px-2.5 text-[10px] text-[var(--text-muted)] font-mono overflow-hidden">
+                            Trilha de Imagens / Fotos (Arraste uma imagem ou clique para vincular)
+                        </div>
+                    </div>
+
+                    <!-- Track 4: B-Roll / Sobreposição PIP (Vídeo 2) -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
+                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-clone text-purple-400"></i><span>B-Roll</span></span>
+                            <button onclick="document.getElementById('fileInput').click()" class="btn-icon w-5 h-5 text-purple-400 hover:text-purple-300 text-xs" title="Adicionar Sobreposição"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+                        <div id="trackBroll" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'video', 'trackBroll')" class="flex-1 h-7 rounded-[var(--radius-sm)] border bg-[var(--bg-elevated)] border-[var(--border)] relative flex items-center px-2.5 text-[10px] text-[var(--text-muted)] font-mono overflow-hidden">
+                            Trilha B-Roll (Sobreposição PIP vazia)
+                        </div>
+                    </div>
+
+                    <!-- Track 5: Áudio Extraído / Microfone -->
+                    <div class="flex items-center space-x-2">
+                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
+                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-music text-emerald-400"></i><span>Áudio 1</span></span>
+                            <button onclick="toggleTrackMute('audio')" id="mute_audio" class="btn-icon w-5 h-5 text-xs" title="Silenciar Trilha de Áudio"><i class="fa-solid fa-volume-high"></i></button>
+                        </div>
+                        <div id="trackAudio" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'audio', 'trackAudio')" class="flex-1 h-8 rounded-[var(--radius-sm)] border track-audio-bg relative flex items-center px-2.5 overflow-hidden">
+                            <span class="text-[10px] text-emerald-400/80 font-mono">Trilha de som vinculada</span>
+                        </div>
+                    </div>
+
+                    <!-- Container de Trilhas Extras Dinâmicas (+ Vídeo, + Áudio, + Imagem) -->
+                    <div id="dynamicTracksContainer" class="space-y-2"></div>
+
+                </div>
+            </div>
+
+                </div>
+
+                <!-- Divisor Resizer Direito -->
+                <div id="resizerRight" class="resizer-v hidden" title="Arraste para redimensionar o inspetor"></div>
+
+                <!-- 4. PAINEL INSPETOR DIREITO RETRÁTIL (280PX) -->
                 <div id="rightInspectorPanel" class="panel-container border-l hidden flex-col shrink-0 text-xs select-none relative transition-all duration-200" style="width: 280px; min-width: 240px; max-width: 500px;">
                     <!-- Inspector Header with Tabs and Retract Button -->
                     <div class="flex items-center justify-between border-b border-[var(--border)] text-[11px] font-semibold px-2 bg-[var(--bg-panel)] h-9 shrink-0">
@@ -1238,6 +1384,8 @@
 
 
                 <!-- CLIPCHAMP RIGHT SLIM DOCK (48PX) -->
+
+                <!-- 5. CLIPCHAMP RIGHT SLIM DOCK (48PX) -->
                 <nav id="clipchampRightDock" class="w-12 bg-[#121317] border-l border-[var(--border)] flex flex-col items-center py-2 space-y-1.5 z-30 shrink-0 select-none">
                     <button onclick="toggleRightDockTool('captions')" id="rightDockBtn_captions" class="right-dock-btn" title="Legendas">
                         <i class="fa-solid fa-closed-captioning text-sm"></i>
@@ -1259,158 +1407,8 @@
 
             </div>
 
-            <!-- ============================================================== -->
-            <!-- DRAGGABLE RESIZER BAR (Redimensionamento Superior vs Timeline) -->
-            <!-- ============================================================== -->
-            <div id="resizerTimeline" class="h-2 w-full bg-[#13151A] hover:bg-cyan-500/60 active:bg-cyan-400 cursor-row-resize flex items-center justify-center transition-colors z-30 select-none group border-t border-b border-[var(--border)]" title="Arraste para redimensionar o reprodutor de vídeo e a timeline">
-                <div class="w-16 h-1 rounded-full bg-[var(--text-muted)] group-hover:bg-cyan-400 transition-colors"></div>
-            </div>
 
-            <!-- ============================================================== -->
-            <!-- BOTTOM TIMELINE (40px Toolbar + Time Ruler + Multi-track)      -->
-            <!-- ============================================================== -->
-            <div class="h-68 panel-container flex flex-col shrink-0 select-none relative" id="bottomTimeline">
-                
-                <!-- Ultra-Minimalist Timeline Toolbar (Clipchamp Standard) -->
-                <div class="h-10 border-b border-[var(--border)] bg-[var(--bg-panel)] px-4 flex items-center justify-between text-xs select-none" id="bottomTimelineToolbar">
-                    
-                    <!-- Left: 3 Essential Actions (Dividir, Desfazer, Refazer) -->
-                    <div class="flex items-center space-x-2">
-                        <!-- Dividir / Tesoura (calls splitSelectedClip()) -->
-                        <button onclick="splitSelectedClip()" id="btnSplit" title="Dividir no Cursor [S]" class="btn-primary py-1 px-3 text-xs flex items-center space-x-1.5 shadow-sm">
-                            <i class="fa-solid fa-scissors text-xs"></i>
-                            <span class="font-semibold text-xs">Dividir</span>
-                        </button>
-
-                        <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
-
-                        <!-- Desfazer (calls undoAction()) -->
-                        <button onclick="undoAction()" id="btnUndo" title="Desfazer [Ctrl+Z]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white flex items-center space-x-1">
-                            <i class="fa-solid fa-rotate-left"></i>
-                            <span id="undoCount" class="text-[9px] font-mono text-[var(--text-muted)]">0</span>
-                        </button>
-
-                        <!-- Refazer (calls redoAction()) -->
-                        <button onclick="redoAction()" id="btnRedo" title="Refazer [Ctrl+Y]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </button>
-                    </div>
-
-                    <!-- Center: Play/Pause (toggles studioVideo playback) & Timecode -->
-                    <div class="flex items-center space-x-3">
-                        <button onclick="togglePlayPause()" id="btnPlayPause" title="Reproduzir / Pausar [Espaço]" class="w-8 h-8 rounded-full bg-[var(--accent)] hover:brightness-110 text-[#0D0E11] flex items-center justify-center font-bold shadow-md transition active:scale-95">
-                            <i class="fa-solid fa-play text-xs ml-0.5"></i>
-                        </button>
-                        <div class="font-mono font-semibold text-[var(--text-primary)] text-xs tracking-wider" id="timelineTimecode">00:00:00:00</div>
-                    </div>
-
-                    <!-- Right: Clip Badge & Zoom -->
-                    <div class="flex items-center space-x-2 text-[var(--text-secondary)] text-xs">
-                        <span id="selectedClipBadge" class="text-[10px] text-[var(--text-muted)] font-mono">Nenhum clipe</span>
-                        <div class="h-3 w-px bg-[var(--border)]"></div>
-                        <button onclick="adjustTimelineZoom(-0.25)" title="Reduzir Zoom [-]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                        <span id="zoomLabel" class="font-mono text-[var(--accent)] text-[10px]">1.0x</span>
-                        <button onclick="adjustTimelineZoom(0.25)" title="Aumentar Zoom [+]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                    </div>
-                </div>
-
-                <!-- Dedicated Time Ruler Bar -->
-                <div class="timeline-ruler-bar select-none relative overflow-hidden" id="timelineRuler" onclick="seekByRulerClick(event)">
-                    <div class="absolute inset-y-0 flex items-center pointer-events-none" id="rulerLabels" style="left: 164px;">
-                    </div>
-                </div>
-
-                <!-- Interactive Multi-Track Scroll Area -->
-                <div class="flex-1 overflow-x-auto overflow-y-auto px-3 py-2 space-y-2 relative" id="timelineTracksArea" onclick="seekByTimelineClick(event)">
-
-                    <!-- Linha Visual do Ponto de Contato Magnético entre Artefatos (Clipchamp Style) -->
-                    <div id="magneticContactGuide" class="hidden absolute top-0 bottom-0 w-[2px] bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,1)] z-50 pointer-events-none transition-opacity duration-75">
-                        <div class="absolute -top-6 -translate-x-1/2 px-2 py-0.5 rounded bg-[#101216] border border-cyan-400 text-[9px] font-mono font-bold text-cyan-300 shadow-xl whitespace-nowrap flex items-center space-x-1">
-                            <i class="fa-solid fa-magnet text-[8px] text-cyan-400"></i>
-                            <span>Ponto de Contato (0.00s)</span>
-                        </div>
-                    </div>
-
-                    
-                    <!-- HIGH-VISIBILITY DA VINCI PLAYHEAD -->
-                    <div id="playheadContainer" style="left: 164px;">
-                        <div id="playheadScrubberHead" onmousedown="startNeedleDrag(event)" ontouchstart="startNeedleDrag(event)" title="Arraste para cortar no ponto exato">
-                            <span id="needleTimecode">00:00</span>
-                        </div>
-                        <div id="playheadNeedleLine"></div>
-                    </div>
-
-                    <!-- Track 1: Legendas IA (Whisper) -->
-                    <div class="flex items-center space-x-2">
-                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
-                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-closed-captioning text-amber-400"></i><span>Legendas</span></span>
-                            <button onclick="toggleTrackMute('subs')" id="mute_subs" class="btn-icon w-5 h-5 text-xs" title="Ocultar/Exibir Legendas"><i class="fa-solid fa-eye"></i></button>
-                        </div>
-                        <div id="trackSubs" class="flex-1 h-7 rounded-[var(--radius-sm)] border track-subs-bg relative flex items-center px-2.5 text-[10px] text-amber-300 font-mono overflow-hidden">
-                            Nenhuma faixa de legenda gerada
-                        </div>
-                    </div>
-
-                    <!-- Track 2: Vídeo Principal (Vídeo 1) -->
-                    <div class="flex items-center space-x-2">
-                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
-                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-film text-blue-400"></i><span>Vídeo 1</span></span>
-                            <div class="flex items-center space-x-0.5">
-                                <button onclick="toggleTrackMute('video_audio')" id="mute_video_audio" class="btn-icon w-5 h-5 text-xs" title="Silenciar Áudio do Vídeo"><i class="fa-solid fa-volume-high"></i></button>
-                                <button onclick="toggleTrackMute('video_display')" id="mute_video_display" class="btn-icon w-5 h-5 text-xs" title="Ocultar Vídeo"><i class="fa-solid fa-eye"></i></button>
-                            </div>
-                        </div>
-                        <div id="trackVideo" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'video', 'trackVideo')" class="flex-1 h-14 rounded-[var(--radius-sm)] border track-video-bg relative flex items-center overflow-x-auto p-1 space-x-1.5">
-                            <div class="text-xs text-[var(--text-muted)] px-3 font-medium">Aguardando Vídeo...</div>
-                        </div>
-                    </div>
-
-                    <!-- Track 3: Imagens e Fotos (Imagem 1) -->
-                    <div class="flex items-center space-x-2" id="row_trackImage">
-                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
-                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-image text-pink-400"></i><span>Imagem 1</span></span>
-                            <button onclick="document.getElementById('fileInput').click()" class="btn-icon w-5 h-5 text-pink-400 hover:text-pink-300 text-xs" title="Adicionar Foto / Imagem"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                        <div id="trackImage" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'image', 'trackImage')" class="flex-1 h-8 rounded-[var(--radius-sm)] border bg-[var(--bg-elevated)] border-[var(--border)] relative flex items-center px-2.5 text-[10px] text-[var(--text-muted)] font-mono overflow-hidden">
-                            Trilha de Imagens / Fotos (Arraste uma imagem ou clique para vincular)
-                        </div>
-                    </div>
-
-                    <!-- Track 4: B-Roll / Sobreposição PIP (Vídeo 2) -->
-                    <div class="flex items-center space-x-2">
-                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
-                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-clone text-purple-400"></i><span>B-Roll</span></span>
-                            <button onclick="document.getElementById('fileInput').click()" class="btn-icon w-5 h-5 text-purple-400 hover:text-purple-300 text-xs" title="Adicionar Sobreposição"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                        <div id="trackBroll" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'video', 'trackBroll')" class="flex-1 h-7 rounded-[var(--radius-sm)] border bg-[var(--bg-elevated)] border-[var(--border)] relative flex items-center px-2.5 text-[10px] text-[var(--text-muted)] font-mono overflow-hidden">
-                            Trilha B-Roll (Sobreposição PIP vazia)
-                        </div>
-                    </div>
-
-                    <!-- Track 5: Áudio Extraído / Microfone -->
-                    <div class="flex items-center space-x-2">
-                        <div class="w-36 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider flex items-center justify-between px-2 shrink-0 whitespace-nowrap bg-[var(--bg-elevated)]/60 rounded-[var(--radius-sm)] border border-[var(--border)]">
-                            <span class="flex items-center space-x-1.5"><i class="fa-solid fa-music text-emerald-400"></i><span>Áudio 1</span></span>
-                            <button onclick="toggleTrackMute('audio')" id="mute_audio" class="btn-icon w-5 h-5 text-xs" title="Silenciar Trilha de Áudio"><i class="fa-solid fa-volume-high"></i></button>
-                        </div>
-                        <div id="trackAudio" ondragover="handleDragOverTrack(event, this)" ondragleave="handleDragLeaveTrack(event, this)" ondrop="handleMediaDropOnTrack(event, 'audio', 'trackAudio')" class="flex-1 h-8 rounded-[var(--radius-sm)] border track-audio-bg relative flex items-center px-2.5 overflow-hidden">
-                            <span class="text-[10px] text-emerald-400/80 font-mono">Trilha de som vinculada</span>
-                        </div>
-                    </div>
-
-                    <!-- Container de Trilhas Extras Dinâmicas (+ Vídeo, + Áudio, + Imagem) -->
-                    <div id="dynamicTracksContainer" class="space-y-2"></div>
-
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- ============================================================== -->
-        <!-- VIEW 2: MOBILE CAPCUT EXACT REPLICA                            -->
-        <!-- ============================================================== -->
-        <div id="mobileLayout" class="hidden flex-1 items-center justify-center p-0 canvas-bg overflow-hidden w-full h-full select-none">
+<div id="mobileLayout" class="hidden flex-1 items-center justify-center p-0 canvas-bg overflow-hidden w-full h-full select-none">
             <div class="mobile-device-frame flex flex-col overflow-hidden relative w-full h-full bg-[#0D0E11]">
                 
                 <!-- Simulated Status Bar (Only on Desktop simulation, hidden on real phones) -->
@@ -2845,6 +2843,16 @@
 
         // Direct Video Canvas Drag & Mouse-Wheel Zoom
         function initCanvasDirectDrag() {
+            // Clique no reprodutor de vídeo para alternar Play/Pause (estilo Clipchamp/YouTube)
+            const pFrame = document.getElementById('playerFrame');
+            if (pFrame) {
+                pFrame.addEventListener('click', (e) => {
+                    // Evitar clique se interagiu com legendas ou controles flutuantes
+                    if (e.target.closest('#subtitleDraggableWrapper') || e.target.closest('#playerViewportControls') || e.target.closest('button')) return;
+                    togglePlayPause();
+                });
+            }
+
             const frame = document.getElementById('playerFrame');
             let isDragging = false;
             let startX = 0, startY = 0;
@@ -3015,7 +3023,7 @@
         // Timeline Zoom
         function setTimelineZoom(val) {
             timelineZoom = parseFloat(val);
-            document.getElementById('sliderZoom').value = val;
+            const sz = document.getElementById('sliderZoom'); if (sz) sz.value = val;
             document.getElementById('zoomLabel').innerText = timelineZoom.toFixed(1) + 'x';
             renderTimelineClips();
             updateTimelineRuler();
@@ -3044,7 +3052,10 @@
             vid.onloadedmetadata = () => {
                 if (vid.duration && !isNaN(vid.duration) && vid.duration > 0) {
                     currentVideoDuration = vid.duration;
-                    document.getElementById('totalDurLabel').innerText = formatTime(vid.duration);
+                    const durLbl = document.getElementById('totalDurLabel');
+                if (durLbl) durLbl.innerText = formatTime(vid.duration);
+                const tcLbl = document.getElementById('timelineTimecode');
+                if (tcLbl) tcLbl.innerText = `00:00:00 / ${formatTime(vid.duration)}`;
                     document.getElementById('mobileTimeDur').innerText = formatTime(vid.duration);
                     
                     if (clips.length === 0 || (clips.length === 1 && (clips[0].end === 15 || clips[0].end === 10))) {
@@ -3371,7 +3382,42 @@
         }
 
         // Timeline Clip Render & Trim Handles
-        function renderTimelineClips() {
+        
+        // Renderizador da Trilha de Clipes Mobile (CapCut Style)
+        function renderMobileTimeline() {
+            const container = document.getElementById('mobileVideoTrackPill');
+            if (!container) return;
+
+            if (clips.length === 0) {
+                container.innerHTML = `
+                    <span class="flex items-center truncate"><i class="fa-solid fa-film mr-2 text-cyan-300"></i><span id="mobileTrackLabel">Toque em + para adicionar vídeo</span></span>
+                    <i class="fa-solid fa-plus text-xs bg-white/20 rounded-full w-5 h-5 flex items-center justify-center shrink-0" onclick="event.stopPropagation(); openMobileMediaSheet()"></i>
+                `;
+                return;
+            }
+
+            let html = '';
+            const totalDur = currentVideoDuration || 1;
+            clips.forEach((c, idx) => {
+                const dur = c.end - c.start;
+                const isSelected = (idx === selectedClipIndex);
+                const pct = Math.max(15, (dur / totalDur) * 100);
+                const icon = c.isImage ? 'fa-image text-pink-300' : 'fa-film text-cyan-300';
+                
+                html += `
+                    <div onclick="event.stopPropagation(); selectClip(${idx})" style="flex: ${pct}; min-width: 60px;" class="h-full ${isSelected ? 'bg-indigo-600 border-2 border-white' : 'bg-blue-700 border border-blue-400/30'} rounded-[3px] px-2 flex items-center justify-between overflow-hidden cursor-pointer active:scale-98 transition">
+                        <span class="text-[10px] font-semibold text-white truncate flex items-center space-x-1">
+                            <i class="fa-solid ${icon} text-[9px]"></i>
+                            <span class="truncate">${c.label || 'Clipe'}</span>
+                        </span>
+                        <span class="text-[9px] font-mono text-cyan-200 shrink-0 ml-1">${dur.toFixed(1)}s</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+function renderTimelineClips() {
             const track = document.getElementById('trackVideo');
             const trackArea = document.getElementById('timelineTracksArea');
             track.innerHTML = '';
@@ -3386,6 +3432,7 @@
             const total = currentVideoDuration || 1;
             track.style.minWidth = `${availableWidth}px`;
 
+            renderMobileTimeline();
             clips.forEach((c, idx) => {
                 const dur = c.end - c.start;
                 const widthPx = Math.max(24, (dur / total) * availableWidth);
@@ -3541,9 +3588,32 @@
         function selectClip(index) {
             selectedClipIndex = index;
             renderTimelineClips();
-            if (clips[index]) {
-                document.getElementById('studioVideo').currentTime = clips[index].start;
+            const c = clips[index];
+            if (c) {
+                const vid = document.getElementById('studioVideo');
+                const img = document.getElementById('studioImage');
+                if (c.isImage && c.url) {
+                    if (img) { img.src = c.url; img.classList.remove('hidden'); }
+                    if (vid) { vid.classList.add('hidden'); vid.pause(); }
+                } else if (c.url) {
+                    if (img) img.classList.add('hidden');
+                    if (vid) {
+                        vid.classList.remove('hidden');
+                        if (vid.src !== c.url && !vid.src.endsWith(c.url)) {
+                            vid.src = c.url;
+                            vid.load();
+                        }
+                        vid.currentTime = c.start;
+                    }
+                } else if (vid) {
+                    if (img) img.classList.add('hidden');
+                    vid.classList.remove('hidden');
+                    vid.currentTime = c.start;
+                }
+                updateTimecodeDisplay(c.start);
+                updatePlayheadPosition();
             }
+            updateSelectedBadge();
         }
 
         function updateSelectedBadge() {
@@ -3577,17 +3647,20 @@
             }
 
             const target = clips[selectedClipIndex];
+            const baseLabel = (target.label || 'Vídeo').replace(/ \(Parte \d+\)$/, '');
             const firstHalf = {
+                ...target,
                 id: 'clip_' + Date.now() + '_a',
                 start: target.start,
                 end: curTime,
-                label: target.label + ' (Parte 1)'
+                label: `${baseLabel} (Parte 1)`
             };
             const secondHalf = {
+                ...target,
                 id: 'clip_' + Date.now() + '_b',
                 start: curTime,
                 end: target.end,
-                label: target.label + ' (Parte 2)'
+                label: `${baseLabel} (Parte 2)`
             };
 
             clips.splice(selectedClipIndex, 1, firstHalf, secondHalf);
@@ -4227,6 +4300,13 @@
                 if (data.status === 'success' && Array.isArray(data.media)) {
                     renderMediaGrid(data.media);
                     updateSelectedMediaUI();
+                    // Se não tiver nenhum vídeo ativo, carrega o mais recente automaticamente
+                    if (clips.length === 0 && data.media.length > 0) {
+                        const firstVid = data.media.find(m => m.type === 'video') || data.media[0];
+                        if (firstVid && firstVid.download_url) {
+                            loadVideoFile(firstVid.server_path, firstVid.download_url, firstVid.name, firstVid.duration);
+                        }
+                    }
                     showToast("Lista de mídias atualizada!");
                 }
             } catch (err) {
@@ -5241,8 +5321,38 @@
         // Helpers
         function togglePlayPause() {
             const vid = document.getElementById('studioVideo');
-            if (!vid.src) return;
-            if (vid.paused) vid.play(); else vid.pause();
+            if (!vid) return;
+
+            // Se não tiver src carregado mas tivermos clips, carrega imediatamente
+            if ((!vid.src || vid.src === window.location.href || vid.src.endsWith('/')) && clips.length > 0) {
+                const c = clips[selectedClipIndex] || clips[0];
+                if (c && (c.url || currentVideoUrl)) {
+                    vid.src = c.url || currentVideoUrl;
+                    vid.load();
+                }
+            }
+
+            if (!vid.src) {
+                showToast("Selecione um vídeo na Minha Mídia ou envie um arquivo", true);
+                return;
+            }
+
+            if (vid.paused) {
+                const p = vid.play();
+                if (p !== undefined) {
+                    p.then(() => {
+                        const btn = document.getElementById('btnPlayPause');
+                        if (btn) btn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+                    }).catch(err => {
+                        console.warn("Autoplay bloqueado pelo navegador:", err);
+                        showToast("Clique no reprodutor para liberar a reprodução de áudio", true);
+                    });
+                }
+            } else {
+                vid.pause();
+                const btn = document.getElementById('btnPlayPause');
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-play text-xs ml-0.5"></i>';
+            }
         }
 
         function toggleMobilePlay() {
