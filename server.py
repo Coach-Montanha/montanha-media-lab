@@ -12,6 +12,7 @@ import os
 import time
 import sys
 import json
+import uuid
 import re
 import shutil
 import subprocess
@@ -19,7 +20,12 @@ import mimetypes
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+import asyncio
+try:
+    import edge_tts
+except ImportError:
+    edge_tts = None
 from PIL import Image
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -116,7 +122,35 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                 self.wfile.write(f.read())
             return
 
-        # 2. List Media Library (Scans DOWNLOADS_DIR, uploads, and exports)
+        # 2. TTS Voices Catalog (pt-BR Neural)
+        elif parsed.path in ["/api/tts/voices", "/api/tts-voices"]:
+            voices = [
+                {
+                    "id": "pt-BR-FranciscaNeural",
+                    "name": "Francisca (Neural)",
+                    "gender": "Feminino",
+                    "locale": "pt-BR",
+                    "style": "Natural, suave e didática"
+                },
+                {
+                    "id": "pt-BR-AntonioNeural",
+                    "name": "Antonio (Neural)",
+                    "gender": "Masculino",
+                    "locale": "pt-BR",
+                    "style": "Firme, autoritário e dinâmico"
+                },
+                {
+                    "id": "pt-BR-ThalitaMultilingualNeural",
+                    "name": "Thalita (Multilíngue)",
+                    "gender": "Feminino",
+                    "locale": "pt-BR",
+                    "style": "Expressiva e flexível"
+                }
+            ]
+            self._send_json({"status": "success", "voices": voices})
+            return
+
+        # 3. List Media Library (Scans DOWNLOADS_DIR, uploads, and exports)
         elif parsed.path in ["/api/list-media", "/api/get-recent-media"]:
             items = []
             valid_exts = {".mp4", ".mov", ".mkv", ".webm", ".mp3", ".wav", ".aac", ".png", ".jpg", ".jpeg"}
@@ -192,13 +226,42 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
             return
 
         elif parsed.path.startswith("/media/"):
-            rel_path = parsed.path.replace("/media/", "")
-            target_path = (DOWNLOADS_DIR / rel_path).resolve()
-            if not target_path.exists():
-                target_path = (UPLOAD_DIR / rel_path).resolve()
-            if not target_path.exists() or not target_path.is_file():
+            raw_path = parsed.path[len("/media/"):]
+            rel_path = urllib.parse.unquote(raw_path)
+            while "%" in rel_path:
+                decoded = urllib.parse.unquote(rel_path)
+                if decoded == rel_path:
+                    break
+                rel_path = decoded
+
+            if ".." in rel_path or ".." in raw_path or rel_path.startswith("/") or rel_path.startswith("\\") or bool(re.match(r'^[a-zA-Z]:', rel_path)):
+                self.send_error(403, "Access Denied")
+                return
+
+            rel_path = rel_path.lstrip("/\\")
+            if not rel_path:
                 self.send_error(404, "Media not found")
                 return
+
+            allowed_dirs = [DOWNLOADS_DIR.resolve(), UPLOAD_DIR.resolve(), OUTPUT_DIR.resolve()]
+            target_path = None
+            for base_dir in allowed_dirs:
+                try:
+                    candidate = (base_dir / rel_path).resolve()
+                    if candidate.is_relative_to(base_dir) and candidate.exists() and candidate.is_file():
+                        target_path = candidate
+                        break
+                except Exception:
+                    continue
+
+            if not target_path or not target_path.exists() or not target_path.is_file():
+                self.send_error(404, "Media not found")
+                return
+
+            if not any(target_path.is_relative_to(d) for d in allowed_dirs):
+                self.send_error(403, "Access Denied")
+                return
+
             self._serve_file_with_range(target_path)
             return
 
@@ -282,17 +345,177 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                         self._send_json({"status": "error", "message": f"Erro no download: {str(e2)}"})
                 return
 
-            # Silence Detection for AutoCut
-            elif parsed.path == "/api/silence-detect":
-                video_path = body.get("video_path")
-                if not video_path or not os.path.exists(video_path):
-                    self._send_json({"status": "error", "message": "Arquivo de vídeo não encontrado"})
+            # Neural Text-to-Speech (edge-tts pt-BR)
+            elif parsed.path == "/api/tts":
+                text = (body.get("text") or "").strip()
+                voice_param = body.get("voice") or "pt-BR-FranciscaNeural"
+                rate_param = body.get("rate")
+                pitch_param = body.get("pitch")
+
+                if not text:
+                    self._send_json({"status": "error", "message": "Texto não fornecido para síntese"}, 400)
                     return
-                if engine:
-                    res = engine.detect_silence_points(video_path)
-                    self._send_json({"status": "success", **res})
+
+                # Voice Fallback Mapping
+                voice_map = {
+                    "francisca": "pt-BR-FranciscaNeural",
+                    "antonio": "pt-BR-AntonioNeural",
+                    "thalita": "pt-BR-ThalitaMultilingualNeural",
+                    "pt-br-franciscaneural": "pt-BR-FranciscaNeural",
+                    "pt-br-antonioneural": "pt-BR-AntonioNeural",
+                    "pt-br-thalitamultilingualneural": "pt-BR-ThalitaMultilingualNeural",
+                    "pt-br-thalitaneural": "pt-BR-ThalitaMultilingualNeural",
+                    "pt-pt-duarteneural": "pt-PT-DuarteNeural",
+                    "pt-pt-raquelneural": "pt-PT-RaquelNeural"
+                }
+                raw_voice = str(voice_param).strip()
+                norm_voice = raw_voice.lower()
+                selected_voice = voice_map.get(norm_voice)
+                if not selected_voice:
+                    if raw_voice.startswith("pt-"):
+                        selected_voice = raw_voice
+                    else:
+                        selected_voice = "pt-BR-FranciscaNeural"
+
+                # Rate formatting
+                if isinstance(rate_param, (int, float)):
+                    pct = int(round((float(rate_param) - 1.0) * 100))
+                    rate_str = f"+{pct}%" if pct >= 0 else f"{pct}%"
                 else:
-                    self._send_json({"status": "error", "message": "Engine não carregada"})
+                    r_s = str(rate_param if rate_param is not None else "+0%").strip()
+                    if not r_s:
+                        r_s = "+0%"
+                    elif not r_s.endswith("%"):
+                        r_s = f"{r_s}%"
+                    if not (r_s.startswith("+") or r_s.startswith("-")):
+                        r_s = f"+{r_s}"
+                    rate_str = r_s
+
+                # Pitch formatting
+                if isinstance(pitch_param, (int, float)):
+                    pitch_str = f"+{int(pitch_param)}Hz" if int(pitch_param) >= 0 else f"{int(pitch_param)}Hz"
+                else:
+                    p_s = str(pitch_param if pitch_param is not None else "+0Hz").strip()
+                    if not p_s:
+                        p_s = "+0Hz"
+                    elif not (p_s.endswith("Hz") or p_s.endswith("hz") or p_s.endswith("%")):
+                        p_s = f"{p_s}Hz"
+                    if not (p_s.startswith("+") or p_s.startswith("-")):
+                        p_s = f"+{p_s}"
+                    pitch_str = p_s
+
+                voice_tag = selected_voice.replace("pt-BR-", "").replace("pt-PT-", "").replace("Multilingual", "").replace("Neural", "").lower()
+                timestamp = int(time.time())
+                out_name = f"tts_{voice_tag}_{timestamp}_{uuid.uuid4().hex[:6]}.mp3"
+                out_file = DOWNLOADS_DIR / out_name
+                if out_file.exists():
+                    out_name = f"tts_{voice_tag}_{timestamp}_{uuid.uuid4().hex[:6]}.mp3"
+                    out_file = DOWNLOADS_DIR / out_name
+
+                try:
+                    import edge_tts
+
+                    async def _run_tts():
+                        comm = edge_tts.Communicate(text, selected_voice, rate=rate_str, pitch=pitch_str)
+                        await comm.save(str(out_file))
+
+                    asyncio.run(_run_tts())
+
+                    duration = 0.0
+                    if engine:
+                        try:
+                            info = engine.get_video_info(str(out_file))
+                            duration = float(info.get("duration", 0.0))
+                        except Exception:
+                            duration = 0.0
+
+                    self._send_json({
+                        "status": "success",
+                        "filename": out_name,
+                        "server_path": str(out_file),
+                        "download_url": f"/stream?file={urllib.parse.quote(str(out_file))}",
+                        "media_url": f"/media/{out_name}",
+                        "duration": round(duration, 2),
+                        "voice": selected_voice,
+                        "text": text
+                    })
+                except Exception as err:
+                    self._send_json({"status": "error", "message": f"Erro na geração de TTS: {str(err)}"}, 500)
+                return
+
+            # Silence Detection for AutoCut
+            elif parsed.path in ["/api/silence-detect", "/api/detect-silence"]:
+                media_path = (body.get("video_path") or body.get("audio_path") or
+                              body.get("media_path") or body.get("file_path"))
+                noise_db = float(body.get("noise_db", -30.0))
+                min_duration = float(body.get("min_duration", 0.25))
+
+                if not media_path:
+                    self._send_json({"status": "error", "message": "Arquivo de mídia não informado"}, 400)
+                    return
+
+                # Clean /media/ or /stream?file= prefixes if sent from frontend
+                clean_media_path = str(media_path).strip()
+                if clean_media_path.startswith("/media/"):
+                    clean_media_path = clean_media_path[len("/media/"):]
+                elif "/stream?file=" in clean_media_path:
+                    clean_media_path = urllib.parse.unquote(clean_media_path.split("file=", 1)[1])
+
+                resolved_path = Path(clean_media_path)
+                if not resolved_path.exists():
+                    for d in [DOWNLOADS_DIR, UPLOAD_DIR, OUTPUT_DIR]:
+                        candidate = d / clean_media_path
+                        if candidate.exists():
+                            resolved_path = candidate
+                            break
+                        candidate_name = d / Path(clean_media_path).name
+                        if candidate_name.exists():
+                            resolved_path = candidate_name
+                            break
+
+                if not resolved_path.exists() or not resolved_path.is_file():
+                    self._send_json({"status": "error", "message": f"Arquivo de mídia não encontrado: {media_path}"}, 400)
+                    return
+
+                if os.path.getsize(resolved_path) == 0:
+                    self._send_json({"status": "error", "message": "Arquivo de mídia inválido, vazio ou sem faixa de áudio"}, 400)
+                    return
+
+                media_path_str = str(resolved_path.resolve())
+
+                if engine and hasattr(engine, "detect_silence_points"):
+                    try:
+                        res = engine.detect_silence_points(media_path_str, noise_db=noise_db, min_duration=min_duration)
+                        if res.get("status") == "error":
+                            self._send_json(res, 400)
+                        else:
+                            self._send_json(res)
+                    except Exception as err:
+                        self._send_json({"status": "error", "message": f"Erro ao detectar silêncio: {str(err)}"}, 500)
+                elif engine:
+                    try:
+                        info = engine.get_video_info(media_path_str)
+                        total_dur = float(info.get("duration", 0.0))
+                        if total_dur <= 0.0 or os.path.getsize(media_path_str) == 0:
+                            self._send_json({"status": "error", "message": "Arquivo de mídia inválido, vazio ou sem faixa de áudio"}, 400)
+                            return
+                        silences = engine.detect_silence(media_path_str, noise_db=noise_db, min_duration=min_duration)
+                        speech = engine.compute_speech_segments(total_dur, silences)
+                        silences_data = [{"start": round(s, 2), "end": round(e, 2), "duration": round(e - s, 2)} for s, e in silences]
+                        speech_data = [{"start": round(s, 2), "end": round(e, 2), "duration": round(e - s, 2)} for s, e in speech]
+                        self._send_json({
+                            "status": "success",
+                            "duration": round(total_dur, 2),
+                            "silences": silences_data,
+                            "speech_segments": speech_data,
+                            "silence_count": len(silences_data),
+                            "speech_count": len(speech_data),
+                            "saved_seconds": round(sum(x["duration"] for x in silences_data), 2)
+                        })
+                    except Exception as err:
+                        self._send_json({"status": "error", "message": f"Erro na análise de áudio: {str(err)}"}, 500)
+                else:
+                    self._send_json({"status": "error", "message": "Engine não carregada"}, 500)
                 return
 
             # Subtitle Generation (Whisper INT8)
@@ -606,8 +829,35 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
         self.wfile.write(resp)
 
 
-def run_server(port=8080):
-    server = HTTPServer(("0.0.0.0", port), UnifiedMediaStudioHandler)
+def get_default_port() -> int:
+    """
+    Calculates server port with precedence:
+    1. sys.argv[1] (explicit CLI argument)
+    2. os.environ['PORT'] (environment override)
+    3. Platform default: 8080 on Termux, 4190 on Windows, 8080 fallback.
+    """
+    if len(sys.argv) > 1:
+        try:
+            return int(sys.argv[1])
+        except ValueError:
+            pass
+    if os.environ.get("PORT"):
+        try:
+            return int(os.environ["PORT"])
+        except ValueError:
+            pass
+    is_termux = os.path.exists("/data/data/com.termux") or os.path.exists("/sdcard")
+    if is_termux:
+        return 8080
+    if sys.platform == "win32":
+        return 4190
+    return 8080
+
+
+def run_server(port=None):
+    if port is None:
+        port = get_default_port()
+    server = ThreadingHTTPServer(("0.0.0.0", port), UnifiedMediaStudioHandler)
     print(f"\n=======================================================")
     print(f"[*] MONTANHA MEDIA LAB & VIDEO STUDIO UNIFICADO ATIVO!")
     print(f"[*] Local: http://localhost:{port}")
@@ -620,5 +870,5 @@ def run_server(port=8080):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", sys.argv[1] if len(sys.argv) > 1 else 8080))
+    port = get_default_port()
     run_server(port)

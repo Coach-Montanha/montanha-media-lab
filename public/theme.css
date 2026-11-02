@@ -718,3 +718,128 @@ input:checked + .slider-toggle:before {
 .library-card:hover .action-overlay {
     opacity: 1;
 }
+
+/* ==========================================================================
+   CLIPCHAMP-STYLE REDESIGN (Milestone M2)
+   Left Vertical Dock (56px), Drawer (340px), Context Menu & Minimalist Toolbar
+   ========================================================================== */
+
+/* 1. Left Vertical Dock (~56px) */
+#clipchampVerticalDock {
+    width: 56px;
+    min-width: 56px;
+    background-color: #121317;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    gap: 6px;
+    z-index: 30;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.dock-tool-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 4px 2px;
+}
+
+.dock-tool-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.dock-tool-btn.active {
+    background: #1D2027;
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dock-tool-btn.active i {
+    color: var(--accent);
+}
+
+/* 2. Expandable Tool Drawer (~340px) */
+#clipchampDrawer {
+    width: 340px;
+    min-width: 340px;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+    overflow: hidden;
+}
+
+#clipchampDrawer.drawer-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    border-right: none !important;
+    display: none !important;
+}
+
+/* 3. Ultra-Minimalist Timeline Toolbar */
+#bottomTimelineToolbar {
+    height: 40px;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    user-select: none;
+}
+
+/* 4. Timeline Clip Context Menu (Right-Click) */
+.clip-context-menu {
+    position: fixed;
+    min-width: 210px;
+    background: #16181E;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    z-index: 9999;
+    padding: 4px 0;
+    user-select: none;
+}
+
+.ctx-item {
+    transition: background-color 0.12s ease;
+}
+
+.ctx-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 5. Retractable Right Inspector Dock */
+#rightInspectorPanel {
+    transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease;
+}
+
+#rightInspectorPanel.inspector-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    border-left: none !important;
+    display: none !important;
+}
+
+/* Timeline clip pointer */
+.timeline-clip {
+    cursor: pointer;
+}
+

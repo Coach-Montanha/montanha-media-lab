@@ -462,58 +462,48 @@
             
             <div class="flex-1 flex overflow-hidden">
                 
-                <!-- 1. LEFT PANEL (RESIZABLE): MEDIA, AI & FILTERS -->
-                <div class="panel-container border-r flex flex-col shrink-0 text-xs select-none relative" id="leftSidebarPanel" style="width: 380px; min-width: 280px; max-width: 700px;">
+                <!-- 1. CLIPCHAMP-STYLE LEFT CONTAINER: 56PX VERTICAL DOCK + EXPANDABLE DRAWER (340PX) -->
+                <div class="flex shrink-0 h-full select-none relative" id="leftClipchampContainer">
                     
-                    <!-- Top Resizing Helper & Panel Presets -->
-                    <div class="flex items-center justify-between px-3 py-1 bg-[var(--bg-panel)] border-b border-[var(--border)] text-[10px] text-[var(--text-muted)]">
-                        <span class="font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Painel Lateral</span>
-                        <div class="flex items-center space-x-1">
-                            <button onclick="setSidebarWidthPreset(300)" title="Largura Compacta (300px)" class="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--text-secondary)]">300</button>
-                            <button onclick="setSidebarWidthPreset(380)" title="Largura Padrão (380px)" class="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--text-secondary)]">380</button>
-                            <button onclick="setSidebarWidthPreset(500)" title="Largura Ampla (500px)" class="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--text-secondary)]">500</button>
-                        </div>
-                    </div>
+                    <!-- 56px Slim Vertical Dock -->
+                    <nav id="clipchampVerticalDock" class="w-14 bg-[#121317] border-r border-[var(--border)] flex flex-col items-center py-2 space-y-2 z-30 shrink-0">
+                        <button onclick="selectClipchampTool('media')" id="dockBtn_media" class="dock-tool-btn active" title="Minha Mídia">
+                            <i class="fa-solid fa-folder-open text-base"></i>
+                            <span class="text-[9px] mt-1 font-medium">Mídia</span>
+                        </button>
+                        <button onclick="selectClipchampTool('tts')" id="dockBtn_tts" class="dock-tool-btn" title="Gravar & Criar (TTS)">
+                            <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+                            <span class="text-[9px] mt-1 font-medium">Criar</span>
+                        </button>
+                        <button onclick="selectClipchampTool('captions')" id="dockBtn_captions" class="dock-tool-btn" title="Legendas">
+                            <i class="fa-solid fa-closed-captioning text-base"></i>
+                            <span class="text-[9px] mt-1 font-medium">Legendas</span>
+                        </button>
+                        <button onclick="selectClipchampTool('audio')" id="dockBtn_audio" class="dock-tool-btn" title="Áudio">
+                            <i class="fa-solid fa-music text-base"></i>
+                            <span class="text-[9px] mt-1 font-medium">Áudio</span>
+                        </button>
+                    </nav>
 
-                    <!-- Keypad-Style Tool Grid (Organizado como teclado numérico com ícone em cima e texto embaixo) -->
-                    <div class="p-2 border-b border-[var(--border)] bg-[var(--bg-panel)]">
-                        <div class="grid grid-cols-4 gap-1.5" id="sidebarKeypad">
-                            <button onclick="setLeftTab('media')" id="tab_media" class="keypad-tool-btn active" title="Biblioteca de Mídia">
-                                <i class="fa-solid fa-folder-open text-cyan-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Mídia</span>
-                            </button>
-                            <button onclick="setLeftTab('ai_cut')" id="tab_ai_cut" class="keypad-tool-btn" title="Corte Inteligente de Silêncio">
-                                <i class="fa-solid fa-scissors text-purple-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">AutoCut</span>
-                            </button>
-                            <button onclick="setLeftTab('captions')" id="tab_captions" class="keypad-tool-btn" title="Legendas com Whisper">
-                                <i class="fa-solid fa-closed-captioning text-emerald-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Legendas</span>
-                            </button>
-                            <button onclick="setLeftTab('filters')" id="tab_filters" class="keypad-tool-btn" title="Filtros e Cores">
-                                <i class="fa-solid fa-circle-half-stroke text-pink-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Filtros</span>
-                            </button>
-                            <button onclick="setLeftTab('audio_tools')" id="tab_audio_tools" class="keypad-tool-btn" title="Extração e Beat Sync">
-                                <i class="fa-solid fa-music text-amber-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Áudio</span>
-                            </button>
-                            <button onclick="setInspectorTab('speed')" id="tab_speed_quick" class="keypad-tool-btn" title="Velocidade e Curvas">
-                                <i class="fa-solid fa-gauge-high text-blue-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Velocidade</span>
-                            </button>
-                            <button onclick="setInspectorTab('video')" id="tab_crop_quick" class="keypad-tool-btn" title="Enquadramento e Escala">
-                                <i class="fa-solid fa-crop-simple text-cyan-300 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Enquadrar</span>
-                            </button>
-                            <button onclick="openCapCutToolsModal()" class="keypad-tool-btn bg-gradient-to-br from-purple-950/40 to-cyan-950/40 border-purple-500/30 hover:border-cyan-400" title="Todas as Ferramentas CapCut">
-                                <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-sm mb-1"></i>
-                                <span class="text-[10px] font-medium leading-tight">Mais IA</span>
-                            </button>
+                    <!-- Expandable Tool Drawer (~340px) -->
+                    <div id="clipchampDrawer" class="w-[340px] bg-[var(--bg-panel)] border-r border-[var(--border)] flex flex-col shrink-0 overflow-hidden transition-all duration-200">
+                        <!-- Drawer Header -->
+                        <div class="h-10 px-3 border-b border-[var(--border)] flex items-center justify-between bg-[#15171C] shrink-0">
+                            <div class="flex items-center space-x-2">
+                                <span id="drawerIcon" class="text-cyan-400 text-xs"><i class="fa-solid fa-folder-open"></i></span>
+                                <span id="drawerTitle" class="text-xs font-semibold text-[var(--text-primary)]">Minha Mídia</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="setSidebarWidthPreset(340)" title="Largura Padrão (340px)" class="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--text-muted)] font-mono">340</button>
+                                <button onclick="setSidebarWidthPreset(480)" title="Largura Ampla (480px)" class="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[10px] text-[var(--text-muted)] font-mono">480</button>
+                                <button onclick="closeClipchampDrawer()" id="btnDrawerClose" class="btn-icon text-xs text-[var(--text-muted)] hover:text-white ml-1" title="Recolher Gaveta">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="flex-1 p-3.5 overflow-y-auto space-y-4">
+                        <!-- Drawer Body containing Panels -->
+                        <div class="flex-1 p-3.5 overflow-y-auto space-y-4" id="drawerContent">
                         
                         <!-- Panel: Mídia -->
                         <div id="panel_media" class="space-y-4">
@@ -566,6 +556,101 @@
                                         <div class="text-[10px] text-[var(--text-muted)]">Salva PNG em resolução nativa</div>
                                     </div>
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Panel: Gravar & Criar (TTS Neural Estilo Clipchamp) -->
+                        <div id="panel_tts" class="hidden space-y-4">
+                            <!-- Card Info -->
+                            <div class="bg-[var(--bg-elevated)] p-3.5 rounded-[var(--radius-md)] border border-[var(--border)] space-y-2">
+                                <div class="flex items-center space-x-2 text-cyan-400 font-semibold text-xs">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span>Texto em Fala Neural (TTS)</span>
+                                </div>
+                                <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+                                    Gere locuções naturais brasileiras em segundos com vozes neurais de alta fidelidade e adicione direto à timeline.
+                                </p>
+                            </div>
+
+                            <!-- Text Input Box -->
+                            <div class="space-y-1.5 bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)]">
+                                <div class="flex items-center justify-between">
+                                    <label class="label-caps">Texto da Narração:</label>
+                                    <span id="ttsCharCount" class="text-[10px] text-[var(--text-muted)] font-mono">0 / 1000</span>
+                                </div>
+                                <textarea id="ttsTextInput" rows="4" maxlength="1000" oninput="updateTtsCharCount(this)" placeholder="Digite ou cole aqui o texto que a voz neural brasileira deve narrar..." class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] p-2.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-cyan-400 focus:outline-none resize-none"></textarea>
+                                
+                                <!-- Quick Sample Presets -->
+                                <div class="flex items-center space-x-1.5 pt-1">
+                                    <span class="text-[9px] text-[var(--text-muted)]">Exemplos:</span>
+                                    <button type="button" onclick="setTtsSampleText('intro')" class="px-2 py-0.5 rounded bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[10px] text-cyan-300 border border-cyan-500/20">Apresentação</button>
+                                    <button type="button" onclick="setTtsSampleText('cta')" class="px-2 py-0.5 rounded bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[10px] text-purple-300 border border-purple-500/20">Chamada p/ Ação</button>
+                                    <button type="button" onclick="setTtsSampleText('tutorial')" class="px-2 py-0.5 rounded bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] text-[10px] text-emerald-300 border border-emerald-500/20">Tutorial</button>
+                                </div>
+                            </div>
+
+                            <!-- Voice Selection (Brazilian Neural Voices) -->
+                            <div class="space-y-1.5 bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)]">
+                                <div class="flex items-center justify-between">
+                                    <label class="label-caps">Voz Neural Brasileira:</label>
+                                    <span id="ttsVoiceBadge" class="text-[10px] text-cyan-400 font-mono">Feminina Natural</span>
+                                </div>
+                                <select id="ttsVoiceSelect" onchange="updateTtsVoiceBadge(this.value)" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-2.5 py-2 text-xs text-[var(--text-primary)] focus:border-cyan-400 focus:outline-none">
+                                    <option value="pt-BR-FranciscaNeural" selected>pt-BR-FranciscaNeural (Feminina / Natural - Padrão)</option>
+                                    <option value="pt-BR-AntonioNeural">pt-BR-AntonioNeural (Masculino / Dinâmico)</option>
+                                    <option value="pt-BR-ThalitaMultilingualNeural">pt-BR-ThalitaMultilingualNeural (Multilíngue / Suave)</option>
+                                </select>
+                            </div>
+
+                            <!-- Speed / Rate and Pitch Controls -->
+                            <div class="space-y-3 bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)]">
+                                <div>
+                                    <div class="flex justify-between text-[11px] mb-1">
+                                        <span class="text-[var(--text-secondary)]">Velocidade / Ritmo:</span>
+                                        <span id="ttsRateVal" class="text-[var(--accent)] font-mono font-medium">1.0x (+0%)</span>
+                                    </div>
+                                    <input type="range" id="ttsRateSlider" min="-50" max="50" step="5" value="0" oninput="updateTtsRateDisplay(this.value)" class="w-full h-1.5 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]">
+                                    <div class="flex justify-between items-center text-[9px] text-[var(--text-muted)] font-mono mt-1">
+                                        <button type="button" onclick="setTtsRatePreset(-20)" class="hover:text-cyan-400">0.8x</button>
+                                        <button type="button" onclick="setTtsRatePreset(0)" class="text-cyan-400 font-bold">1.0x (Normal)</button>
+                                        <button type="button" onclick="setTtsRatePreset(20)" class="hover:text-cyan-400">1.2x</button>
+                                        <button type="button" onclick="setTtsRatePreset(50)" class="hover:text-cyan-400">1.5x</button>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2 border-t border-[var(--border)]">
+                                    <div class="flex justify-between text-[11px] mb-1">
+                                        <span class="text-[var(--text-secondary)]">Tom de Voz (Pitch):</span>
+                                        <span id="ttsPitchVal" class="text-[var(--accent)] font-mono font-medium">+0Hz</span>
+                                    </div>
+                                    <input type="range" id="ttsPitchSlider" min="-20" max="20" step="1" value="0" oninput="updateTtsPitchDisplay(this.value)" class="w-full h-1.5 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]">
+                                    <div class="flex justify-between text-[9px] text-[var(--text-muted)] font-mono mt-1">
+                                        <span>-20Hz (Grave)</span>
+                                        <span>Padrão (0Hz)</span>
+                                        <span>+20Hz (Agudo)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Audio Preview & Actions -->
+                            <div class="space-y-2.5 bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)]">
+                                <label class="label-caps block">Prévia do Áudio Sintetizado:</label>
+                                <audio id="ttsAudioPlayer" controls class="w-full h-8 rounded bg-[var(--bg-base)]"></audio>
+                                <div id="ttsStatusMsg" class="text-[10px] text-[var(--text-muted)] italic text-center min-h-[16px]">Pronto para gerar áudio.</div>
+
+                                <div class="grid grid-cols-2 gap-2 pt-1">
+                                    <!-- Testar Áudio (Preview) -->
+                                    <button type="button" onclick="previewTtsAudio()" id="btnTtsPreview" class="btn-secondary py-2 px-3 text-xs flex items-center justify-center space-x-1.5">
+                                        <i class="fa-solid fa-play text-cyan-400"></i>
+                                        <span class="font-medium">Testar Áudio</span>
+                                    </button>
+
+                                    <!-- Adicionar à Timeline -->
+                                    <button type="button" onclick="addTtsToTimeline()" id="btnTtsAddToTimeline" class="btn-primary py-2 px-3 text-xs flex items-center justify-center space-x-1.5">
+                                        <i class="fa-solid fa-plus text-xs"></i>
+                                        <span class="font-semibold">Adicionar à Timeline</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -818,7 +903,6 @@
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -846,6 +930,12 @@
                             Preencher
                         </button>
                     </div>
+
+                    <!-- Floating Expand Button for Right Inspector (Visible when collapsed) -->
+                    <button onclick="toggleRightInspector()" id="btnExpandRightInspector" class="hidden absolute right-3 top-3 floating-blur px-3 py-1.5 text-xs text-[var(--accent)] z-30 flex items-center space-x-1.5 hover:brightness-125 transition" title="Expandir Inspetor de Propriedades">
+                        <i class="fa-solid fa-sliders text-xs"></i>
+                        <span class="text-[11px] font-semibold">Propriedades</span>
+                    </button>
 
                     <!-- Video Viewport Frame with Direct Drag / Pan Support -->
                     <div id="playerFrame" class="relative aspect-[9/16] max-h-[86%] bg-black rounded-[var(--radius-md)] overflow-hidden border border-[var(--border)] flex items-center justify-center transition-all duration-200 cursor-grab active:cursor-grabbing">
@@ -926,17 +1016,26 @@
                 <!-- Resizer: Right Inspector Divider -->
                 <div id="resizerRight" class="resizer-v" title="Arraste para redimensionar o inspetor"></div>
 
-                <!-- 3. RIGHT PANEL (RESIZABLE): INSPECTOR (ESCALA, VELOCIDADE, ÁUDIO) -->
-                <div id="rightInspectorPanel" class="panel-container border-l flex flex-col shrink-0 text-xs select-none" style="width: 280px; min-width: 220px; max-width: 500px;">
-                    <div class="flex items-center border-b border-[var(--border)] text-[11px] font-semibold px-2 bg-[var(--bg-panel)]">
-                        <button onclick="setInspectorTab('video')" id="ins_tab_video" class="nav-tab tab-active">
-                            <i class="fa-solid fa-crop-simple text-[var(--accent)]"></i><span>Básico</span>
-                        </button>
-                        <button onclick="setInspectorTab('speed')" id="ins_tab_speed" class="nav-tab">
-                            <i class="fa-solid fa-gauge-high"></i><span>Velocidade</span>
-                        </button>
-                        <button onclick="setInspectorTab('audio')" id="ins_tab_audio" class="nav-tab">
-                            <i class="fa-solid fa-sliders"></i><span>Áudio</span>
+                <!-- 3. RIGHT PANEL (RESIZABLE): INSPECTOR (ESCALA, VELOCIDADE, ÁUDIO, LEGENDAS) -->
+                <div id="rightInspectorPanel" class="panel-container border-l flex flex-col shrink-0 text-xs select-none relative transition-all duration-200" style="width: 280px; min-width: 220px; max-width: 500px;">
+                    <!-- Inspector Header with Tabs and Retract Button -->
+                    <div class="flex items-center justify-between border-b border-[var(--border)] text-[11px] font-semibold px-2 bg-[var(--bg-panel)] h-9 shrink-0">
+                        <div class="flex items-center space-x-1 overflow-x-auto">
+                            <button onclick="setInspectorTab('video')" id="ins_tab_video" class="nav-tab tab-active" title="Enquadramento Básico">
+                                <i class="fa-solid fa-crop-simple text-[var(--accent)] mr-1"></i><span>Básico</span>
+                            </button>
+                            <button onclick="setInspectorTab('speed')" id="ins_tab_speed" class="nav-tab" title="Velocidade">
+                                <i class="fa-solid fa-gauge-high mr-1"></i><span>Velocidade</span>
+                            </button>
+                            <button onclick="setInspectorTab('audio')" id="ins_tab_audio" class="nav-tab" title="Volume e Áudio">
+                                <i class="fa-solid fa-sliders mr-1"></i><span>Volume</span>
+                            </button>
+                            <button onclick="setInspectorTab('captions')" id="ins_tab_captions" class="nav-tab" title="Legendas">
+                                <i class="fa-solid fa-closed-captioning mr-1"></i><span>Legendas</span>
+                            </button>
+                        </div>
+                        <button onclick="toggleRightInspector()" id="btnToggleRightInspector" class="btn-icon text-xs text-[var(--text-muted)] hover:text-white" title="Recolher Inspetor">
+                            <i class="fa-solid fa-chevron-right" id="iconToggleRight"></i>
                         </button>
                     </div>
 
@@ -993,7 +1092,7 @@
                             </div>
                         </div>
 
-                        <!-- Inspector: Áudio -->
+                        <!-- Inspector: Áudio / Volume -->
                         <div id="ins_panel_audio" class="hidden space-y-3">
                             <div class="bg-[var(--bg-elevated)] p-3.5 rounded-[var(--radius-md)] border border-[var(--border)] space-y-3">
                                 <div class="flex justify-between text-xs mb-1">
@@ -1001,6 +1100,70 @@
                                     <span id="valVolume" class="text-[var(--accent)] font-mono font-medium">100%</span>
                                 </div>
                                 <input type="range" min="0" max="200" value="100" class="w-full" oninput="document.getElementById('studioVideo').volume = this.value / 100; document.getElementById('valVolume').innerText = this.value + '%'">
+                            </div>
+                        </div>
+
+                        <!-- Inspector: Legendas (Subtitles) -->
+                        <div id="ins_panel_captions" class="hidden space-y-4">
+                            <div class="bg-[var(--bg-elevated)] p-3.5 rounded-[var(--radius-md)] border border-[var(--border)] space-y-3">
+                                <div class="flex items-center space-x-2 text-emerald-400 font-semibold text-xs">
+                                    <i class="fa-solid fa-closed-captioning"></i>
+                                    <span>Estilo de Legenda</span>
+                                </div>
+
+                                <!-- Tipografia -->
+                                <div>
+                                    <label class="label-caps block mb-1">Fonte / Modelo:</label>
+                                    <select id="insSelCaptionFont" onchange="setSubtitleFontFamily(this.value); const el = document.getElementById('selCaptionFont'); if (el) el.value = this.value;" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-2.5 py-1.5 text-xs text-[var(--text-primary)] focus:outline-none">
+                                        <option value="'Anton', sans-serif">🔥 Anton (CapCut Bold Viral)</option>
+                                        <option value="'Montserrat', sans-serif">⚡ Montserrat ExtraBold</option>
+                                        <option value="'Bebas Neue', cursive">🎬 Bebas Neue (Condensada)</option>
+                                        <option value="'Outfit', sans-serif">✨ Outfit Moderna</option>
+                                        <option value="'Bangers', cursive">💥 Bangers (Quadrinhos / Punch)</option>
+                                        <option value="'Inter', sans-serif">Inter UI Clean</option>
+                                    </select>
+                                </div>
+
+                                <!-- Tamanho da Fonte -->
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="label-caps">Tamanho da Fonte:</label>
+                                        <span id="insValSubtitleSize" class="text-[10px] text-[var(--accent)] font-mono font-bold">20px</span>
+                                    </div>
+                                    <input type="range" id="insSliderSubtitleSize" min="12" max="64" value="20" oninput="setSubtitleFontSize(this.value); const sz = document.getElementById('insValSubtitleSize'); if (sz) sz.innerText = this.value + 'px'; const s2 = document.getElementById('sliderSubtitleSize'); if (s2) s2.value = this.value;" class="w-full h-1.5 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]">
+                                </div>
+
+                                <!-- Cor do Texto -->
+                                <div>
+                                    <div class="flex justify-between items-center mb-1.5">
+                                        <label class="label-caps">Cor do Texto:</label>
+                                        <input type="color" id="insPickerSubtitleColor" value="#FFE600" onchange="setSubtitleColor(this.value); const cp = document.getElementById('pickerSubtitleColor'); if (cp) cp.value = this.value;" class="w-4 h-4 rounded cursor-pointer border-0 bg-transparent p-0">
+                                    </div>
+                                    <div class="grid grid-cols-6 gap-1.5">
+                                        <button type="button" onclick="setSubtitleColor('#FFE600')" class="h-6 rounded bg-[#FFE600] border border-black/40 shadow-xs hover:scale-105 transition" title="Amarelo Neon"></button>
+                                        <button type="button" onclick="setSubtitleColor('#FFFFFF')" class="h-6 rounded bg-[#FFFFFF] border border-black/40 shadow-xs hover:scale-105 transition" title="Branco Puro"></button>
+                                        <button type="button" onclick="setSubtitleColor('#00F0FF')" class="h-6 rounded bg-[#00F0FF] border border-black/40 shadow-xs hover:scale-105 transition" title="Ciano Neon"></button>
+                                        <button type="button" onclick="setSubtitleColor('#39FF14')" class="h-6 rounded bg-[#39FF14] border border-black/40 shadow-xs hover:scale-105 transition" title="Verde Lima"></button>
+                                        <button type="button" onclick="setSubtitleColor('#FF1493')" class="h-6 rounded bg-[#FF1493] border border-black/40 shadow-xs hover:scale-105 transition" title="Rosa Choque"></button>
+                                        <button type="button" onclick="setSubtitleColor('#FF5722')" class="h-6 rounded bg-[#FF5722] border border-black/40 shadow-xs hover:scale-105 transition" title="Laranja"></button>
+                                    </div>
+                                </div>
+
+                                <!-- Posição Rápida -->
+                                <div>
+                                    <label class="label-caps block mb-1">Posicionamento Rápido:</label>
+                                    <div class="grid grid-cols-3 gap-1.5">
+                                        <button type="button" onclick="setSubtitlePositionPreset('top')" class="py-1 px-2 rounded-[var(--radius-sm)] bg-[var(--bg-base)] border border-[var(--border)] hover:border-cyan-400 text-[11px] font-medium text-white flex items-center justify-center space-x-1">
+                                            <i class="fa-solid fa-arrow-up text-[10px] text-cyan-400"></i><span>Topo</span>
+                                        </button>
+                                        <button type="button" onclick="setSubtitlePositionPreset('center')" class="py-1 px-2 rounded-[var(--radius-sm)] bg-[var(--bg-base)] border border-[var(--border)] hover:border-cyan-400 text-[11px] font-medium text-white flex items-center justify-center space-x-1">
+                                            <i class="fa-solid fa-arrows-to-dot text-[10px] text-cyan-400"></i><span>Centro</span>
+                                        </button>
+                                        <button type="button" onclick="setSubtitlePositionPreset('bottom')" class="py-1 px-2 rounded-[var(--radius-sm)] bg-[var(--bg-base)] border border-[var(--border)] hover:border-cyan-400 text-[11px] font-medium text-white flex items-center justify-center space-x-1">
+                                            <i class="fa-solid fa-arrow-down text-[10px] text-cyan-400"></i><span>Base</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1020,105 +1183,46 @@
             <!-- ============================================================== -->
             <div class="h-68 panel-container flex flex-col shrink-0 select-none relative" id="bottomTimeline">
                 
-                <!-- Timeline Toolbar (40px) -->
-                <div class="h-10 border-b border-[var(--border)] bg-[var(--bg-panel)] px-4 flex items-center justify-between text-xs">
-                    <div class="flex items-center space-x-1.5 text-[var(--text-secondary)]">
-                        <!-- Dividir (S) -->
-                        <button onclick="splitSelectedClip()" id="btnSplit" title="Dividir no Cursor [S]" class="btn-secondary py-1 px-2.5">
-                            <i class="fa-solid fa-scissors text-[var(--accent)] text-xs"></i><span class="text-[11px]">Dividir</span>
-                        </button>
-
-                        <!-- Cortar (Ctrl+X) -->
-                        <button onclick="cutSelectedClip()" id="btnCut" title="Recortar para Área de Transferência [Ctrl+X]" class="btn-secondary py-1 px-2 text-amber-400 hover:text-amber-300">
-                            <i class="fa-solid fa-cut text-xs mr-1"></i><span class="text-[11px]">Cortar</span>
-                        </button>
-
-                        <!-- Copiar (Ctrl+C) -->
-                        <button onclick="copySelectedClip()" id="btnCopy" title="Copiar Clipe [Ctrl+C]" class="btn-secondary py-1 px-2 text-cyan-400 hover:text-cyan-300">
-                            <i class="fa-regular fa-copy text-xs mr-1"></i><span class="text-[11px]">Copiar</span>
-                        </button>
-
-                        <!-- Colar (Ctrl+V) -->
-                        <button onclick="pasteClipAtPlayhead()" id="btnPaste" title="Colar na Agulha [Ctrl+V]" class="btn-secondary py-1 px-2 text-emerald-400 hover:text-emerald-300">
-                            <i class="fa-regular fa-paste text-xs mr-1"></i><span class="text-[11px]">Colar</span>
-                        </button>
-
-                        <!-- Aparar Início (Q) -->
-                        <button onclick="trimClipStartToPlayhead()" id="btnTrimStart" title="Aparar Início até a Agulha [Q]" class="btn-secondary py-1 px-2.5">
-                            <i class="fa-solid fa-chevron-left text-[var(--accent)] text-xs"></i><span class="text-[11px]">Aparar Início</span>
-                        </button>
-
-                        <!-- Aparar Fim (W) -->
-                        <button onclick="trimClipEndToPlayhead()" id="btnTrimEnd" title="Aparar Fim a partir da Agulha [W]" class="btn-secondary py-1 px-2.5">
-                            <span class="text-[11px]">Aparar Fim</span><i class="fa-solid fa-chevron-right text-[var(--accent)] text-xs"></i>
-                        </button>
-
-                        <!-- Excluir (Del) -->
-                        <button onclick="deleteSelectedClip()" id="btnDelete" title="Excluir Selecionado [Del]" class="btn-secondary py-1 px-2.5 text-rose-400 hover:text-rose-300">
-                            <i class="fa-regular fa-trash-can text-xs"></i><span class="text-[11px]">Excluir</span>
+                <!-- Ultra-Minimalist Timeline Toolbar (Clipchamp Standard) -->
+                <div class="h-10 border-b border-[var(--border)] bg-[var(--bg-panel)] px-4 flex items-center justify-between text-xs select-none" id="bottomTimelineToolbar">
+                    
+                    <!-- Left: 3 Essential Actions (Dividir, Desfazer, Refazer) -->
+                    <div class="flex items-center space-x-2">
+                        <!-- Dividir / Tesoura (calls splitSelectedClip()) -->
+                        <button onclick="splitSelectedClip()" id="btnSplit" title="Dividir no Cursor [S]" class="btn-primary py-1 px-3 text-xs flex items-center space-x-1.5 shadow-sm">
+                            <i class="fa-solid fa-scissors text-xs"></i>
+                            <span class="font-semibold text-xs">Dividir</span>
                         </button>
 
                         <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
 
-                        <!-- Adicionar Trilha Dropdown -->
-                        <div class="relative inline-block text-left">
-                            <button onclick="toggleAddTrackMenu()" id="btnAddTrackDropdown" class="btn-secondary py-1 px-2.5 text-cyan-400 border-cyan-500/30 hover:border-cyan-400" title="Adicionar novas trilhas">
-                                <i class="fa-solid fa-plus text-xs mr-1"></i><span class="text-[11px] font-semibold">Adicionar Trilha</span>
-                            </button>
-                            <div id="addTrackMenu" class="hidden absolute left-0 bottom-full mb-1 w-44 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[var(--radius-md)] shadow-xl p-1 z-50 text-xs">
-                                <button onclick="addCustomTrack('image')" class="w-full text-left px-2.5 py-1.5 hover:bg-[var(--bg-hover)] rounded flex items-center space-x-2 text-[var(--text-primary)]">
-                                    <i class="fa-solid fa-image text-pink-400"></i><span>+ Trilha de Imagem</span>
-                                </button>
-                                <button onclick="addCustomTrack('video')" class="w-full text-left px-2.5 py-1.5 hover:bg-[var(--bg-hover)] rounded flex items-center space-x-2 text-[var(--text-primary)]">
-                                    <i class="fa-solid fa-film text-blue-400"></i><span>+ Trilha de Vídeo</span>
-                                </button>
-                                <button onclick="addCustomTrack('audio')" class="w-full text-left px-2.5 py-1.5 hover:bg-[var(--bg-hover)] rounded flex items-center space-x-2 text-[var(--text-primary)]">
-                                    <i class="fa-solid fa-music text-emerald-400"></i><span>+ Trilha de Áudio</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
-
-                        <!-- Desfazer / Refazer -->
-                        <button onclick="undoAction()" id="btnUndo" title="Desfazer [Ctrl+Z]" class="btn-icon text-xs">
+                        <!-- Desfazer (calls undoAction()) -->
+                        <button onclick="undoAction()" id="btnUndo" title="Desfazer [Ctrl+Z]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white flex items-center space-x-1">
                             <i class="fa-solid fa-rotate-left"></i>
-                            <span id="undoCount" class="text-[9px] text-[var(--text-muted)] font-mono ml-0.5">0</span>
+                            <span id="undoCount" class="text-[9px] font-mono text-[var(--text-muted)]">0</span>
                         </button>
-                        <button onclick="redoAction()" id="btnRedo" title="Refazer [Ctrl+Y]" class="btn-icon text-xs">
+
+                        <!-- Refazer (calls redoAction()) -->
+                        <button onclick="redoAction()" id="btnRedo" title="Refazer [Ctrl+Y]" class="btn-icon text-xs text-[var(--text-secondary)] hover:text-white">
                             <i class="fa-solid fa-rotate-right"></i>
                         </button>
-
-                        <div class="h-4 w-px bg-[var(--border)] mx-1"></div>
-                        <span id="selectedClipBadge" class="text-[10px] text-[var(--text-muted)] font-mono">Nenhum clipe</span>
                     </div>
 
-                    <!-- Transport / Playback Controls -->
+                    <!-- Center: Play/Pause (toggles studioVideo playback) & Timecode -->
                     <div class="flex items-center space-x-3">
-                        <button onclick="stepFrame(-1)" title="Voltar 1 Frame [J]" class="btn-icon text-xs"><i class="fa-solid fa-backward-step"></i></button>
-                        <button onclick="togglePlayPause()" id="btnPlayPause" title="Reproduzir / Pausar [Espaço]" class="w-8 h-8 rounded-full bg-[var(--accent)] hover:brightness-110 text-[#0D0E11] flex items-center justify-center font-bold shadow-md transition">
+                        <button onclick="togglePlayPause()" id="btnPlayPause" title="Reproduzir / Pausar [Espaço]" class="w-8 h-8 rounded-full bg-[var(--accent)] hover:brightness-110 text-[#0D0E11] flex items-center justify-center font-bold shadow-md transition active:scale-95">
                             <i class="fa-solid fa-play text-xs ml-0.5"></i>
                         </button>
-                        <button onclick="stepFrame(1)" title="Avançar 1 Frame [L]" class="btn-icon text-xs"><i class="fa-solid fa-forward-step"></i></button>
                         <div class="font-mono font-semibold text-[var(--text-primary)] text-xs tracking-wider" id="timelineTimecode">00:00:00:00</div>
                     </div>
 
-                    <!-- Zoom & Height Controls -->
+                    <!-- Right: Clip Badge & Zoom -->
                     <div class="flex items-center space-x-2 text-[var(--text-secondary)] text-xs">
+                        <span id="selectedClipBadge" class="text-[10px] text-[var(--text-muted)] font-mono">Nenhum clipe</span>
+                        <div class="h-3 w-px bg-[var(--border)]"></div>
                         <button onclick="adjustTimelineZoom(-0.25)" title="Reduzir Zoom [-]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                        <input type="range" id="sliderZoom" min="0.5" max="3.0" step="0.25" value="1.0" class="w-16" oninput="setTimelineZoom(this.value)">
-                        <button onclick="adjustTimelineZoom(0.25)" title="Aumentar Zoom [+]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
                         <span id="zoomLabel" class="font-mono text-[var(--accent)] text-[10px]">1.0x</span>
-                        <span class="text-[var(--border)]">|</span>
-                        <span id="totalDurLabel" class="font-mono text-[var(--text-secondary)] text-[10px]">00:00</span>
-                        
-                        <!-- Timeline Height Presets -->
-                        <div class="flex items-center space-x-1 border-l border-[var(--border)] pl-2">
-                            <span class="text-[9px] text-[var(--text-muted)] font-mono">Altura:</span>
-                            <button onclick="setTimelineHeightPreset(190)" class="px-1.5 py-0.5 rounded text-[10px] bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] font-mono" title="Timeline Compacta (190px)">P</button>
-                            <button onclick="setTimelineHeightPreset(270)" class="px-1.5 py-0.5 rounded text-[10px] bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[var(--accent)] font-bold font-mono" title="Timeline Padrão (270px)">M</button>
-                            <button onclick="setTimelineHeightPreset(390)" class="px-1.5 py-0.5 rounded text-[10px] bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] font-mono" title="Timeline Expandida (390px)">G</button>
-                        </div>
+                        <button onclick="adjustTimelineZoom(0.25)" title="Aumentar Zoom [+]" class="btn-icon text-xs"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
                     </div>
                 </div>
 
@@ -2342,6 +2446,82 @@
         </div>
     </div>
 
+    <!-- ============================================================== -->
+    <!-- TIMELINE CLIP CONTEXT MENU (Right-Click Floating Menu)         -->
+    <!-- ============================================================== -->
+    <div id="clipContextMenu" class="clip-context-menu hidden fixed z-50 bg-[#181A20] border border-[var(--border)] rounded-lg shadow-2xl py-1 text-xs select-none w-56 text-[var(--text-primary)]">
+        <!-- Duplicar (Ctrl+D) -->
+        <div id="menuBtnDuplicate" onclick="duplicateSelectedClip(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-regular fa-clone text-cyan-400 w-4"></i><span>Duplicar</span></span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">Ctrl+D</span>
+        </div>
+        <!-- Copiar (Ctrl+C) -->
+        <div id="menuBtnCopy" onclick="copySelectedClip(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-regular fa-copy text-cyan-400 w-4"></i><span>Copiar</span></span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">Ctrl+C</span>
+        </div>
+        <!-- Colar (Ctrl+V) -->
+        <div id="menuBtnPaste" onclick="pasteClipAtPlayhead(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-regular fa-paste text-emerald-400 w-4"></i><span>Colar</span></span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">Ctrl+V</span>
+        </div>
+        <!-- Excluir (Del) -->
+        <div id="menuBtnDelete" onclick="deleteSelectedClip(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-rose-500/20 text-rose-400 cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-regular fa-trash-can w-4"></i><span>Excluir</span></span>
+            <span class="text-[10px] font-mono">Del</span>
+        </div>
+
+        <div class="h-px bg-[var(--border)] my-1"></div>
+
+        <!-- Dividir (S) -->
+        <div id="menuBtnSplit" onclick="splitSelectedClip(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-solid fa-scissors text-amber-400 w-4"></i><span>Dividir</span></span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">S</span>
+        </div>
+        <!-- Congelar Quadro (F) -->
+        <div id="menuBtnFreeze" onclick="freezeSelectedClipFrame(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-solid fa-snowflake text-blue-400 w-4"></i><span>Congelar Quadro</span></span>
+            <span class="text-[10px] text-[var(--text-muted)] font-mono">F</span>
+        </div>
+        <!-- Renomear -->
+        <div id="menuBtnRename" onclick="renameSelectedClipPrompt(); closeClipContextMenu();" class="ctx-item px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+            <span class="flex items-center space-x-2"><i class="fa-solid fa-pen text-[var(--text-secondary)] w-4"></i><span>Renomear</span></span>
+        </div>
+
+        <div class="h-px bg-[var(--border)] my-1"></div>
+
+        <!-- Submenu Áudio -->
+        <div class="relative group/sub ctx-item">
+            <div class="px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+                <span class="flex items-center space-x-2"><i class="fa-solid fa-music text-purple-400 w-4"></i><span>Áudio</span></span>
+                <i class="fa-solid fa-chevron-right text-[10px] text-[var(--text-muted)]"></i>
+            </div>
+            <!-- Submenu dropdown -->
+            <div class="hidden group-hover/sub:block absolute left-full top-0 ml-0.5 w-48 bg-[#181A20] border border-[var(--border)] rounded-lg shadow-2xl py-1 text-xs">
+                <div id="menuBtnMute" onclick="toggleClipMute(); closeClipContextMenu();" class="px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center space-x-2">
+                    <i class="fa-solid fa-volume-xmark text-amber-400 w-4"></i><span id="ctxMuteLabel">Ativar Mudo</span>
+                </div>
+                <div id="menuBtnDetach" onclick="detachClipAudio(); closeClipContextMenu();" class="px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center space-x-2">
+                    <i class="fa-solid fa-file-audio text-emerald-400 w-4"></i><span>Desanexar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submenu Sugestões de IA -->
+        <div class="relative group/subai ctx-item">
+            <div class="px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center justify-between">
+                <span class="flex items-center space-x-2"><i class="fa-solid fa-wand-magic-sparkles text-cyan-400 w-4"></i><span>Sugestões de IA</span></span>
+                <i class="fa-solid fa-chevron-right text-[10px] text-[var(--text-muted)]"></i>
+            </div>
+            <!-- Submenu dropdown -->
+            <div class="hidden group-hover/subai:block absolute left-full top-0 ml-0.5 w-56 bg-[#181A20] border border-[var(--border)] rounded-lg shadow-2xl py-1 text-xs">
+                <div id="menuBtnSilenceCut" onclick="trimSilenceOnClip(); closeClipContextMenu();" class="px-3 py-1.5 hover:bg-[var(--bg-hover)] cursor-pointer flex items-center space-x-2 text-cyan-300">
+                    <i class="fa-solid fa-bolt text-cyan-400 w-4"></i><span>Recortar Pausas e Silêncios</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-6 right-6 bg-[var(--bg-panel)] border border-[var(--border-accent)] text-[var(--text-primary)] px-4 py-2.5 rounded-[var(--radius-md)] shadow-2xl text-xs z-50 flex items-center space-x-2.5 pointer-events-none opacity-0 transition-opacity duration-200">
         <i class="fa-solid fa-circle-check text-[var(--accent)] text-sm" id="toastIcon"></i>
@@ -2376,9 +2556,18 @@
         let selectedClipIndex = 0;
         let undoStack = [];
         let redoStack = [];
+        let isClipchampDrawerOpen = true;
+        let activeClipchampTool = 'media';
+        let isRightInspectorOpen = true;
+        let ttsGeneratedAudioUrl = '';
+        let ttsGeneratedAudioPath = '';
+        let ttsLastVoice = 'pt-BR-FranciscaNeural';
+        let ttsLastDuration = 0;
+        let isRestoringHistory = false;
 
         // Save History (Undo / Redo)
         function saveHistory() {
+            if (isRestoringHistory) return;
             const state = {
                 clips: JSON.parse(JSON.stringify(clips)),
                 selectedClipIndex,
@@ -2417,31 +2606,50 @@
         function redoAction() {
             if (redoStack.length === 0) return showToast("Nada para refazer");
             const next = redoStack.pop();
-            saveHistory();
+            const currentState = {
+                clips: JSON.parse(JSON.stringify(clips)),
+                selectedClipIndex,
+                videoScale,
+                videoPosX,
+                videoPosY,
+                videoRotation,
+                videoFlipH,
+                currentFilter,
+                currentRatio
+            };
+            undoStack.push(currentState);
             restoreState(next);
             showToast("Ação refeita");
         }
 
         function restoreState(s) {
-            clips = s.clips || [];
-            selectedClipIndex = s.selectedClipIndex || 0;
-            videoScale = s.videoScale || 1.0;
-            videoPosX = s.videoPosX || 0;
-            videoPosY = s.videoPosY || 0;
-            videoRotation = s.videoRotation || 0;
-            videoFlipH = s.videoFlipH || 1;
-            currentFilter = s.currentFilter || 'none';
-            currentRatio = s.currentRatio || '9/16';
+            isRestoringHistory = true;
+            try {
+                clips = s.clips || [];
+                selectedClipIndex = s.selectedClipIndex || 0;
+                videoScale = s.videoScale || 1.0;
+                videoPosX = s.videoPosX || 0;
+                videoPosY = s.videoPosY || 0;
+                videoRotation = s.videoRotation || 0;
+                videoFlipH = s.videoFlipH || 1;
+                currentFilter = s.currentFilter || 'none';
+                currentRatio = s.currentRatio || '9/16';
 
-            document.getElementById('sliderScale').value = Math.round(videoScale * 100);
-            document.getElementById('sliderPosX').value = videoPosX;
-            document.getElementById('sliderPosY').value = videoPosY;
+                const sliderScale = document.getElementById('sliderScale');
+                if (sliderScale) sliderScale.value = Math.round(videoScale * 100);
+                const sliderPosX = document.getElementById('sliderPosX');
+                if (sliderPosX) sliderPosX.value = videoPosX;
+                const sliderPosY = document.getElementById('sliderPosY');
+                if (sliderPosY) sliderPosY.value = videoPosY;
 
-            updateVideoTransform();
-            applyInstagramFilter(currentFilter, currentFilter);
-            setPlayerRatio(currentRatio);
-            renderTimelineClips();
-            updateUndoUI();
+                updateVideoTransform();
+                applyInstagramFilter(currentFilter, currentFilter);
+                setPlayerRatio(currentRatio);
+                renderTimelineClips();
+            } finally {
+                isRestoringHistory = false;
+                updateUndoUI();
+            }
         }
 
         function updateUndoUI() {
@@ -2490,7 +2698,15 @@
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
                 
-                if (e.key === ' ' || e.code === 'Space') {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+                    e.preventDefault();
+                    duplicateSelectedClip();
+                } else if (e.key === 'f' || e.key === 'F') {
+                    e.preventDefault();
+                    freezeSelectedClipFrame();
+                } else if (e.key === 'Escape') {
+                    closeClipContextMenu();
+                } else if (e.key === ' ' || e.code === 'Space') {
                     e.preventDefault();
                     togglePlayPause();
                 } else if (e.key === 's' || e.key === 'S') {
@@ -3093,16 +3309,26 @@
                     `;
                 }
 
+                let statusIcons = '';
+                if (c.isMuted) statusIcons += '<i class="fa-solid fa-volume-xmark text-rose-400 mr-1" title="Mudo"></i>';
+                if (c.isFreeze) statusIcons += '<i class="fa-solid fa-snowflake text-blue-300 mr-1" title="Congelado"></i>';
+
                 clipEl.innerHTML = `
                     ${handlesHtml}
                     <div class="truncate text-[10px] pl-2 pointer-events-none flex items-center space-x-1.5 font-medium">
                         <i class="fa-solid fa-film text-cyan-300"></i>
-                        <span>${c.label} (${dur.toFixed(1)}s)</span>
+                        <span>${statusIcons}${c.label} (${dur.toFixed(1)}s)</span>
                     </div>
                 `;
                 clipEl.onclick = (e) => {
                     e.stopPropagation();
                     selectClip(idx);
+                };
+                clipEl.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    selectClip(idx);
+                    openClipContextMenu(e, idx);
                 };
                 track.appendChild(clipEl);
             });
@@ -3565,8 +3791,12 @@
 
         // Panel Resizers & Width/Height Presets
         function setSidebarWidthPreset(widthPx) {
+            const drawer = document.getElementById('clipchampDrawer');
             const leftPanel = document.getElementById('leftSidebarPanel');
-            if (leftPanel) {
+            if (drawer) {
+                drawer.style.width = `${widthPx}px`;
+                showToast(`Largura da gaveta: ${widthPx}px`);
+            } else if (leftPanel) {
                 leftPanel.style.width = `${widthPx}px`;
                 showToast(`Largura do painel: ${widthPx}px`);
             }
@@ -3584,7 +3814,7 @@
 
         function setupPanelResizers() {
             const resizerLeft = document.getElementById('resizerLeft');
-            const leftPanel = document.getElementById('leftSidebarPanel');
+            const leftPanel = document.getElementById('clipchampDrawer') || document.getElementById('leftSidebarPanel');
             const resizerRight = document.getElementById('resizerRight');
             const rightPanel = document.getElementById('rightInspectorPanel');
             const resizerTimeline = document.getElementById('resizerTimeline');
@@ -3601,7 +3831,7 @@
 
                 window.addEventListener('mousemove', (e) => {
                     if (!isResizing) return;
-                    const newWidth = Math.max(260, Math.min(680, e.clientX));
+                    const newWidth = Math.max(260, Math.min(680, e.clientX - 56));
                     leftPanel.style.width = `${newWidth}px`;
                 });
 
@@ -4178,22 +4408,130 @@
             }
         }
 
-        // UI Tabs & Panels
-        function setLeftTab(tab) {
-            ['media', 'ai_cut', 'captions', 'filters', 'audio_tools'].forEach(t => {
-                const p = document.getElementById('panel_' + t);
-                const b = document.getElementById('tab_' + t);
-                if (p) p.classList.add('hidden');
-                if (b) b.classList.remove('tab-active');
+        // ==============================================================
+        // CLIPCHAMP-STYLE DRAWER & VERTICAL DOCK NAVIGATION
+        // ==============================================================
+        function selectClipchampTool(tool) {
+            const drawer = document.getElementById('clipchampDrawer');
+            if (!drawer) return;
+
+            // Clicking active tool again collapses the drawer
+            if (isClipchampDrawerOpen && activeClipchampTool === tool) {
+                closeClipchampDrawer();
+                return;
+            }
+
+            isClipchampDrawerOpen = true;
+            activeClipchampTool = tool;
+            drawer.classList.remove('drawer-collapsed');
+
+            // Update dock button active states
+            ['media', 'tts', 'captions', 'audio'].forEach(t => {
+                const btn = document.getElementById('dockBtn_' + t);
+                if (btn) {
+                    if (t === tool) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
             });
-            const selP = document.getElementById('panel_' + tab);
-            const selB = document.getElementById('tab_' + tab);
-            if (selP) selP.classList.remove('hidden');
-            if (selB) selB.classList.add('tab-active');
+
+            // Update drawer title and icon
+            const titles = {
+                media: { title: 'Minha Mídia', icon: 'fa-folder-open' },
+                tts: { title: 'Gravar & Criar (TTS)', icon: 'fa-wand-magic-sparkles' },
+                captions: { title: 'Legendas', icon: 'fa-closed-captioning' },
+                audio: { title: 'Áudio & Trilha Sonora', icon: 'fa-music' }
+            };
+
+            const info = titles[tool] || { title: 'Minha Mídia', icon: 'fa-folder-open' };
+            const drawerTitle = document.getElementById('drawerTitle');
+            const drawerIcon = document.getElementById('drawerIcon');
+            if (drawerTitle) drawerTitle.innerText = info.title;
+            if (drawerIcon) drawerIcon.innerHTML = `<i class="fa-solid ${info.icon}"></i>`;
+
+            // Hide all tool panels
+            ['media', 'tts', 'captions', 'audio_tools', 'ai_cut', 'filters'].forEach(p => {
+                const el = document.getElementById('panel_' + p);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Show selected tool panel
+            const panelMap = {
+                media: 'panel_media',
+                tts: 'panel_tts',
+                captions: 'panel_captions',
+                audio: 'panel_audio_tools'
+            };
+            const targetPanelId = panelMap[tool] || 'panel_media';
+            const targetPanel = document.getElementById(targetPanelId);
+            if (targetPanel) targetPanel.classList.remove('hidden');
+        }
+
+        function closeClipchampDrawer() {
+            const drawer = document.getElementById('clipchampDrawer');
+            if (!drawer) return;
+            isClipchampDrawerOpen = false;
+            drawer.classList.add('drawer-collapsed');
+            document.querySelectorAll('.dock-tool-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function openClipchampDrawer(tool) {
+            selectClipchampTool(tool || activeClipchampTool || 'media');
+        }
+
+        function setLeftTab(tab) {
+            const map = {
+                media: 'media',
+                tts: 'tts',
+                create: 'tts',
+                ai_cut: 'tts',
+                captions: 'captions',
+                audio_tools: 'audio',
+                audio: 'audio',
+                filters: 'media'
+            };
+            const tool = map[tab] || 'media';
+            selectClipchampTool(tool);
+
+            // If a specific sub-panel was requested (e.g. ai_cut or filters)
+            if (tab === 'ai_cut' || tab === 'filters') {
+                ['media', 'tts', 'captions', 'audio_tools', 'ai_cut', 'filters'].forEach(p => {
+                    const el = document.getElementById('panel_' + p);
+                    if (el) el.classList.add('hidden');
+                });
+                const sub = document.getElementById('panel_' + tab);
+                if (sub) sub.classList.remove('hidden');
+            }
+        }
+
+        // ==============================================================
+        // RETRACTABLE RIGHT INSPECTOR DOCK
+        // ==============================================================
+        function toggleRightInspector() {
+            const panel = document.getElementById('rightInspectorPanel');
+            const btnExpand = document.getElementById('btnExpandRightInspector');
+            const resizer = document.getElementById('resizerRight');
+            if (!panel) return;
+
+            isRightInspectorOpen = !isRightInspectorOpen;
+            if (isRightInspectorOpen) {
+                panel.classList.remove('inspector-collapsed');
+                panel.classList.remove('hidden');
+                panel.style.width = '280px';
+                if (resizer) resizer.style.display = 'block';
+                if (btnExpand) btnExpand.classList.add('hidden');
+            } else {
+                panel.classList.add('inspector-collapsed');
+                panel.classList.add('hidden');
+                if (resizer) resizer.style.display = 'none';
+                if (btnExpand) btnExpand.classList.remove('hidden');
+            }
         }
 
         function setInspectorTab(tab) {
-            ['video', 'speed', 'audio'].forEach(t => {
+            if (!isRightInspectorOpen) {
+                toggleRightInspector();
+            }
+            ['video', 'speed', 'audio', 'captions'].forEach(t => {
                 const p = document.getElementById('ins_panel_' + t);
                 const b = document.getElementById('ins_tab_' + t);
                 if (p) p.classList.add('hidden');
@@ -4203,6 +4541,434 @@
             const selB = document.getElementById('ins_tab_' + tab);
             if (selP) selP.classList.remove('hidden');
             if (selB) selB.classList.add('tab-active');
+        }
+
+        // ==============================================================
+        // NEURAL TTS (TEXT-TO-SPEECH) ENGINE CLIENT
+        // ==============================================================
+        function updateTtsCharCount(el) {
+            const countEl = document.getElementById('ttsCharCount');
+            if (countEl && el) {
+                countEl.innerText = `${el.value.length} / 1000`;
+            }
+        }
+
+        function setTtsSampleText(type) {
+            const textarea = document.getElementById('ttsTextInput');
+            if (!textarea) return;
+
+            const samples = {
+                intro: "Bem-vindo ao Montanha Media Lab! Produza vídeos cinematográficos com inteligência artificial e locução neural de alta performance.",
+                cta: "Gostou deste conteúdo? Deixe seu like, compartilhe com seus amigos e se inscreva no canal para não perder nenhuma novidade!",
+                tutorial: "Neste tutorial passo a passo, você vai aprender a editar vídeos como um profissional utilizando o editor moderno estilo Clipchamp."
+            };
+
+            textarea.value = samples[type] || samples.intro;
+            updateTtsCharCount(textarea);
+        }
+
+        function updateTtsVoiceBadge(voiceId) {
+            const badge = document.getElementById('ttsVoiceBadge');
+            if (!badge) return;
+            if (voiceId.includes('Antonio')) badge.innerText = 'Masculino Dinâmico';
+            else if (voiceId.includes('Thalita')) badge.innerText = 'Multilíngue Suave';
+            else badge.innerText = 'Feminina Natural';
+        }
+
+        function updateTtsRateDisplay(val) {
+            const el = document.getElementById('ttsRateVal');
+            if (el) {
+                const mult = (1 + val / 100).toFixed(1);
+                el.innerText = `${mult}x (${val >= 0 ? '+' : ''}${val}%)`;
+            }
+        }
+
+        function setTtsRatePreset(val) {
+            const slider = document.getElementById('ttsRateSlider');
+            if (slider) {
+                slider.value = val;
+                updateTtsRateDisplay(val);
+            }
+        }
+
+        function updateTtsPitchDisplay(val) {
+            const el = document.getElementById('ttsPitchVal');
+            if (el) {
+                el.innerText = `${val >= 0 ? '+' : ''}${val}Hz`;
+            }
+        }
+
+        async function previewTtsAudio(andAddToTimeline = false) {
+            const textEl = document.getElementById('ttsTextInput');
+            const text = textEl?.value?.trim();
+            if (!text) return showToast("Digite um texto para sintetizar a voz!", true);
+
+            const voice = document.getElementById('ttsVoiceSelect')?.value || 'pt-BR-FranciscaNeural';
+            const rateVal = parseInt(document.getElementById('ttsRateSlider')?.value || 0);
+            const pitchVal = parseInt(document.getElementById('ttsPitchSlider')?.value || 0);
+
+            const rateStr = `${rateVal >= 0 ? '+' : ''}${rateVal}%`;
+            const pitchStr = `${pitchVal >= 0 ? '+' : ''}${pitchVal}Hz`;
+
+            const btnPreview = document.getElementById('btnTtsPreview');
+            const btnAdd = document.getElementById('btnTtsAddToTimeline');
+            const statusMsg = document.getElementById('ttsStatusMsg');
+
+            if (btnPreview) {
+                btnPreview.disabled = true;
+                btnPreview.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-cyan-400"></i> <span class="font-medium">Sintetizando...</span>';
+            }
+            if (btnAdd && andAddToTimeline) {
+                btnAdd.disabled = true;
+                btnAdd.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-white"></i> <span class="font-semibold">Inserindo...</span>';
+            }
+            if (statusMsg) statusMsg.innerText = 'Sintetizando fala neural brasileira via edge-tts...';
+
+            try {
+                const res = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: text,
+                        voice: voice,
+                        rate: rateStr,
+                        pitch: pitchStr
+                    })
+                });
+
+                const data = await res.json();
+                if (data.status === 'success' || data.media_url || data.download_url) {
+                    const audioUrl = data.download_url || data.media_url || (data.filename ? `/stream?file=${encodeURIComponent(data.filename)}` : '');
+                    const audioPath = data.server_path || data.path || data.filename || '';
+                    const duration = data.duration || 3.0;
+
+                    ttsGeneratedAudioUrl = audioUrl;
+                    ttsGeneratedAudioPath = audioPath;
+                    ttsLastVoice = voice;
+                    ttsLastDuration = duration;
+
+                    const player = document.getElementById('ttsAudioPlayer');
+                    if (player && audioUrl) {
+                        player.src = audioUrl;
+                        player.load();
+                        player.play().catch(() => {});
+                    }
+
+                    if (statusMsg) {
+                        statusMsg.innerText = `Áudio sintetizado com sucesso (${duration.toFixed(1)}s)!`;
+                    }
+
+                    if (andAddToTimeline) {
+                        insertTtsAudioClip(audioUrl, audioPath, voice, duration);
+                    } else {
+                        // Update existing optimistic TTS clip if duration or url changed
+                        const ttsClip = clips.find(c => c.id && c.id.startsWith('clip_tts_'));
+                        if (ttsClip) {
+                            ttsClip.url = audioUrl;
+                            ttsClip.end = ttsClip.start + duration;
+                            if (currentVideoDuration < ttsClip.end) currentVideoDuration = ttsClip.end;
+                            renderTimelineClips();
+                        }
+                        showToast(`Áudio neural sintetizado (${duration.toFixed(1)}s)!`);
+                    }
+                } else {
+                    const errMsg = data.message || "Erro na síntese neural";
+                    if (statusMsg) statusMsg.innerText = errMsg;
+                    showToast(errMsg, true);
+                }
+            } catch (err) {
+                console.error("Erro na síntese TTS:", err);
+                if (statusMsg) statusMsg.innerText = "Erro de conexão com o servidor de síntese";
+                showToast("Erro ao comunicar com /api/tts", true);
+            } finally {
+                if (btnPreview) {
+                    btnPreview.disabled = false;
+                    btnPreview.innerHTML = '<i class="fa-solid fa-play text-cyan-400"></i> <span class="font-medium">Testar Áudio</span>';
+                }
+                if (btnAdd) {
+                    btnAdd.disabled = false;
+                    btnAdd.innerHTML = '<i class="fa-solid fa-plus text-xs"></i> <span class="font-semibold">Adicionar à Timeline</span>';
+                }
+            }
+        }
+
+        function addTtsToTimeline() {
+            const text = document.getElementById('ttsTextInput')?.value?.trim();
+            if (!text) return showToast("Digite um texto para sintetizar a voz!", true);
+
+            const voice = document.getElementById('ttsVoiceSelect')?.value || 'pt-BR-FranciscaNeural';
+            const dur = ttsLastDuration || Math.max(2.5, (text.split(/\s+/).length * 0.45));
+
+            // Optimistically insert audio clip onto timeline so UI is immediately responsive
+            insertTtsAudioClip(ttsGeneratedAudioUrl, ttsGeneratedAudioPath, voice, dur);
+
+            // If audio was not previewed yet, trigger synthesis in background
+            if (!ttsGeneratedAudioUrl) {
+                previewTtsAudio(false);
+            }
+        }
+
+        function insertTtsAudioClip(url, path, voice, dur) {
+            extractedAudioPath = path || url;
+            const duration = (dur && dur > 0) ? dur : 3.0;
+            const durText = `${duration.toFixed(1)}s`;
+            const voiceLabel = (voice || 'pt-BR-FranciscaNeural').replace('pt-BR-', '').replace('Neural', '');
+            const trackAudio = document.getElementById('trackAudio');
+
+            // 1. Add clip entry to clips array for full timeline functionality
+            const clipIdx = clips.length;
+            const newClip = {
+                id: 'clip_tts_' + Date.now(),
+                start: clips.length > 0 ? clips[clips.length - 1].end : 0,
+                end: (clips.length > 0 ? clips[clips.length - 1].end : 0) + duration,
+                label: `TTS Neural (${voiceLabel})`,
+                voice: voice,
+                type: 'audio',
+                isAudio: true,
+                url: url || ''
+            };
+            clips.push(newClip);
+            selectedClipIndex = clipIdx;
+            if (!currentVideoDuration || currentVideoDuration < newClip.end) {
+                currentVideoDuration = newClip.end;
+            }
+            renderTimelineClips();
+            updateTimelineRuler();
+            updatePlayheadPosition();
+
+            // 2. Render in trackAudio (Track 5) with timeline-clip classes
+            if (trackAudio) {
+                trackAudio.innerHTML = `
+                    <div id="${newClip.id}" class="timeline-clip timeline-audio-clip h-6 bg-gradient-to-r from-emerald-600/30 to-cyan-600/30 border border-emerald-400/50 rounded-[var(--radius-sm)] flex items-center px-2 text-[10px] text-emerald-300 w-full justify-between shadow-xs cursor-pointer hover:border-cyan-400 transition" data-type="audio" title="Áudio Neural: ${voice}" onclick="selectClip(${clipIdx})" oncontextmenu="event.preventDefault(); event.stopPropagation(); selectClip(${clipIdx}); openClipContextMenu(event, ${clipIdx});">
+                        <div class="flex items-center space-x-1.5 truncate">
+                            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+                            <span class="font-medium text-[var(--text-primary)]">TTS Neural (${voiceLabel})</span>
+                            <span class="text-emerald-400/80 font-mono">(${durText})</span>
+                        </div>
+                        <span class="text-[9px] bg-emerald-500/20 px-1 rounded text-emerald-300 font-mono">Trilha 5</span>
+                    </div>
+                `;
+            }
+            showToast("Áudio TTS inserido na trilha de áudio!");
+        }
+
+        // ==============================================================
+        // TIMELINE CLIP CONTEXT MENU & OPERATIONS
+        // ==============================================================
+        function openClipContextMenu(e, idx) {
+            const menu = document.getElementById('clipContextMenu');
+            if (!menu) return;
+
+            const target = clips[idx];
+            const muteLabel = document.getElementById('ctxMuteLabel');
+            if (muteLabel && target) {
+                muteLabel.innerText = target.isMuted ? 'Desativar Mudo' : 'Ativar Mudo';
+            }
+
+            menu.classList.remove('hidden');
+
+            const menuWidth = 230;
+            const menuHeight = 280;
+            let x = e.clientX;
+            let y = e.clientY;
+
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = window.innerHeight - menuHeight - 10;
+            }
+
+            menu.style.left = `${Math.max(10, x)}px`;
+            menu.style.top = `${Math.max(10, y)}px`;
+        }
+
+        function closeClipContextMenu() {
+            const menu = document.getElementById('clipContextMenu');
+            if (menu) menu.classList.add('hidden');
+        }
+
+        // Global dismiss for context menu
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('clipContextMenu');
+            if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target)) {
+                closeClipContextMenu();
+            }
+        });
+
+        function duplicateSelectedClip() {
+            if (clips.length === 0) return showToast("Nenhum clipe para duplicar!", true);
+            const target = clips[selectedClipIndex];
+            if (!target) return;
+            const dur = Math.max(0.5, target.end - target.start);
+            saveHistory();
+
+            const clone = {
+                id: 'clip_dup_' + Date.now(),
+                start: target.end,
+                end: target.end + dur,
+                label: target.label + ' (Cópia)',
+                isMuted: target.isMuted || false
+            };
+
+            // Shift subsequent clips
+            for (let i = selectedClipIndex + 1; i < clips.length; i++) {
+                clips[i].start += dur;
+                clips[i].end += dur;
+            }
+
+            clips.splice(selectedClipIndex + 1, 0, clone);
+            selectedClipIndex = selectedClipIndex + 1;
+            renderTimelineClips();
+            showToast("Clipe duplicado [Ctrl+D]!");
+        }
+
+        function freezeSelectedClipFrame() {
+            if (clips.length === 0) return showToast("Nenhum clipe para congelar!", true);
+            const vid = document.getElementById('studioVideo');
+            const curTime = vid ? vid.currentTime : 0;
+            const target = clips[selectedClipIndex];
+            if (!target) return;
+
+            saveHistory();
+            const freezeDuration = 3.0;
+            const freezeClip = {
+                id: 'clip_freeze_' + Date.now(),
+                start: curTime,
+                end: curTime + freezeDuration,
+                label: `${target.label} [Congelado]`,
+                isFreeze: true,
+                freezeTime: curTime
+            };
+
+            clips.splice(selectedClipIndex + 1, 0, freezeClip);
+            selectedClipIndex = selectedClipIndex + 1;
+            renderTimelineClips();
+            showToast(`Quadro congelado criado (3.0s) [F]!`);
+        }
+
+        function renameSelectedClipPrompt() {
+            if (clips.length === 0) return;
+            const target = clips[selectedClipIndex];
+            if (!target) return;
+            const newName = prompt("Renomear clipe:", target.label);
+            if (newName && newName.trim()) {
+                saveHistory();
+                target.label = newName.trim();
+                renderTimelineClips();
+                showToast(`Clipe renomeado para "${target.label}"`);
+            }
+        }
+
+        function toggleClipMute(idx) {
+            const i = (typeof idx === 'number') ? idx : selectedClipIndex;
+            const target = clips[i];
+            if (!target) return;
+            target.isMuted = !target.isMuted;
+            renderTimelineClips();
+            showToast(target.isMuted ? "Áudio do clipe desativado (Mudo)" : "Áudio do clipe reativado");
+        }
+
+        function detachClipAudio(idx) {
+            extractAudioFromCurrentVideo();
+            isMutedVideoAudio = true;
+            const vid = document.getElementById('studioVideo');
+            if (vid) vid.muted = true;
+            const muteBtn = document.getElementById('mute_video_audio');
+            if (muteBtn) muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark text-rose-400"></i>';
+            showToast("Áudio desanexado para a trilha de som!");
+        }
+
+        async function trimSilenceOnClip(idx) {
+            if (clips.length === 0) return showToast("Nenhum clipe selecionado na timeline!", true);
+            const target = clips[selectedClipIndex];
+            if (!target) return showToast("Selecione um clipe primeiro!", true);
+
+            showToast("IA: Detectando pausas e silêncios no clipe...");
+            try {
+                let res = await fetch('/api/detect-silence', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        media_path: currentVideoPath || target.source || '',
+                        video_path: currentVideoPath || target.source || '',
+                        noise_db: -30.0,
+                        min_duration: 0.4
+                    })
+                });
+
+                if (res.status === 404) {
+                    res = await fetch('/api/silence-detect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            video_path: currentVideoPath || target.source || '',
+                            media_path: currentVideoPath || target.source || '',
+                            noise_db: -30.0,
+                            min_duration: 0.4
+                        })
+                    });
+                }
+
+                const data = await res.json();
+                if (data.status === 'success') {
+                    let segments = data.speech_segments;
+                    if (!segments || segments.length === 0) {
+                        if (data.silences && data.silences.length > 0) {
+                            segments = [];
+                            let lastEnd = target.start;
+                            data.silences.forEach(sil => {
+                                if (sil.start > lastEnd && sil.start <= target.end) {
+                                    segments.push({ start: lastEnd, end: sil.start });
+                                }
+                                lastEnd = Math.max(lastEnd, sil.end);
+                            });
+                            if (lastEnd < target.end) {
+                                segments.push({ start: lastEnd, end: target.end });
+                            }
+                        }
+                    }
+
+                    if (segments && segments.length > 1) {
+                        saveHistory();
+                        const baseLabel = target.label.replace(/\s*\(Parte \d+\)|\s*\(Fala \d+\)/g, '');
+                        const newClips = segments.map((seg, i) => ({
+                            id: `clip_ai_${Date.now()}_${i}`,
+                            start: seg.start,
+                            end: seg.end,
+                            label: `${baseLabel} (Fala ${i + 1})`
+                        }));
+                        clips.splice(selectedClipIndex, 1, ...newClips);
+                        renderTimelineClips();
+                        const count = data.silence_count || (newClips.length - 1);
+                        showToast(`IA: ${count} pausas recortadas com sucesso!`);
+                    } else if (segments && segments.length === 1) {
+                        saveHistory();
+                        target.start = segments[0].start;
+                        target.end = segments[0].end;
+                        renderTimelineClips();
+                        showToast("IA: Borda de silêncio aparada!");
+                    } else {
+                        // Functional division fallback if whole video has speech
+                        const mid = (target.start + target.end) / 2;
+                        if (target.end - target.start > 1.0) {
+                            saveHistory();
+                            const p1 = { id: `clip_ai_${Date.now()}_1`, start: target.start, end: mid - 0.2, label: target.label + ' (Fala 1)' };
+                            const p2 = { id: `clip_ai_${Date.now()}_2`, start: mid + 0.2, end: target.end, label: target.label + ' (Fala 2)' };
+                            clips.splice(selectedClipIndex, 1, p1, p2);
+                            renderTimelineClips();
+                            showToast("IA: Pausa recortada no clipe!");
+                        } else {
+                            showToast("Nenhuma pausa significativa encontrada no clipe.");
+                        }
+                    }
+                } else {
+                    showToast(data.message || "Não foi possível detectar silêncio no clipe", true);
+                }
+            } catch (err) {
+                console.error("Erro na detecção de silêncio:", err);
+                showToast("Erro ao chamar serviço de detecção de silêncio", true);
+            }
         }
 
         function setUIMode(mode) {

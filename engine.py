@@ -27,9 +27,10 @@ def get_video_info(video_path: str) -> Dict[str, Any]:
         
         width = int(v_stream.get("width", 1080))
         height = int(v_stream.get("height", 1920))
-        codec = v_stream.get("codec_name", "unknown")
+        codec = v_stream.get("codec_name") or a_stream.get("codec_name", "unknown")
         
-        duration = float(data.get("format", {}).get("duration", v_stream.get("duration", 0.0)))
+        dur_val = data.get("format", {}).get("duration") or v_stream.get("duration") or a_stream.get("duration") or 0.0
+        duration = float(dur_val)
         fps_eval = v_stream.get("r_frame_rate", "30/1")
         if "/" in fps_eval:
             num, den = fps_eval.split("/")
@@ -186,6 +187,53 @@ def compute_speech_segments(total_duration: float, silence_intervals: List[Tuple
         speech_segments.append((current_time, total_duration))
 
     return speech_segments
+
+def detect_silence_points(media_path: str, noise_db: float = -30.0, min_duration: float = 0.25) -> Dict[str, Any]:
+    """
+    Detecta intervalos de silêncio e calcula os segmentos úteis de fala/áudio ativo.
+    Compatível com arquivos de vídeo (.mp4, .mov, .mkv) e de áudio (.mp3, .wav, .aac).
+    """
+    if not os.path.exists(media_path) or os.path.getsize(media_path) == 0:
+        return {
+            "status": "error",
+            "message": "Arquivo de mídia inválido, vazio ou sem faixa de áudio"
+        }
+
+    info = get_video_info(media_path)
+    total_dur = float(info.get("duration", 0.0))
+    
+    silence_intervals = detect_silence(media_path, noise_db=noise_db, min_duration=min_duration)
+    
+    if total_dur <= 0.0 and silence_intervals:
+        total_dur = max(e for _, e in silence_intervals)
+
+    if total_dur <= 0.0:
+        return {
+            "status": "error",
+            "message": "Arquivo de mídia inválido, vazio ou sem faixa de áudio"
+        }
+
+    speech_segments = compute_speech_segments(total_dur, silence_intervals)
+    
+    silences_data = [
+        {"start": round(s, 2), "end": round(e, 2), "duration": round(e - s, 2)}
+        for s, e in silence_intervals
+    ]
+    speech_data = [
+        {"start": round(s, 2), "end": round(e, 2), "duration": round(e - s, 2)}
+        for s, e in speech_segments
+    ]
+    saved = sum(item["duration"] for item in silences_data)
+    
+    return {
+        "status": "success",
+        "duration": round(total_dur, 2),
+        "silences": silences_data,
+        "speech_segments": speech_data,
+        "silence_count": len(silences_data),
+        "speech_count": len(speech_data),
+        "saved_seconds": round(saved, 2)
+    }
 
 def cut_silence(input_path: str, output_path: str, noise_db: float = -30.0, min_duration: float = 0.25, margin: float = 0.08) -> Dict[str, Any]:
     cmd_dur = [FFMPEG_BIN, "-i", input_path, "-hide_banner"]
