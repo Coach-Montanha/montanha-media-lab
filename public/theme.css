@@ -531,6 +531,63 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .subtitle-handle.bottom-left { bottom: -5px; left: -5px; cursor: nesw-resize; }
 .subtitle-handle.bottom-right { bottom: -5px; right: -5px; cursor: nwse-resize; }
 
+/* ==========================================================================
+   ARTCRAFT DASHBOARD & LAUNCHER DESIGN SYSTEM
+   ========================================================================== */
+.artcraft-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+.artcraft-card:hover {
+    background: var(--bg-elevated);
+    border-color: rgba(34, 211, 238, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 16px rgba(34, 211, 238, 0.1);
+}
+.artcraft-card:active {
+    transform: translateY(0);
+    transform: scale(0.99);
+}
+.artcraft-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.artcraft-card:hover .artcraft-icon-box {
+    transform: scale(1.08);
+}
+.artcraft-arrow {
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+.artcraft-card:hover .artcraft-arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+}
+.artcraft-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
 /* Subtitle CapCut Animations */
 /* Subtitle CapCut Animations & Typography Utility Classes */
 .font-anton { font-family: 'Anton', sans-serif; }

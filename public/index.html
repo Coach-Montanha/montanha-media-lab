@@ -66,7 +66,7 @@
         /* Mode Switching Logic */
         body.mode-mobile #desktopLayout { display: none !important; }
         body.mode-mobile #mobileLayout { display: flex !important; }
-        body.mode-mobile header.header-bar { display: none !important; }
+        body.mode-mobile.in-video-mobile header.header-bar { display: none !important; }
 
         body.mode-desktop #desktopLayout { display: flex !important; }
         body.mode-desktop #mobileLayout { display: none !important; }
@@ -145,8 +145,12 @@
         <!-- Center: 4-in-1 Creative Suite Tabs + Viewport Switcher -->
         <div class="flex items-center space-x-2">
             <div class="segmented-control" id="mainSuiteTabs">
-                <button onclick="switchAppTab('video')" id="tabNav_video" class="segmented-item active" title="Video Studio (Editor de Vídeo & Timeline)">
-                    <i class="fa-solid fa-film text-xs text-cyan-400"></i>
+                <button onclick="switchAppTab('home')" id="tabNav_home" class="segmented-item active" title="Início / Launcher ArtCraft">
+                    <i class="fa-solid fa-house text-xs text-blue-400"></i>
+                    <span>Início</span>
+                </button>
+                <button onclick="switchAppTab('video')" id="tabNav_video" class="segmented-item" title="Video Studio (Editor de Vídeo & Timeline)">
+                    <i class="fa-solid fa-film text-xs text-amber-400"></i>
                     <span>Vídeo Studio</span>
                 </button>
                 <button onclick="switchAppTab('pdf')" id="tabNav_pdf" class="segmented-item" title="PDF Intelligence Pro (Resumos, Carrosséis, Roteiros)">
@@ -164,7 +168,7 @@
             </div>
 
             <!-- Viewport Mode Switcher (Visible when Video Studio is active) -->
-            <div class="segmented-control ml-1" id="viewportSwitcherContainer">
+            <div class="segmented-control ml-1" id="viewportSwitcherContainer" style="display: none;">
                 <button onclick="setUIMode('desktop')" id="btnViewDesktop" class="segmented-item active" title="Modo PC Studio (DaVinci/Premiere)">
                     <i class="fa-solid fa-desktop text-xs"></i>
                 </button>
@@ -208,9 +212,200 @@
     <div class="flex-1 flex overflow-hidden relative" id="mainContainer">
 
         <!-- ============================================================== -->
+        <!-- TAB 0: ARTCRAFT LAUNCHER & DASHBOARD (TELA INICIAL)            -->
+        <!-- ============================================================== -->
+        <div id="tabContent_home" class="app-tab-panel flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 lg:p-12 bg-[var(--bg-base)]">
+            <div class="max-w-5xl mx-auto w-full space-y-8 my-auto py-6">
+
+                <!-- Hero Section: ArtCraft Benchmark -->
+                <div class="text-center space-y-3">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-xs text-[var(--accent)] font-medium mb-1 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        <span>Ecossistema Montanha • Suíte Criativa Unificada</span>
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">
+                        O que você vai <span class="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent">criar</span> hoje?
+                    </h1>
+                    <p class="text-xs md:text-sm text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+                        Todas as ferramentas da sua suíte em um só lugar — selecione uma das opções abaixo para abrir diretamente na função desejada.
+                    </p>
+                </div>
+
+                <!-- Section: CRIAR -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Criar & Produzir</span>
+                        <span class="text-[10px] text-[var(--text-muted)]">4 fluxos principais</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                        
+                        <!-- Card 1: Criar Vídeo -->
+                        <div class="artcraft-card group" onclick="switchAppTab('video')">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="artcraft-icon-box bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                                    <i class="fa-solid fa-film"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-amber-400 transition-colors flex items-center space-x-2">
+                                        <span>Criar Vídeo</span>
+                                        <span class="artcraft-badge bg-amber-500/20 text-amber-300">DaVinci / CapCut</span>
+                                    </div>
+                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
+                                        Editor timeline multi-trilhas, corte inteligente de silêncios e exportação acelerada
+                                    </div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
+                        </div>
+
+                        <!-- Card 2: PDF Intelligence Pro -->
+                        <div class="artcraft-card group" onclick="switchAppTab('pdf')">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="artcraft-icon-box bg-red-500/10 border border-red-500/20 text-red-400">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-red-400 transition-colors flex items-center space-x-2">
+                                        <span>PDF Intelligence Pro</span>
+                                        <span class="artcraft-badge bg-red-500/20 text-red-300">5 em 1</span>
+                                    </div>
+                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
+                                        Indexe livros e apostilas para gerar Resumos, Carrosséis, Reels e Stories
+                                    </div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
+                        </div>
+
+                        <!-- Card 3: Downloader Social -->
+                        <div class="artcraft-card group" onclick="switchAppTab('downloader')">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="artcraft-icon-box bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                                    <i class="fa-solid fa-download"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors flex items-center space-x-2">
+                                        <span>Baixar da Web</span>
+                                        <span class="artcraft-badge bg-emerald-500/20 text-emerald-300">yt-dlp</span>
+                                    </div>
+                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
+                                        Baixe vídeos do Instagram, TikTok e YouTube direto para o estúdio
+                                    </div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
+                        </div>
+
+                        <!-- Card 4: Foto & Estilo Visual -->
+                        <div class="artcraft-card group" onclick="switchAppTab('foto')">
+                            <div class="flex items-center space-x-3.5">
+                                <div class="artcraft-icon-box bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-purple-400 transition-colors flex items-center space-x-2">
+                                        <span>Foto & Composição Visual</span>
+                                        <span class="artcraft-badge bg-purple-500/20 text-purple-300">Needle 32x32</span>
+                                    </div>
+                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
+                                        Extraia paleta de iluminação e prompts cinematográficos ultra-realistas
+                                    </div>
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Section: FERRAMENTAS RÁPIDAS & IMPORTAÇÃO -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 px-1">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Ações Rápidas & Importação</span>
+                        <span class="text-[10px] text-[var(--text-muted)]">Atalhos inteligentes</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                        
+                        <!-- Card 5: Puxar do Redmi -->
+                        <div class="artcraft-card group" onclick="pullLatestRedmiVideo(); switchAppTab('video')">
+                            <div class="flex items-center space-x-3">
+                                <div class="artcraft-icon-box bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                                    <i class="fa-solid fa-mobile-screen"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-cyan-400 transition-colors truncate">
+                                        Câmera Redmi 12
+                                    </div>
+                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
+                                        Puxar gravação USB
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 6: Importar Nuvem -->
+                        <div class="artcraft-card group" onclick="openCloudImportModal()">
+                            <div class="flex items-center space-x-3">
+                                <div class="artcraft-icon-box bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-blue-400 transition-colors truncate">
+                                        Nuvem / Drive
+                                    </div>
+                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
+                                        Link do Drive ou URL
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 7: Legendas CapCut -->
+                        <div class="artcraft-card group" onclick="switchAppTab('video'); setLeftTab('captions')">
+                            <div class="flex items-center space-x-3">
+                                <div class="artcraft-icon-box bg-yellow-500/10 border border-yellow-500/20 text-yellow-400">
+                                    <i class="fa-solid fa-closed-captioning"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-yellow-400 transition-colors truncate">
+                                        Legendas CapCut
+                                    </div>
+                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
+                                        Presets neon e arrasto
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 8: Importar PC -->
+                        <div class="artcraft-card group" onclick="document.getElementById('fileInput').click(); switchAppTab('video')">
+                            <div class="flex items-center space-x-3">
+                                <div class="artcraft-icon-box bg-teal-500/10 border border-teal-500/20 text-teal-400">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-teal-400 transition-colors truncate">
+                                        Importar PC
+                                    </div>
+                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
+                                        MP4, MOV ou áudio
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
         <!-- TAB 1: VIDEO STUDIO (DAVINCI PC & CAPCUT MOBILE REPLICA)       -->
         <!-- ============================================================== -->
-        <div id="tabContent_video" class="app-tab-panel flex-1 flex flex-col w-full h-full overflow-hidden">
+        <div id="tabContent_video" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-hidden">
 
             <!-- ============================================================== -->
             <!-- VIEW 1: DESKTOP STUDIO (3-PANEL PROFESSIONAL ARCHITECTURE)    -->
@@ -981,11 +1176,19 @@
 
                 <!-- CapCut Authentic Mobile Top Bar (44px) -->
                 <div class="h-11 px-3 flex items-center justify-between text-xs border-b border-[var(--border)] bg-[#121317] shrink-0 z-20">
-                    <!-- Switcher to Desktop Mode -->
-                    <button onclick="setUIMode('desktop')" class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] hover:border-cyan-400 active:scale-95 transition" title="Alternar para Modo PC Studio">
-                        <i class="fa-solid fa-desktop text-cyan-400 text-xs"></i>
-                        <span class="text-[11px] font-semibold">PC Studio</span>
-                    </button>
+                    <div class="flex items-center space-x-1.5">
+                        <!-- Switcher to Home Dashboard -->
+                        <button onclick="switchAppTab('home')" class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] hover:border-blue-400 active:scale-95 transition" title="Voltar à Tela Inicial">
+                            <i class="fa-solid fa-house text-blue-400 text-xs"></i>
+                            <span class="text-[11px] font-semibold">Início</span>
+                        </button>
+
+                        <!-- Switcher to Desktop Mode -->
+                        <button onclick="setUIMode('desktop')" class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] hover:border-cyan-400 active:scale-95 transition" title="Alternar para Modo PC Studio">
+                            <i class="fa-solid fa-desktop text-cyan-400 text-xs"></i>
+                            <span class="text-[11px] font-semibold">PC</span>
+                        </button>
+                    </div>
 
                     <!-- Ratio & Resolution Pill -->
                     <div onclick="openMobileRatioSheet()" class="flex items-center space-x-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-full text-[11px] font-bold text-[var(--text-primary)] cursor-pointer active:scale-95 transition" title="Mudar Proporção">
@@ -4092,6 +4295,12 @@
             if (targetBtn) targetBtn.classList.add('active');
             const vpSwitcher = document.getElementById('viewportSwitcherContainer');
             if (vpSwitcher) vpSwitcher.style.display = (tabKey === 'video') ? 'flex' : 'none';
+
+            if (tabKey !== 'video') {
+                document.body.classList.remove('in-video-mobile');
+            } else if (document.body.classList.contains('mode-mobile')) {
+                document.body.classList.add('in-video-mobile');
+            }
         }
 
         // --- ABA 2: PDF INTELLIGENCE PRO ---
