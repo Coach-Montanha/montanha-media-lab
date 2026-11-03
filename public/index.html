@@ -102,7 +102,7 @@
         }
 
         .app-tab-panel.hidden { display: none !important; }
-        body.mode-mobile header.header-bar { display: flex !important; }
+        body.mode-mobile header.header-bar { display: none !important; }
         body.mode-mobile.in-video-mobile header.header-bar { display: none !important; }
 </style>
 
@@ -262,193 +262,101 @@
         <!-- ============================================================== -->
         <!-- TAB 0: ARTCRAFT LAUNCHER & DASHBOARD (TELA INICIAL)            -->
         <!-- ============================================================== -->
-        <div id="tabContent_home" class="app-tab-panel flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 lg:p-12 bg-[var(--bg-base)]">
-            <div class="max-w-4xl mx-auto w-full space-y-6 pt-2 md:pt-4 pb-12">
-
-                <!-- Hero Section: ArtCraft Benchmark -->
-                <div class="text-center space-y-3">
-
-                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">
-                        O que você vai <span class="bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400 bg-clip-text text-transparent">criar</span> hoje?
-                    </h1>
-                    <p class="text-xs md:text-sm text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
-                        Todas as ferramentas da sua suíte em um só lugar — selecione uma das opções abaixo para abrir diretamente na função desejada.
-                    </p>
+                <!-- TAB 0: HOME / INSHOT PROJECTS DASHBOARD -->
+        <div id="tabContent_home" class="app-tab-panel flex-1 flex flex-col w-full h-full overflow-y-auto bg-[#121316] text-white select-none">
+            
+            <!-- InShot Header (Logo + Settings) -->
+            <div class="px-5 pt-6 pb-2 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl font-black tracking-tight text-white">InShot</span>
+                    <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Pro</span>
                 </div>
-
-                <!-- Section: CRIAR -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Criar & Produzir</span>
-                        <span class="text-[10px] text-[var(--text-muted)]">4 fluxos principais</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                        
-                        <!-- Card 1: Criar Vídeo -->
-                        <div class="artcraft-card group" onclick="switchAppTab('video')">
-                            <div class="flex items-center space-x-3.5">
-                                <div class="artcraft-icon-box bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                                    <i class="fa-solid fa-film"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-amber-400 transition-colors flex items-center space-x-2">
-                                        <span>Criar Vídeo</span>
-                                        
-                                    </div>
-                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
-                                        Editor timeline multi-trilhas, corte inteligente de silêncios e exportação acelerada
-                                    </div>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
-                        </div>
-
-                        <!-- Card 2: PDF Intelligence Pro -->
-                        <div class="artcraft-card group" onclick="switchAppTab('pdf')">
-                            <div class="flex items-center space-x-3.5">
-                                <div class="artcraft-icon-box bg-red-500/10 border border-red-500/20 text-red-400">
-                                    <i class="fa-solid fa-file-pdf"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-red-400 transition-colors flex items-center space-x-2">
-                                        <span>PDF Intelligence Pro</span>
-                                        
-                                    </div>
-                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
-                                        Indexe livros e apostilas para gerar Resumos, Carrosséis, Reels e Stories
-                                    </div>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
-                        </div>
-
-                        <!-- Card 3: Downloader Social -->
-                        <div class="artcraft-card group" onclick="switchAppTab('downloader')">
-                            <div class="flex items-center space-x-3.5">
-                                <div class="artcraft-icon-box bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                                    <i class="fa-solid fa-download"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-emerald-400 transition-colors flex items-center space-x-2">
-                                        <span>Baixar da Web</span>
-                                        
-                                    </div>
-                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
-                                        Baixe vídeos do Instagram, TikTok e YouTube direto para o estúdio
-                                    </div>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
-                        </div>
-
-                        <!-- Card 4: Foto & Estilo Visual -->
-                        <div class="artcraft-card group" onclick="switchAppTab('foto')">
-                            <div class="flex items-center space-x-3.5">
-                                <div class="artcraft-icon-box bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                                    <i class="fa-solid fa-camera"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-sm text-[var(--text-primary)] group-hover:text-purple-400 transition-colors flex items-center space-x-2">
-                                        <span>Foto & Composição Visual</span>
-                                        
-                                    </div>
-                                    <div class="text-xs text-[var(--text-muted)] mt-0.5">
-                                        Extraia paleta de iluminação e prompts cinematográficos ultra-realistas
-                                    </div>
-                                </div>
-                            </div>
-                            <i class="fa-solid fa-arrow-right artcraft-arrow text-xs"></i>
-                        </div>
-
-                    </div>
+                <div class="flex items-center space-x-3 text-white/60">
+                    <button onclick="openProjectsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition">
+                        <i class="fa-solid fa-crown text-amber-400 text-xs"></i>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition" title="Ir para o Editor">
+                        <i class="fa-solid fa-sliders text-xs"></i>
+                    </button>
                 </div>
-
-                <!-- Section: FERRAMENTAS RÁPIDAS & IMPORTAÇÃO -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Ações Rápidas & Importação</span>
-                        <span class="text-[10px] text-[var(--text-muted)]">Atalhos inteligentes</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                        
-                        <!-- Card 5: Puxar do Redmi -->
-                        <div class="artcraft-card group" onclick="pullLatestRedmiVideo(); switchAppTab('video')">
-                            <div class="flex items-center space-x-3">
-                                <div class="artcraft-icon-box bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
-                                    <i class="fa-solid fa-mobile-screen"></i>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-cyan-400 transition-colors truncate">
-                                        Câmera Redmi 12
-                                    </div>
-                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
-                                        Puxar gravação USB
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card 6: Importar Nuvem -->
-                        <div class="artcraft-card group" onclick="openCloudImportModal()">
-                            <div class="flex items-center space-x-3">
-                                <div class="artcraft-icon-box bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-blue-400 transition-colors truncate">
-                                        Nuvem / Drive
-                                    </div>
-                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
-                                        Link do Drive ou URL
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card 7: Legendas CapCut -->
-                        <div class="artcraft-card group" onclick="switchAppTab('video'); setLeftTab('captions')">
-                            <div class="flex items-center space-x-3">
-                                <div class="artcraft-icon-box bg-yellow-500/10 border border-yellow-500/20 text-yellow-400">
-                                    <i class="fa-solid fa-closed-captioning"></i>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-yellow-400 transition-colors truncate">
-                                        Legendas CapCut
-                                    </div>
-                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
-                                        Presets neon e arrasto
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Card 8: Importar PC -->
-                        <div class="artcraft-card group" onclick="document.getElementById('fileInput').click(); switchAppTab('video')">
-                            <div class="flex items-center space-x-3">
-                                <div class="artcraft-icon-box bg-teal-500/10 border border-teal-500/20 text-teal-400">
-                                    <i class="fa-solid fa-folder-open"></i>
-                                </div>
-                                <div class="overflow-hidden">
-                                    <div class="font-bold text-xs text-[var(--text-primary)] group-hover:text-teal-400 transition-colors truncate">
-                                        Importar PC
-                                    </div>
-                                    <div class="text-[10px] text-[var(--text-muted)] mt-0.5 truncate">
-                                        MP4, MOV ou áudio
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
             </div>
+
+            <!-- InShot Primary Hub: CRIAR NOVO (Vídeo, Foto, Colagem) -->
+            <div class="px-5 py-4">
+                <div class="text-[11px] font-bold text-white/40 uppercase tracking-wider mb-3">Criar Novo</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <!-- Botão 1: Vídeo (Rosa/Coral InShot) -->
+                    <button onclick="startBrandNewMobileProject()" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#ff5364] to-[#f43f5e] shadow-lg shadow-rose-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
+                            <i class="fa-solid fa-video text-white text-base"></i>
+                        </div>
+                        <span class="text-xs font-bold text-white">Vídeo</span>
+                    </button>
+
+                    <!-- Botão 2: Foto (Laranja InShot) -->
+                    <button onclick="switchAppTab('foto')" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#fb923c] to-[#ea580c] shadow-lg shadow-orange-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
+                            <i class="fa-solid fa-image text-white text-base"></i>
+                        </div>
+                        <span class="text-xs font-bold text-white">Foto</span>
+                    </button>
+
+                    <!-- Botão 3: PDF / Apostilas (Verde InShot) -->
+                    <button onclick="switchAppTab('pdf')" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#10b981] to-[#059669] shadow-lg shadow-emerald-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
+                            <i class="fa-solid fa-file-pdf text-white text-base"></i>
+                        </div>
+                        <span class="text-xs font-bold text-white">PDF Book</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- InShot Projects & Drafts Drawer -->
+            <div class="px-5 py-2 flex-1 flex flex-col min-h-0">
+                <div class="flex items-center justify-between mb-2.5">
+                    <span id="inshotDraftCountText" class="text-[11px] font-black uppercase tracking-wider text-white/50 font-mono">0 RASCUNHOS</span>
+                    <button onclick="openProjectsModal()" class="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center space-x-1">
+                        <span>TODAS</span>
+                        <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                    </button>
+                </div>
+
+                <!-- Green Dotted "NOVO +" Card & Recent Drafts -->
+                <div class="grid grid-cols-1 gap-2.5">
+                    <!-- Novo Projeto Button (Exact InShot Style) -->
+                    <button onclick="startBrandNewMobileProject()" class="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#00D284] text-black font-extrabold shadow-lg active:scale-95 transition">
+                        <span class="text-sm tracking-wide uppercase">NOVO</span>
+                        <div class="w-7 h-7 rounded-lg border-2 border-dashed border-black/50 flex items-center justify-center">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </div>
+                    </button>
+
+                    <!-- Dynamic List of Projects -->
+                    <div id="inshotRecentDraftsContainer" class="flex flex-col space-y-2 mt-1">
+                        <div class="text-white/40 text-xs p-3 text-center italic bg-black/20 rounded-xl">
+                            Carregando rascunhos...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick ArtCraft Tools Footer -->
+            <div class="px-5 py-4 border-t border-white/5 mt-auto">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-white/30 mb-2">Ferramentas Rápidas</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button onclick="pullLatestRedmiVideo(); switchAppTab('video')" class="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 flex items-center space-x-2 text-left">
+                        <i class="fa-solid fa-mobile-screen text-cyan-400"></i>
+                        <span class="truncate text-white/80">Câmera Redmi 12</span>
+                    </button>
+                    <button onclick="switchAppTab('downloader')" class="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 flex items-center space-x-2 text-left">
+                        <i class="fa-solid fa-cloud-arrow-down text-amber-400"></i>
+                        <span class="truncate text-white/80">Downloader Web</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <!-- ============================================================== -->
-        <!-- TAB 1: VIDEO STUDIO (DAVINCI PC & CAPCUT MOBILE REPLICA)       -->
         <!-- ============================================================== -->
         <div id="tabContent_video" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-hidden">
 
@@ -1457,7 +1365,7 @@
             </div>
 
 
-<div <div id="mobileLayout" class="hidden flex-1 flex-col p-0 overflow-hidden w-full h-full bg-[#1A1A1A] text-white select-none relative font-sans">
+<div id="mobileLayout" class="hidden flex-1 flex-col p-0 overflow-hidden w-full h-full bg-[#1A1A1A] text-white select-none relative font-sans">
             
             <!-- 1. TOP BAR ESTILO INSHOT (48px) -->
             <header class="h-12 px-4 flex items-center justify-between shrink-0 bg-[#1A1A1A] z-30 border-b border-white/5">
@@ -2230,39 +2138,155 @@
         </div>
     </div>
 
-    <!-- 2. MOBILE BOTTOM SHEET: FILTROS INSTAGRAM/CINEMA -->
-    <div id="mobileFiltersSheet" class="fixed inset-0 z-50 flex flex-col justify-end hidden bg-black/70 backdrop-blur-xs select-none">
+        <!-- 2. MOBILE BOTTOM SHEET: FILTROS & AJUSTAR (EXACT INSHOT REPLICA) -->
+    <div id="mobileFiltersSheet" class="fixed inset-0 z-50 flex flex-col justify-end hidden bg-black/75 backdrop-blur-md select-none">
         <div onclick="closeMobileFiltersSheet()" class="flex-1"></div>
-        <div class="bg-[var(--bg-panel)] border-t border-[var(--border)] rounded-t-[18px] p-4 flex flex-col space-y-3 shadow-2xl">
-            <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
-                <span class="font-bold text-xs text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-half-stroke text-amber-400"></i>
-                    <span>Filtros do Instagram & LUTs</span>
+        <div class="bg-[#1c1d22] border-t border-white/10 rounded-t-[20px] p-4 flex flex-col space-y-4 shadow-2xl">
+            <!-- Top Controls: Sub-Tabs & Actions -->
+            <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                <div class="flex items-center space-x-6 text-sm">
+                    <button id="inshotTabBtn_filtro" onclick="setInShotFilterTab('filtro')" class="text-white border-b-2 border-white pb-1 font-bold">Filtro</button>
+                    <button id="inshotTabBtn_ajustar" onclick="setInShotFilterTab('ajustar')" class="text-white/50 pb-1 font-bold">Ajustar</button>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="applyInShotFilterPreset('none')" class="text-xs text-white/50 hover:text-white px-2 py-1">Reset</button>
+                    <button onclick="closeMobileFiltersSheet()" class="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-95 transition">
+                        <i class="fa-solid fa-check text-xs text-emerald-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content 1: Filtros Presets -->
+            <div id="inshotFilterSubTab_filtro" class="flex flex-col space-y-3">
+                <div class="flex items-center space-x-3 overflow-x-auto py-2 scrollbar-none">
+                    <button onclick="applyInShotFilterPreset('none')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border-2 border-white/40 flex items-center justify-center bg-black/40 group-hover:border-white">
+                            <i class="fa-solid fa-ban text-white/60"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Original</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('bright')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-sun text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Bright</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('story')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-wand-magic-sparkles text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Story</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('vintage')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-yellow-700 to-stone-800 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-camera-retro text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Vintage</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('film')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-emerald-600 to-teal-900 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-film text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Cinema</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('warm')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-amber-600 to-red-700 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-fire text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Warm</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('cool')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-cyan-600 to-blue-800 flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-snowflake text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">Cool</span>
+                    </button>
+                    <button onclick="applyInShotFilterPreset('noir')" class="flex flex-col items-center space-y-1.5 shrink-0 group">
+                        <div class="w-14 h-14 rounded-xl border border-white/20 overflow-hidden bg-gradient-to-tr from-zinc-700 to-black flex items-center justify-center group-hover:border-white">
+                            <i class="fa-solid fa-moon text-white text-base"></i>
+                        </div>
+                        <span class="text-[10px] text-white/80 font-medium">P&B Noir</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Ajustar (Brilho, Contraste, Saturação, Matiz) -->
+            <div id="inshotFilterSubTab_ajustar" class="hidden flex flex-col space-y-4">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-semibold text-white/80">
+                        <span id="inshotCurrentAdjustLabel">Brilho</span>
+                        <span id="inshotCurrentAdjustVal" class="text-cyan-400 font-mono">100%</span>
+                    </div>
+                    <input type="range" id="inshotAdjustSlider" min="0" max="200" value="100" class="w-full accent-cyan-400 cursor-pointer" oninput="updateInShotAdjustment(this.value)">
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 pt-1 border-t border-white/5">
+                    <button id="paramBtn_brightness" onclick="selectInShotAdjustParam('brightness')" class="p-2 rounded-xl bg-white/10 text-white flex flex-col items-center space-y-1 active:scale-95 transition">
+                        <i class="fa-solid fa-sun text-base text-amber-400"></i>
+                        <span class="text-[10px] font-medium">Brilho</span>
+                    </button>
+                    <button id="paramBtn_contrast" onclick="selectInShotAdjustParam('contrast')" class="p-2 rounded-xl text-white/60 hover:text-white flex flex-col items-center space-y-1 active:scale-95 transition">
+                        <i class="fa-solid fa-circle-half-stroke text-base"></i>
+                        <span class="text-[10px] font-medium">Contraste</span>
+                    </button>
+                    <button id="paramBtn_saturate" onclick="selectInShotAdjustParam('saturate')" class="p-2 rounded-xl text-white/60 hover:text-white flex flex-col items-center space-y-1 active:scale-95 transition">
+                        <i class="fa-solid fa-droplet text-base"></i>
+                        <span class="text-[10px] font-medium">Saturação</span>
+                    </button>
+                    <button id="paramBtn_hue" onclick="selectInShotAdjustParam('hue')" class="p-2 rounded-xl text-white/60 hover:text-white flex flex-col items-center space-y-1 active:scale-95 transition">
+                        <i class="fa-solid fa-palette text-base"></i>
+                        <span class="text-[10px] font-medium">Matiz</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between pt-1">
+                    <button onclick="applyFilterToAllClips()" class="text-xs text-amber-400 hover:text-amber-300 font-semibold flex items-center space-x-1.5">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Aplicar a todos os clipes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2B. MOBILE BOTTOM SHEET: EFEITOS VFX DINÂMICOS (INSHOT REPLICA) -->
+    <div id="mobileEffectsSheet" class="fixed inset-0 z-50 flex flex-col justify-end hidden bg-black/75 backdrop-blur-md select-none">
+        <div onclick="closeMobileEffectsSheet()" class="flex-1"></div>
+        <div class="bg-[#1c1d22] border-t border-white/10 rounded-t-[20px] p-4 flex flex-col space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                <span class="text-sm font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-star text-amber-400"></i>
+                    <span>Efeitos Visuais Dinâmicos</span>
                 </span>
-                <button onclick="closeMobileFiltersSheet()" class="w-7 h-7 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] flex items-center justify-center hover:text-white active:scale-95 transition">
-                    <i class="fa-solid fa-xmark text-xs"></i>
+                <button onclick="closeMobileEffectsSheet()" class="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-95 transition">
+                    <i class="fa-solid fa-check text-xs text-emerald-400"></i>
                 </button>
             </div>
-            <div class="grid grid-cols-3 gap-2 text-xs">
-                <button onclick="applyFilter('none', 'Sem Filtro'); closeMobileFiltersSheet()" class="p-2.5 rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-cyan-400 text-center flex flex-col items-center space-y-1 text-white active:scale-95 transition">
-                    <i class="fa-solid fa-ban text-sm text-[var(--text-muted)]"></i>
-                    <span class="text-[11px] font-medium">Original</span>
+
+            <div class="grid grid-cols-4 gap-2.5 py-1">
+                <button onclick="applyInShotVfx('none')" class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-white text-center flex flex-col items-center space-y-1.5 active:scale-95 transition">
+                    <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center">
+                        <i class="fa-solid fa-ban text-white/50 text-base"></i>
+                    </div>
+                    <span class="text-[10px] text-white font-medium">Original</span>
                 </button>
-                <button onclick="applyFilter('teal_orange', 'Teal & Orange'); closeMobileFiltersSheet()" class="p-2.5 rounded-[var(--radius-sm)] bg-gradient-to-br from-teal-950 to-orange-950 border border-teal-500/30 hover:border-cyan-400 text-center flex flex-col items-center space-y-1 text-white active:scale-95 transition">
-                    <i class="fa-solid fa-sun text-sm text-amber-400"></i>
-                    <span class="text-[11px] font-medium">Teal & Orange</span>
+                <button onclick="applyInShotVfx('slow-zoom')" class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400 text-center flex flex-col items-center space-y-1.5 active:scale-95 transition">
+                    <div class="w-10 h-10 rounded-lg bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <i class="fa-solid fa-magnifying-glass-plus text-base"></i>
+                    </div>
+                    <span class="text-[10px] text-white font-medium">Slow Zoom</span>
                 </button>
-                <button onclick="applyFilter('retro_90s', 'Retrô 90s'); closeMobileFiltersSheet()" class="p-2.5 rounded-[var(--radius-sm)] bg-gradient-to-br from-purple-950 to-amber-950 border border-purple-500/30 hover:border-cyan-400 text-center flex flex-col items-center space-y-1 text-white active:scale-95 transition">
-                    <i class="fa-solid fa-compact-disc text-sm text-purple-400"></i>
-                    <span class="text-[11px] font-medium">Retrô 90s</span>
+                <button onclick="applyInShotVfx('jump-zoom')" class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-amber-400 text-center flex flex-col items-center space-y-1.5 active:scale-95 transition">
+                    <div class="w-10 h-10 rounded-lg bg-amber-950/40 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-bolt text-base"></i>
+                    </div>
+                    <span class="text-[10px] text-white font-medium">Jump Zoom</span>
                 </button>
-                <button onclick="applyFilter('noir', 'Noir P&B'); closeMobileFiltersSheet()" class="p-2.5 rounded-[var(--radius-sm)] bg-zinc-900 border border-zinc-600/30 hover:border-cyan-400 text-center flex flex-col items-center space-y-1 text-white active:scale-95 transition">
-                    <i class="fa-solid fa-moon text-sm text-zinc-300"></i>
-                    <span class="text-[11px] font-medium">Noir P&B</span>
-                </button>
-                <button onclick="applyFilter('hdr', 'Nitidez HDR'); closeMobileFiltersSheet()" class="p-2.5 rounded-[var(--radius-sm)] bg-gradient-to-br from-blue-950 to-cyan-950 border border-cyan-500/30 hover:border-cyan-400 text-center flex flex-col items-center space-y-1 text-white active:scale-95 transition">
-                    <i class="fa-solid fa-eye text-sm text-cyan-400"></i>
-                    <span class="text-[11px] font-medium">Nitidez HDR</span>
+                <button onclick="applyInShotVfx('tremble')" class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-rose-400 text-center flex flex-col items-center space-y-1.5 active:scale-95 transition">
+                    <div class="w-10 h-10 rounded-lg bg-rose-950/40 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                        <i class="fa-solid fa-arrows-spin text-base"></i>
+                    </div>
+                    <span class="text-[10px] text-white font-medium">Tremble</span>
                 </button>
             </div>
         </div>
@@ -2890,6 +2914,7 @@
             // Detecção Técnica Estrita: App Mobile no Celular vs Versão Desktop no PC Browser
             const isMobileApp = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
             setUIMode(isMobileApp ? 'mobile' : 'desktop');
+            if (isMobileApp) switchAppTab('video');
             initCanvasDirectDrag();
             setupVideoEventListeners();
             setupKeyboardShortcuts();
@@ -6033,9 +6058,7 @@ function setupPanelResizers() {
             }
         }
 
-        function openMobileEffectsSheet() {
-            openMobileFiltersSheet();
-        }
+        // openMobileEffectsSheet defined in InShot visual engine
 
         let currentMobileRotation = 0;
         function rotateVideo90() {
