@@ -518,22 +518,35 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                     self._send_json({"status": "error", "message": "Engine não carregada"}, 500)
                 return
 
-            # Subtitle Generation (Whisper INT8)
-            elif parsed.path == "/api/generate-subtitles":
+            # Subtitle Generation (Whisper INT8) - Supports /api/generate-subtitles and /api/auto-captions
+            elif parsed.path in ["/api/generate-subtitles", "/api/auto-captions"]:
                 video_path = body.get("video_path")
                 if not video_path or not os.path.exists(video_path):
-                    self._send_json({"status": "error", "message": "Arquivo não encontrado"})
+                    self._send_json({"status": "error", "message": "Arquivo de vídeo não encontrado"})
                     return
                 srt_out = str(OUTPUT_DIR / f"sub_{Path(video_path).stem}.srt")
                 ass_out = str(OUTPUT_DIR / f"sub_{Path(video_path).stem}.ass")
+                lang = body.get("language", "pt")
                 if engine:
                     try:
-                        res = engine.generate_subtitles(video_path, srt_out, ass_out)
+                        res = engine.generate_subtitles(video_path, srt_out, ass_out, model_size="tiny", language=lang)
                         self._send_json({"status": "success", **res})
                     except Exception as err:
                         self._send_json({"status": "error", "message": str(err)})
                 else:
-                    self._send_json({"status": "error", "message": "Engine não disponível"})
+                    self._send_json({"status": "error", "message": "Engine Whisper não disponível"})
+                return
+
+            # Cleanup TTS Test Audio Cache
+            elif parsed.path == "/api/cleanup-tts-cache":
+                deleted_count = 0
+                for f in DOWNLOADS_DIR.glob("tts_*.mp3"):
+                    try:
+                        f.unlink(missing_ok=True)
+                        deleted_count += 1
+                    except Exception:
+                        pass
+                self._send_json({"status": "success", "message": f"{deleted_count} arquivos de locução TTS limpos com sucesso", "count": deleted_count})
                 return
 
             # Final Video Export (Cuts + Burn Subtitles + Aspect Ratio)
