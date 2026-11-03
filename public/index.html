@@ -282,31 +282,58 @@
             </div>
 
             <!-- InShot Primary Hub: CRIAR NOVO (Vídeo, Foto, Colagem) -->
-            <div class="px-5 py-4">
-                <div class="text-[11px] font-bold text-white/40 uppercase tracking-wider mb-3">Criar Novo</div>
-                <div class="grid grid-cols-3 gap-3">
-                    <!-- Botão 1: Vídeo (Rosa/Coral InShot) -->
-                    <button onclick="startBrandNewMobileProject()" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#ff5364] to-[#f43f5e] shadow-lg shadow-rose-900/30 active:scale-95 transition aspect-square">
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
-                            <i class="fa-solid fa-video text-white text-base"></i>
+            <div class="px-5 py-3">
+                <div class="flex items-center justify-between mb-2.5">
+                    <div class="text-[11px] font-bold text-white/50 uppercase tracking-wider">Ferramentas Autônomas & Criação</div>
+                    <span class="text-[10px] text-emerald-400 font-mono">Uso Isolado</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2.5">
+                    <!-- 1. Vídeo (InShot Editor) -->
+                    <button onclick="startBrandNewMobileProject()" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#ff5364] to-[#f43f5e] shadow-lg shadow-rose-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-video text-white text-sm"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Vídeo</span>
+                        <span class="text-[11px] font-bold text-white">Editor Vídeo</span>
                     </button>
 
-                    <!-- Botão 2: Foto (Laranja InShot) -->
-                    <button onclick="switchAppTab('foto')" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#fb923c] to-[#ea580c] shadow-lg shadow-orange-900/30 active:scale-95 transition aspect-square">
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
-                            <i class="fa-solid fa-image text-white text-base"></i>
+                    <!-- 2. Downloader Web (Baixar Vídeos) -->
+                    <button onclick="switchAppTab('downloader')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#06b6d4] to-[#0891b2] shadow-lg shadow-cyan-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-cloud-arrow-down text-white text-sm"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Foto</span>
+                        <span class="text-[11px] font-bold text-white">Baixar Web</span>
                     </button>
 
-                    <!-- Botão 3: PDF / Apostilas (Verde InShot) -->
-                    <button onclick="switchAppTab('pdf')" class="flex flex-col items-center justify-center p-3.5 rounded-2xl bg-gradient-to-b from-[#10b981] to-[#059669] shadow-lg shadow-emerald-900/30 active:scale-95 transition aspect-square">
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-1.5">
-                            <i class="fa-solid fa-file-pdf text-white text-base"></i>
+                    <!-- 3. Text to Audio (Locução Neural) -->
+                    <button onclick="switchAppTab('tts')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#8b5cf6] to-[#6d28d9] shadow-lg shadow-purple-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-wand-magic-sparkles text-white text-sm"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">PDF Book</span>
+                        <span class="text-[11px] font-bold text-white">Voz Neural</span>
+                    </button>
+
+                    <!-- 4. Legendas SRT (Whisper IA) -->
+                    <button onclick="switchAppTab('subtitles')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#eab308] to-[#ca8a04] shadow-lg shadow-amber-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-closed-captioning text-black text-sm"></i>
+                        </div>
+                        <span class="text-[11px] font-bold text-black">Legenda SRT</span>
+                    </button>
+
+                    <!-- 5. Foto & Prompt -->
+                    <button onclick="switchAppTab('foto')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#fb923c] to-[#ea580c] shadow-lg shadow-orange-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-image text-white text-sm"></i>
+                        </div>
+                        <span class="text-[11px] font-bold text-white">Foto Prompt</span>
+                    </button>
+
+                    <!-- 6. PDF Book -->
+                    <button onclick="switchAppTab('pdf')" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-[#10b981] to-[#059669] shadow-lg shadow-emerald-900/30 active:scale-95 transition aspect-square">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mb-1">
+                            <i class="fa-solid fa-file-pdf text-white text-sm"></i>
+                        </div>
+                        <span class="text-[11px] font-bold text-white">PDF Book</span>
                     </button>
                 </div>
             </div>
@@ -1798,6 +1825,151 @@
                 </div>
             </div>
         </div>
+        <!-- ============================================================== -->
+        <!-- TAB 5: LOCUÇÃO NEURAL & TEXT TO AUDIO (TTS INDEPENDENTE)       -->
+        <!-- ============================================================== -->
+        <div id="tabContent_tts" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
+            <div class="max-w-2xl mx-auto w-full space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                    <button onclick="switchAppTab('home')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar ao Início</span>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-sliders text-amber-400"></i>
+                        <span>Ir ao Editor</span>
+                    </button>
+                </div>
+                <div class="border-b border-[var(--border)] pb-3">
+                    <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i>
+                        <span>Locução Neural & Text to Audio</span>
+                    </h2>
+                    <p class="text-xs text-[var(--text-secondary)] mt-0.5">
+                        Converta qualquer texto em áudio narrado realista com vozes neurais brasileiras de alta fidelidade sem precisar abrir projetos de vídeo.
+                    </p>
+                </div>
+
+                <div class="bg-[var(--bg-panel)] p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-4 shadow-xl">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label class="label-caps">Texto da Narração:</label>
+                            <span id="standaloneTtsCharCount" class="text-[10px] text-[var(--text-muted)] font-mono">0 / 2000</span>
+                        </div>
+                        <textarea id="standaloneTtsInput" rows="5" maxlength="2000" oninput="document.getElementById('standaloneTtsCharCount').innerText = this.value.length + ' / 2000'" placeholder="Digite ou cole aqui o roteiro para transformar em áudio narrado..." class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] p-3 text-xs text-white placeholder-[var(--text-muted)] focus:border-cyan-400 focus:outline-none resize-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="label-caps block mb-1">Voz Neural Brasileira:</label>
+                            <select id="standaloneTtsVoice" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                                <option value="pt-BR-FranciscaNeural" selected>pt-BR-Francisca (Feminina Natural)</option>
+                                <option value="pt-BR-AntonioNeural">pt-BR-Antonio (Masculino Dinâmico)</option>
+                                <option value="pt-BR-ThalitaMultilingualNeural">pt-BR-Thalita (Suave / Narradora)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label-caps block mb-1">Velocidade / Ritmo:</label>
+                            <select id="standaloneTtsRate" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                                <option value="0">1.0x (Padrão)</option>
+                                <option value="-15">0.85x (Mais lento)</option>
+                                <option value="15">1.15x (Dinâmico / Reels)</option>
+                                <option value="30">1.3x (Rápido)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="executeStandaloneTts()" id="btnStandaloneTts" class="w-full py-3 rounded-[var(--radius-md)] bg-gradient-to-r from-cyan-500 to-blue-600 hover:brightness-110 text-white font-bold text-xs flex items-center justify-center space-x-2 transition shadow-md active:scale-95">
+                        <i class="fa-solid fa-waveform-lines"></i>
+                        <span>Gerar Áudio MP3 Agora</span>
+                    </button>
+                </div>
+
+                <!-- Standalone TTS Result Player -->
+                <div id="cardStandaloneTtsResult" class="hidden bg-[var(--bg-panel)] p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-3 shadow-xl">
+                    <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                        <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Áudio Gerado com Sucesso</span>
+                        </span>
+                        <a id="linkDownloadStandaloneTts" href="#" download class="btn-primary py-1 px-3 text-xs flex items-center space-x-1">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Baixar MP3</span>
+                        </a>
+                    </div>
+                    <audio id="playerStandaloneTts" controls class="w-full h-10 rounded bg-[var(--bg-base)]"></audio>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB 6: LEGENDAS AUTOMÁTICAS SRT / WHISPER (STANDALONE)         -->
+        <!-- ============================================================== -->
+        <div id="tabContent_subtitles" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
+            <div class="max-w-2xl mx-auto w-full space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                    <button onclick="switchAppTab('home')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar ao Início</span>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-sliders text-amber-400"></i>
+                        <span>Ir ao Editor</span>
+                    </button>
+                </div>
+                <div class="border-b border-[var(--border)] pb-3">
+                    <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
+                        <i class="fa-solid fa-closed-captioning text-yellow-400"></i>
+                        <span>Gerador & Extrator de Legendas SRT (Whisper IA)</span>
+                    </h2>
+                    <p class="text-xs text-[var(--text-secondary)] mt-0.5">
+                        Envie qualquer vídeo ou áudio para transcrever automaticamente e baixar o arquivo .SRT sincronizado.
+                    </p>
+                </div>
+
+                <div class="bg-[var(--bg-panel)] p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-4 shadow-xl">
+                    <div class="border-2 border-dashed border-[var(--border)] hover:border-yellow-400/50 rounded-[var(--radius-md)] p-6 text-center cursor-pointer transition bg-[var(--bg-elevated)]/40" onclick="document.getElementById('subStandaloneInputFile').click()">
+                        <i class="fa-solid fa-file-video text-3xl text-yellow-400 mb-2"></i>
+                        <div class="text-sm font-semibold text-[var(--text-primary)]" id="labelSubStandaloneFile">Selecionar Vídeo ou Áudio</div>
+                        <div class="text-xs text-[var(--text-muted)] mt-1">Gera arquivo .SRT com timestamps precisos</div>
+                    </div>
+                    <input type="file" id="subStandaloneInputFile" accept="video/*,audio/*" class="hidden" onchange="handleSubStandaloneFileSelect(event)">
+
+                    <div>
+                        <label class="label-caps block mb-1">Idioma do Áudio:</label>
+                        <select id="subStandaloneLang" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-xs text-white focus:outline-none">
+                            <option value="pt" selected>Português (Brasil)</option>
+                            <option value="en">Inglês</option>
+                            <option value="es">Espanhol</option>
+                            <option value="auto">Detecção Automática</option>
+                        </select>
+                    </div>
+
+                    <button onclick="executeStandaloneTranscription()" id="btnStandaloneTranscribe" class="w-full py-3 rounded-[var(--radius-md)] bg-gradient-to-r from-yellow-500 to-amber-600 hover:brightness-110 text-black font-extrabold text-xs flex items-center justify-center space-x-2 transition shadow-md active:scale-95">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Transcrever & Gerar Legenda SRT</span>
+                    </button>
+                </div>
+
+                <!-- Subtitle Output Result -->
+                <div id="cardStandaloneSubResult" class="hidden bg-[var(--bg-panel)] p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-3 shadow-xl">
+                    <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                        <span class="text-xs font-bold text-emerald-400 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Transcrição Concluída</span>
+                        </span>
+                        <div class="flex items-center space-x-2">
+                            <a id="linkDownloadSrt" href="#" download="legendas.srt" class="btn-primary py-1 px-3 text-xs flex items-center space-x-1">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Baixar .SRT</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="boxStandaloneSubPreview" class="w-full max-h-48 overflow-y-auto p-3 rounded-[var(--radius-md)] bg-[var(--bg-base)] border border-[var(--border)] font-mono text-xs text-[var(--text-secondary)] whitespace-pre-wrap"></div>
+                </div>
+            </div>
+        </div>
+
 
 
 
@@ -8185,6 +8357,114 @@ function setupPanelResizers() {
             strip.addEventListener('pointerdown', () => { isScrubbing = true; });
             window.addEventListener('pointerup', () => { isScrubbing = false; });
         }
+
+        // === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
+        async function executeStandaloneTts() {
+            const text = document.getElementById('standaloneTtsInput').value.trim();
+            if (!text) return showToast("Digite um texto para narrar!", true);
+            const voice = document.getElementById('standaloneTtsVoice').value;
+            const rate = parseInt(document.getElementById('standaloneTtsRate').value || 0);
+            const btn = document.getElementById('btnStandaloneTts');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Sintetizando Voz Neural...</span>';
+
+            try {
+                const res = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        text: text,
+                        voice: voice,
+                        rate: rate,
+                        pitch: 0
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast("Áudio MP3 gerado com sucesso!");
+                    const card = document.getElementById('cardStandaloneTtsResult');
+                    const player = document.getElementById('playerStandaloneTts');
+                    const link = document.getElementById('linkDownloadStandaloneTts');
+                    if (card) card.classList.remove('hidden');
+                    if (player) { player.src = data.download_url; player.play(); }
+                    if (link) { link.href = data.download_url; link.setAttribute('download', data.filename || 'locucao_neural.mp3'); }
+                } else {
+                    showToast(data.message || "Erro ao sintetizar áudio", true);
+                }
+            } catch (err) {
+                showToast("Erro ao conectar ao servidor de TTS", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-waveform-lines mr-1"></i><span>Gerar Áudio MP3 Agora</span>';
+            }
+        }
+
+        let selectedSubStandaloneFile = null;
+        function handleSubStandaloneFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedSubStandaloneFile = file;
+                const lbl = document.getElementById('labelSubStandaloneFile');
+                if (lbl) lbl.innerText = file.name + ' (' + (file.size / (1024*1024)).toFixed(1) + ' MB)';
+            }
+        }
+
+        async function executeStandaloneTranscription() {
+            if (!selectedSubStandaloneFile) {
+                return showToast("Selecione um arquivo de vídeo ou áudio primeiro!", true);
+            }
+            const btn = document.getElementById('btnStandaloneTranscribe');
+            const lang = document.getElementById('subStandaloneLang').value;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Transcrevendo com Whisper IA...</span>';
+            showToast("Fazendo upload e iniciando transcrição Whisper INT8...");
+
+            try {
+                // 1. Upload file
+                const formData = new FormData();
+                formData.append('file', selectedSubStandaloneFile);
+                const upRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const upData = await upRes.json();
+                if (upData.status !== 'success') {
+                    throw new Error(upData.message || "Falha no envio do arquivo");
+                }
+
+                // 2. Trigger auto captions
+                const transRes = await fetch('/api/auto-captions', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        video_path: upData.filepath,
+                        lang: lang
+                    })
+                });
+                const transData = await transRes.json();
+                if (transData.status === 'success') {
+                    showToast("Legendas geradas com sucesso!");
+                    const card = document.getElementById('cardStandaloneSubResult');
+                    const preview = document.getElementById('boxStandaloneSubPreview');
+                    const link = document.getElementById('linkDownloadSrt');
+                    if (card) card.classList.remove('hidden');
+                    if (link && transData.srt_path) {
+                        link.href = '/stream?file=' + encodeURIComponent(transData.srt_path);
+                    }
+                    if (preview && transData.segments) {
+                        preview.innerText = transData.segments.map(s => '[' + s.start.toFixed(1) + 's -> ' + s.end.toFixed(1) + 's] ' + s.text).join('\n');
+                    }
+                } else {
+                    showToast(transData.message || "Falha na transcrição", true);
+                }
+            } catch (err) {
+                showToast(err.message || "Erro na geração de legendas", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i><span>Transcrever & Gerar Legenda SRT</span>';
+            }
+        }
+
 </script>
 
     <!-- ============================================================== -->
