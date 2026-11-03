@@ -42,11 +42,24 @@ PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
 # Shared Media Storage (Termux Android & Windows fallback)
 # Storage no Android (Salva diretamente na pasta pública Downloads do celular)
-if os.path.exists("/sdcard/Download"):
-    DOWNLOADS_DIR = Path("/sdcard/Download")
-elif os.path.exists("/storage/emulated/0/Download"):
-    DOWNLOADS_DIR = Path("/storage/emulated/0/Download")
-else:
+DOWNLOADS_DIR = None
+for _cand in [Path("/storage/emulated/0/Download"), Path("/sdcard/Download"), Path.home() / "storage" / "downloads"]:
+    try:
+        if _cand.exists() and os.access(_cand, os.W_OK):
+            DOWNLOADS_DIR = _cand
+            break
+    except Exception:
+        pass
+if not DOWNLOADS_DIR:
+    for _cand in [Path("/storage/emulated/0/Download"), Path("/sdcard/Download")]:
+        try:
+            _cand.mkdir(parents=True, exist_ok=True)
+            if _cand.exists() and os.access(_cand, os.W_OK):
+                DOWNLOADS_DIR = _cand
+                break
+        except Exception:
+            pass
+if not DOWNLOADS_DIR:
     DOWNLOADS_DIR = Path.home() / "Downloads"
 DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -67,9 +80,21 @@ PDF_CACHE = {"texto_completo": "", "secoes": []}
 
 def notify_android_media_scanner(file_path: str):
     """Notifica o scanner do Android para que o arquivo apareça instantaneamente na galeria e downloads."""
+    fp_str = str(file_path)
+    # 1. Termux API media scanner
     if shutil.which("termux-media-scan"):
         try:
-            subprocess.run(["termux-media-scan", str(file_path)], capture_output=True, timeout=5)
+            subprocess.run(["termux-media-scan", fp_str], capture_output=True, timeout=5)
+        except Exception:
+            pass
+    # 2. Android am broadcast media scan fallback
+    if shutil.which("am"):
+        try:
+            subprocess.run([
+                "am", "broadcast",
+                "-a", "android.intent.action.MEDIA_SCANNER_SCAN_FILE",
+                "-d", f"file://{fp_str}"
+            ], capture_output=True, timeout=5)
         except Exception:
             pass
 

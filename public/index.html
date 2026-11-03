@@ -1911,6 +1911,14 @@
                         </a>
                     </div>
                     <audio id="playerStandaloneTts" controls class="w-full h-10 rounded bg-[var(--bg-base)]"></audio>
+                    <div id="boxStandaloneTtsPathInfo" class="mt-2 p-2.5 rounded-lg bg-black/40 border border-white/10 text-[11px] text-white/80 space-y-1">
+                        <div class="flex items-center justify-between text-cyan-400 font-bold">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-hard-drive"></i> Arquivo gravado no dispositivo:</span>
+                            <button id="btnCopyAudioPath" onclick="navigator.clipboard.writeText(this.dataset.path || ''); showToast('Caminho copiado!');" class="text-[10px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white">Copiar</button>
+                        </div>
+                        <div id="txtStandaloneTtsPath" class="font-mono text-[10px] text-emerald-300 break-all select-all">/sdcard/Download/tts_audio.mp3</div>
+                        <p class="text-[10px] text-white/50 leading-tight">O áudio já está salvo diretamente no seu celular (App Arquivos / Downloads). Caso o botão Baixar não acione o gerenciador de downloads no app empacotado, o arquivo já está disponível no caminho acima.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -8379,27 +8387,27 @@ function setupPanelResizers() {
 
         
         async function downloadAudioFileDirectly(url, filename) {
-            showToast("Iniciando download do arquivo...");
-
-            // 1. Tentar Web Share API se suportada (permite salvar em qualquer pasta ou WhatsApp/Telegram/Files)
+            // Em APK Termux (WebView pura), a WebView ignora tags <a download> e blob links
+            // O arquivo já é gravado fisicamente em /sdcard/Download pelo servidor Python
+            // Tentamos Share API se disponível, senão tentamos abrir em navegador externo ou link direto
             try {
                 const res = await fetch(url);
                 if (res.ok) {
                     const blob = await res.blob();
-                    const file = new File([blob], filename, { type: 'audio/mpeg' });
+                    const mime = filename.endsWith('.mp4') ? 'video/mp4' : 'audio/mpeg';
+                    const file = new File([blob], filename, { type: mime });
                     
-                    // Se o navegador móvel suportar compartilhamento/salvamento nativo de arquivos
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         await navigator.share({
                             files: [file],
                             title: filename,
-                            text: 'Áudio narrado gerado no Montanha Media Lab'
+                            text: 'Arquivo gerado no Montanha Media Lab'
                         });
-                        showToast("✓ Áudio compartilhado/salvo com sucesso!");
+                        showToast("✓ Compartilhado / Salvo com sucesso!");
                         return;
                     }
 
-                    // 2. Fallback via Blob URL nativo (funciona 100% no Android Edge/Chrome)
+                    // Fallback Blob para navegador móvel (Chrome/Edge)
                     const blobUrl = window.URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.style.display = 'none';
@@ -8411,14 +8419,12 @@ function setupPanelResizers() {
                         document.body.removeChild(link);
                         window.URL.revokeObjectURL(blobUrl);
                     }, 2000);
-                    showToast("✓ Arquivo gravado com sucesso!");
-                    return;
                 }
             } catch (err) {
-                console.warn("Share/Blob download catch:", err);
+                console.warn("Share/Blob catch:", err);
             }
 
-            // 3. Fallback clássico por link direto
+            // Tentativa de navegação direta
             const directUrl = url + (url.includes('?') ? '&' : '?') + 'download=1&t=' + Date.now();
             const a = document.createElement('a');
             a.href = directUrl;
@@ -8427,6 +8433,8 @@ function setupPanelResizers() {
             document.body.appendChild(a);
             a.click();
             setTimeout(() => { document.body.removeChild(a); }, 1000);
+
+            showToast("✓ Arquivo salvo na pasta Downloads do celular!");
         }
 // === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
         async function executeStandaloneTts() {
@@ -8452,10 +8460,14 @@ function setupPanelResizers() {
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    showToast("Áudio MP3 gerado com sucesso!");
+                    showToast("Áudio MP3 gerado e salvo em Downloads!");
                     const card = document.getElementById('cardStandaloneTtsResult');
                     const player = document.getElementById('playerStandaloneTts');
                     const link = document.getElementById('linkDownloadStandaloneTts');
+                    const pathTxt = document.getElementById('txtStandaloneTtsPath');
+                    const copyBtn = document.getElementById('btnCopyAudioPath');
+                    if (pathTxt) pathTxt.innerText = data.server_path || ('/sdcard/Download/' + data.filename);
+                    if (copyBtn) copyBtn.dataset.path = data.server_path || ('/sdcard/Download/' + data.filename);
                     if (card) card.classList.remove('hidden');
                     const downloadUrl = `/download?file=${encodeURIComponent(data.server_path)}&name=${encodeURIComponent(data.filename || 'locucao_neural.mp3')}&download=1`;
                     if (player) { player.src = data.download_url; player.play(); }
