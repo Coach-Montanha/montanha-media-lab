@@ -1386,193 +1386,213 @@
             </div>
 
 
-<div id="mobileLayout" class="hidden flex-1 items-center justify-center p-0 canvas-bg overflow-hidden w-full h-full select-none">
-            <div class="mobile-device-frame flex flex-col overflow-hidden relative w-full h-full bg-[#0D0E11]">
-                
-                <!-- Simulated Status Bar (Only on Desktop simulation, hidden on real phones) -->
-                <div class="simulated-phone-notch h-6 px-4 hidden md:flex items-center justify-between text-[11px] text-[var(--text-muted)] bg-black shrink-0">
-                    <span id="mobileClock" class="font-mono font-medium">14:50</span>
-                    <div class="w-16 h-3 bg-neutral-900 rounded-full mx-auto"></div>
-                    <div class="flex items-center space-x-2 text-[10px]">
-                        <i class="fa-solid fa-wifi"></i>
-                        <i class="fa-solid fa-battery-three-quarters text-emerald-400"></i>
-                    </div>
+<div <div id="mobileLayout" class="hidden flex-1 flex-col p-0 overflow-hidden w-full h-full bg-[#1A1A1A] text-white select-none relative font-sans">
+            
+            <!-- 1. TOP BAR ESTILO INSHOT (48px) -->
+            <header class="h-12 px-4 flex items-center justify-between shrink-0 bg-[#1A1A1A] z-30 border-b border-white/5">
+                <!-- Back / Home Button -->
+                <button onclick="switchAppTab('home')" class="w-9 h-9 flex items-center justify-center text-white/80 hover:text-white active:scale-90 transition" title="Voltar ao Início">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </button>
+
+                <!-- Center: Help / InShot Question Icon with Yellow Dot -->
+                <div class="relative cursor-pointer" onclick="showToast('InShot Mode: Toque nos botões inferiores para editar')" title="Ajuda">
+                    <i class="fa-regular fa-circle-question text-lg text-white/90"></i>
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#FFE600] border-2 border-[#1A1A1A]"></span>
                 </div>
 
-                <!-- CapCut Authentic Mobile Top Bar (44px) -->
-                <div class="h-11 px-3 flex items-center justify-between text-xs border-b border-[var(--border)] bg-[#121317] shrink-0 z-20">
-                    <div class="flex items-center space-x-1.5">
-                        <!-- Switcher to Home Dashboard -->
-                        <button onclick="switchAppTab('home')" class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] hover:border-blue-400 active:scale-95 transition" title="Voltar à Tela Inicial">
-                            <i class="fa-solid fa-house text-blue-400 text-xs"></i>
-                            <span class="text-[11px] font-semibold">Início</span>
-                        </button>
+                <!-- Right: Clean Exportar Text Button -->
+                <button onclick="openExportModal()" class="px-3.5 py-1 text-sm font-semibold tracking-wide text-white hover:text-amber-400 active:scale-95 transition">
+                    Exportar
+                </button>
+            </header>
 
-                        
-                    </div>
+            <!-- 2. INSHOT VIDEO CANVAS (Clean Central Viewing Area) -->
+            <main class="flex-1 min-h-0 bg-[#141414] flex items-center justify-center relative overflow-hidden p-2" id="mobileCanvasContainer">
+                <div id="mobilePlayerFrame" class="relative max-h-full max-w-full flex items-center justify-center overflow-hidden shadow-2xl rounded-sm bg-black" style="aspect-ratio: 9/16; height: 100%;">
+                    <video id="mobileVideo" class="w-full h-full object-contain pointer-events-auto" playsinline preload="auto" onclick="toggleMobilePlay()">
+                    </video>
 
-                    <!-- Ratio & Resolution Pill -->
-                    <div onclick="openMobileRatioSheet()" class="flex items-center space-x-1 px-3 py-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-full text-[11px] font-bold text-[var(--text-primary)] cursor-pointer active:scale-95 transition" title="Mudar Proporção">
-                        <span id="mobileRatioLabel">9:16</span>
-                        <span class="text-[var(--text-muted)] text-[9px]">• 1080P</span>
-                        <i class="fa-solid fa-chevron-down text-[8px] text-[var(--text-muted)] ml-1"></i>
-                    </div>
-
-                    <!-- Export Button -->
-                    <button onclick="openExportModal()" class="px-3.5 py-1 rounded-full bg-[var(--accent)] hover:brightness-110 text-[#0D0E11] font-extrabold text-xs tracking-wide shadow flex items-center space-x-1 active:scale-95 transition">
-                        <i class="fa-solid fa-download text-[11px]"></i>
-                        <span>Exportar</span>
-                    </button>
-                </div>
-
-                <!-- Mobile Video Canvas (Takes remaining vertical space, adapts to any phone screen) -->
-                <div class="flex-1 min-h-0 bg-black flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing p-1" id="mobileCanvasContainer">
-                    <div id="mobilePlayerFrame" class="relative max-h-full max-w-full flex items-center justify-center overflow-hidden shadow-2xl rounded-lg" style="aspect-ratio: 9/16; height: 100%;">
-                        <video id="mobileVideo" class="w-full h-full object-contain transition-transform" playsinline preload="auto">
-                        </video>
-                    </div>
-                    
-                    <!-- Mobile Play Button Overlay -->
-                    <div id="mobilePlayOverlay" onclick="toggleMobilePlay()" class="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer z-10">
-                        <div class="w-12 h-12 rounded-full bg-[var(--accent)]/90 text-[#0D0E11] flex items-center justify-center text-lg shadow-2xl backdrop-blur-sm active:scale-90 transition">
-                            <i class="fa-solid fa-play ml-0.5"></i>
-                        </div>
-                    </div>
-
-                    <!-- Empty State: Displayed when no video is active -->
-                    <div id="mobileEmptyState" class="absolute inset-0 flex flex-col items-center justify-center p-4 bg-black/85 z-20 text-center">
-                        <div onclick="openMobileMediaSheet()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500/20 to-blue-600/20 border border-cyan-400/50 flex items-center justify-center text-cyan-400 text-xl mb-2.5 shadow-[0_0_24px_rgba(34,211,238,0.3)] cursor-pointer active:scale-95 transition">
-                            <i class="fa-solid fa-plus"></i>
-                        </div>
-                        <h3 class="text-white text-xs font-bold tracking-wide mb-1">Novo Projeto / Carregar Vídeo</h3>
-                        <p class="text-[var(--text-secondary)] text-[11px] max-w-[240px] mb-3 leading-tight">Escolha dos vídeos importados, envie da galeria ou puxe da câmera Redmi.</p>
-                        <div class="flex flex-col w-full max-w-[230px] space-y-2">
-                            <button onclick="openMobileMediaSheet()" class="w-full py-2 px-3 rounded-full bg-[var(--accent)] text-[#0D0E11] font-bold text-xs flex items-center justify-center space-x-2 shadow active:scale-95 transition">
-                                <i class="fa-solid fa-photo-film"></i>
-                                <span>Vídeos Importados</span>
-                            </button>
-                            <button onclick="document.getElementById('mobileNativeFileInput').click()" class="w-full py-1.5 px-3 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-white hover:border-cyan-400 font-medium text-xs flex items-center justify-center space-x-2 active:scale-95 transition">
-                                <i class="fa-solid fa-file-arrow-up text-amber-400"></i>
-                                <span>Galeria do Celular</span>
-                            </button>
-                            <button onclick="openCloudImportModal()" class="w-full py-1.5 px-3 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-white hover:border-cyan-400 font-medium text-xs flex items-center justify-center space-x-2 active:scale-95 transition">
-                                <i class="fa-solid fa-cloud text-blue-400"></i>
-                                <span>Google Drive / Dropbox / Nuvem</span>
-                            </button>
-                            <button onclick="pullLatestRedmiVideo()" class="w-full py-1.5 px-3 rounded-full bg-[var(--bg-elevated)] border border-[var(--border)] text-white hover:border-cyan-400 font-medium text-xs flex items-center justify-center space-x-2 active:scale-95 transition">
-                                <i class="fa-solid fa-mobile-screen text-cyan-400"></i>
-                                <span>Puxar Câmera (Redmi 12)</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mobile Instagram Safe-Area Snapping Guidelines Layer -->
-                    <div id="mobileSafeAreaGuides" class="absolute inset-0 pointer-events-none transition-opacity duration-200 opacity-0 z-20">
-                        <div class="absolute inset-x-[7%] top-[12%] bottom-[20%] border border-dashed border-cyan-400/50 rounded-xl pointer-events-none">
-                            <div class="w-2.5 h-2.5 border-t-2 border-l-2 border-cyan-400 absolute -top-0.5 -left-0.5"></div>
-                            <div class="w-2.5 h-2.5 border-t-2 border-r-2 border-cyan-400 absolute -top-0.5 -right-0.5"></div>
-                            <div class="w-2.5 h-2.5 border-b-2 border-l-2 border-cyan-400 absolute -bottom-0.5 -left-0.5"></div>
-                            <div class="w-2.5 h-2.5 border-b-2 border-r-2 border-cyan-400 absolute -bottom-0.5 -right-0.5"></div>
-                        </div>
-                        <div id="mobileGuideLineV" class="absolute left-1/2 top-0 bottom-0 w-px border-l border-dashed border-cyan-400/35 -translate-x-1/2 transition-all"></div>
-                        <div id="mobileGuideLineH" class="absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-cyan-400/35 -translate-y-1/2 transition-all"></div>
-                        <div class="w-2 h-2 rounded-full border border-cyan-400/70 bg-cyan-400/40 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-                    </div>
-
-                    <!-- Mobile Interactive Draggable Subtitle Element -->
+                    <!-- Draggable Subtitle Box InShot Style -->
                     <div id="mobileSubtitleDraggableWrapper" onpointerdown="startSubtitleDrag(event, 'mobile')" class="absolute left-1/2 top-[75%] -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing select-none z-25 touch-none">
-                        <div class="subtitle-handle top-left" onpointerdown="startSubtitleResize(event, 'tl')"></div>
-                        <div class="subtitle-handle top-right" onpointerdown="startSubtitleResize(event, 'tr')"></div>
-                        <div class="subtitle-handle bottom-left" onpointerdown="startSubtitleResize(event, 'bl')"></div>
-                        <div class="subtitle-handle bottom-right" onpointerdown="startSubtitleResize(event, 'br')"></div>
-                        <div id="mobileSubtitleBox" class="text-center font-black text-base tracking-wide uppercase transition-all duration-150 inline-block px-2.5 py-0.5 rounded-lg" style="color: #FFE600; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 2px 8px rgba(0,0,0,0.9);">
-                            LEGENDA SINCRONIZADA
-                        </div>
-                    </div>
-
-                    <!-- Mobile Subtitle Overlay (Legacy fallback) -->
-                    <div id="mobileSubtitleOverlay" class="hidden"></div>
-                </div>
-
-                <!-- CapCut Mobile Transport & Time Controls (32px) -->
-                <div class="h-8 px-3 flex items-center justify-between text-xs bg-[#121317] border-t border-[var(--border)] text-[var(--text-secondary)] shrink-0 font-mono">
-                    <div class="flex items-center space-x-1.5 text-[11px]">
-                        <span id="mobileTimeCur" class="text-[var(--text-primary)] font-bold">00:00</span>
-                        <span class="text-[var(--text-muted)]">/</span>
-                        <span id="mobileTimeDur" class="text-[var(--text-muted)]">00:00</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="undoAction()" class="text-xs hover:text-[var(--text-primary)] p-1"><i class="fa-solid fa-rotate-left"></i></button>
-                        <button onclick="redoAction()" class="text-xs hover:text-[var(--text-primary)] p-1"><i class="fa-solid fa-rotate-right"></i></button>
-                        <button onclick="toggleMobilePlay()" class="text-xs text-[var(--accent)] hover:brightness-125 p-1"><i class="fa-solid fa-play"></i></button>
-                    </div>
-                </div>
-
-                <!-- CapCut Authentic Timeline Reel with Dynamic Synchronized Playhead (84px) -->
-                <div class="h-[84px] bg-[var(--bg-panel)] border-t border-[var(--border)] flex flex-col p-1.5 select-none relative overflow-hidden shrink-0" id="mobileTimelineContainer">
-                    <!-- Dynamic Synchronized Needle -->
-                    <div id="mobilePlayheadNeedle" class="absolute inset-y-0 left-4 w-0.5 bg-white z-30 pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-[left] duration-75">
-                        <div class="w-3 h-3 rounded-full bg-cyan-400 border border-white absolute -top-1 left-1/2 -translate-x-1/2 shadow-sm"></div>
-                    </div>
-
-                    <!-- Scrollable Filmstrip Reel -->
-                    <div class="flex-1 flex flex-col justify-center space-y-1 overflow-x-auto scrollbar-none px-4" id="mobileTimelineStrip" onclick="seekByMobileTimeline(event)">
-                        <!-- Main Video Reel -->
-                        <div id="mobileVideoTrackPill" onclick="openMobileMediaSheet()" class="h-9 bg-gradient-to-r from-blue-700 via-indigo-600 to-blue-600 border border-blue-400/50 rounded-[var(--radius-sm)] min-w-full flex items-center justify-between px-3 text-[11px] text-white font-semibold shadow cursor-pointer">
-                            <span class="flex items-center truncate"><i class="fa-solid fa-film mr-2 text-cyan-300"></i><span id="mobileTrackLabel">Trilha Principal de Vídeo</span></span>
-                            <i class="fa-solid fa-plus text-xs bg-white/20 rounded-full w-5 h-5 flex items-center justify-center shrink-0"></i>
-                        </div>
-                        <!-- Secondary Audio Reel -->
-                        <div id="mobileAudioTrackPill" onclick="openMobileAudioSheet()" class="h-6 bg-emerald-950/60 border border-emerald-500/30 rounded-[var(--radius-sm)] min-w-full flex items-center justify-between px-3 text-[10px] text-emerald-300 font-medium cursor-pointer">
-                            <span class="flex items-center truncate"><i class="fa-solid fa-music mr-2 text-emerald-400"></i><span id="mobileAudioLabel">+ Adicionar / Gerenciar Áudio</span></span>
+                        <div id="mobileSubtitleBox" class="text-center font-black text-base tracking-wide uppercase transition-all duration-150 inline-block px-2.5 py-0.5 rounded" style="color: #FFE600; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 2px 8px rgba(0,0,0,0.9);">
                         </div>
                     </div>
                 </div>
 
-                <!-- CapCut Fixed Bottom Action Dock (Scrollable 9-item Carousel) (56px) -->
-                <div class="h-14 bg-[#121317] border-t border-[var(--border)] px-1 flex items-center space-x-1 overflow-x-auto scrollbar-none text-[10px] text-[var(--text-secondary)] shrink-0 z-20 pb-[max(2px,env(safe-area-inset-bottom))]">
-                    <button onclick="openMobileMediaSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-[var(--accent)] space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-photo-film text-sm text-cyan-400"></i>
-                        <span class="leading-none">Mídias</span>
+                <!-- Empty State When No Video Is Loaded -->
+                <div id="mobileEmptyState" class="absolute inset-0 flex flex-col items-center justify-center p-4 bg-[#141414] z-20 text-center">
+                    <div onclick="openMobileMediaSheet()" class="w-16 h-16 rounded-full bg-[#FE2C55] text-white flex items-center justify-center text-2xl mb-3 shadow-lg cursor-pointer active:scale-95 transition">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <h3 class="text-white text-sm font-bold tracking-wide mb-1">Novo Projeto</h3>
+                    <p class="text-white/60 text-xs max-w-[220px]">Toque para selecionar um vídeo da sua galeria ou armazenamento</p>
+                </div>
+            </main>
+
+            <!-- 3. INSHOT MID-BAR: Undo, Redo, Play, Keyframe, Fullscreen (38px) -->
+            <div class="h-10 px-4 flex items-center justify-between text-white/70 bg-[#1A1A1A] shrink-0 border-t border-white/5">
+                <!-- Left: Undo & Redo -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="undoAction()" class="w-7 h-7 flex items-center justify-center hover:text-white active:scale-90 transition" title="Desfazer">
+                        <i class="fa-solid fa-arrow-rotate-left text-sm"></i>
                     </button>
-                    <button onclick="splitSelectedClip()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-[var(--accent)] space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-scissors text-sm text-[var(--text-primary)]"></i>
-                        <span class="leading-none">Dividir</span>
+                    <button onclick="redoAction()" class="w-7 h-7 flex items-center justify-center hover:text-white active:scale-90 transition" title="Refazer">
+                        <i class="fa-solid fa-arrow-rotate-right text-sm"></i>
                     </button>
-                    <button onclick="triggerAutoCut()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-[var(--accent)] space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-bolt text-sm text-purple-400"></i>
-                        <span class="leading-none">AutoCut</span>
+                </div>
+
+                <!-- Center: Direct Play / Pause InShot Triangle -->
+                <button onclick="toggleMobilePlay()" id="inshotPlayBtn" class="w-8 h-8 flex items-center justify-center text-white hover:text-amber-400 active:scale-90 transition" title="Reproduzir/Pausar">
+                    <i class="fa-solid fa-play text-base ml-0.5"></i>
+                </button>
+
+                <!-- Right: Keyframe Diamond & Expand Fullscreen -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="showToast('Marcador salvo na agulha')" class="w-7 h-7 flex items-center justify-center hover:text-white active:scale-90 transition" title="Keyframe">
+                        <i class="fa-solid fa-diamond text-sm"></i>
                     </button>
-                    <button onclick="openMobileSubtitleSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-emerald-400 space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-font text-sm text-emerald-400"></i>
-                        <span class="leading-none">Legendas</span>
+                    <button onclick="toggleMobileFullscreen()" class="w-7 h-7 flex items-center justify-center hover:text-white active:scale-90 transition" title="Tela Cheia">
+                        <i class="fa-solid fa-expand text-sm"></i>
                     </button>
-                    <button onclick="openMobileFiltersSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-amber-400 space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-circle-half-stroke text-sm text-amber-400"></i>
-                        <span class="leading-none">Filtros</span>
-                    </button>
-                    <button onclick="openMobileAudioSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-pink-400 space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-music text-sm text-pink-400"></i>
-                        <span class="leading-none">Áudio</span>
-                    </button>
-                    <button onclick="openMobileSpeedSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-blue-400 space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-gauge-high text-sm text-blue-400"></i>
-                        <span class="leading-none">Velocidade</span>
-                    </button>
-                    <button onclick="openMobileRatioSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-cyan-300 space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-crop-simple text-sm text-cyan-300"></i>
-                        <span class="leading-none">Formato</span>
-                    </button>
-                    <button onclick="openCapCutToolsModal()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-[var(--accent)] space-y-0.5 active:scale-95 transition">
-                        <i class="fa-solid fa-wand-magic-sparkles text-sm text-cyan-400"></i>
-                        <span class="leading-none">Mais IA</span>
-                    </button>
+                </div>
+            </div>
+
+            <!-- 4. INSHOT TOOLBAR ICONS (Scrollable 1-row Horizontal Carousel) (58px) -->
+            <div class="h-[62px] bg-[#1A1A1A] px-2 flex items-center space-x-1.5 overflow-x-auto scrollbar-none shrink-0 z-20 border-b border-white/5">
+                
+                <!-- Tool: Canvas (Proporção) -->
+                <button onclick="openMobileRatioSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-crop-simple text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Canvas</span>
+                </button>
+
+                <!-- Tool: Música / Áudio -->
+                <button onclick="openMobileAudioSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-music text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Áudio</span>
+                </button>
+
+                <!-- Tool: Sticker / AutoCut -->
+                <button onclick="triggerAutoCut()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition relative">
+                    <div class="w-7 h-7 flex items-center justify-center relative">
+                        <i class="fa-regular fa-face-smile text-base"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 rounded-full bg-[#FFE600]"></span>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">AutoCut</span>
+                </button>
+
+                <!-- Tool: Texto / Legendas -->
+                <button onclick="openMobileSubtitleSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-font text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Texto</span>
+                </button>
+
+                <!-- Tool: Efeito / IA -->
+                <button onclick="openMobileEffectsSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition relative">
+                    <div class="w-7 h-7 flex items-center justify-center relative">
+                        <i class="fa-solid fa-star text-base"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 rounded-full bg-[#FFE600]"></span>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Efeito</span>
+                </button>
+
+                <!-- Tool: Filtro -->
+                <button onclick="openMobileFiltersSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-half-stroke text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Filtro</span>
+                </button>
+
+                <!-- Tool: Pré-corte / Dividir -->
+                <button onclick="splitSelectedClip()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-scissors text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Dividir</span>
+                </button>
+
+                <!-- Tool: Excluir -->
+                <button onclick="deleteSelectedClip()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-trash-can text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Excluir</span>
+                </button>
+
+                <!-- Tool: Velocidade -->
+                <button onclick="openMobileSpeedSheet()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-gauge-high text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Velocidade</span>
+                </button>
+
+                <!-- Tool: Girar / Rotação -->
+                <button onclick="rotateVideo90()" class="flex flex-col items-center justify-center min-w-[56px] h-full text-white/80 hover:text-white space-y-1 active:scale-95 transition">
+                    <div class="w-7 h-7 flex items-center justify-center">
+                        <i class="fa-solid fa-rotate-right text-base"></i>
+                    </div>
+                    <span class="text-[10px] font-medium leading-none">Girar</span>
+                </button>
+
+            </div>
+
+            <!-- 5. INSHOT TIMELINE ROW WITH RED [+] BUTTON, SILENCIAR & THUMBNAIL TRACK -->
+            <div class="h-20 bg-[#141414] px-3 flex items-center space-x-3 shrink-0 relative overflow-hidden select-none">
+                
+                <!-- Red InShot Add Media [+] Pill Button -->
+                <button onclick="openMobileMediaSheet()" class="w-11 h-11 rounded-2xl bg-[#FF3B5C] hover:bg-[#E02447] text-white flex items-center justify-center text-xl shrink-0 shadow-lg active:scale-90 transition" title="Adicionar Clipe / Foto">
+                    <i class="fa-solid fa-plus font-bold"></i>
+                </button>
+
+                <!-- Silenciar Áudio do Vídeo Pill Button -->
+                <button onclick="toggleMobileMute()" id="mobileMuteBtn" class="flex flex-col items-center justify-center px-1 text-white/60 hover:text-white shrink-0 active:scale-90 transition" title="Silenciar Vídeo">
+                    <i id="mobileMuteIcon" class="fa-solid fa-volume-high text-base mb-1"></i>
+                    <span class="text-[9px] font-medium leading-none" id="mobileMuteText">Silenciar</span>
+                </button>
+
+                <!-- InShot Video Reel with Thumbnails and Film Strip with Drag Handle -->
+                <div class="flex-1 h-12 bg-[#222222] rounded-md relative flex items-center overflow-x-auto scrollbar-none cursor-pointer border border-white/10" id="mobileTimelineStrip" onclick="seekByMobileTimeline(event)">
+                    
+                    <!-- Fixed Center White Line Indicator with Round Handle (Exact InShot Replica) -->
+                    <div id="mobilePlayheadNeedle" class="absolute inset-y-0 left-0 w-0.5 bg-white z-30 pointer-events-none shadow-[0_0_6px_rgba(255,255,255,0.9)] transition-[left] duration-75">
+                        <div class="w-4 h-4 rounded-full bg-white border border-black/30 shadow absolute -top-1.5 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                            <div class="w-1.5 h-1.5 rounded-full bg-black/60"></div>
+                        </div>
+                    </div>
+
+                    <!-- Filmstrip Clips Container -->
+                    <div id="mobileClipsStripContainer" class="flex items-center h-full min-w-full px-2 space-x-1">
+                        <div class="h-10 bg-[#333333] border border-white/20 rounded flex items-center px-3 text-xs text-white/90 font-medium truncate min-w-full shadow-inner">
+                            <i class="fa-solid fa-film mr-2 text-amber-400 text-xs"></i>
+                            <span id="mobileTrackLabel">Carregue um vídeo</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
-        </div>
 
-        <!-- END OF TAB 1: VIDEO STUDIO -->
+            <!-- 6. INSHOT TIME RULER & COUNTER FOOTER (24px) -->
+            <div class="h-6 px-4 bg-[#141414] flex items-center justify-between text-[11px] font-mono text-white/50 shrink-0 border-t border-white/5">
+                <span id="mobileTimeCur" class="text-white font-bold">0:00.0</span>
+                <div class="flex space-x-6 text-[9px] text-white/30 hidden xs:flex">
+                    <span>00:00</span>
+                    <span>00:02</span>
+                    <span>00:04</span>
+                    <span>00:06</span>
+                </div>
+                <span id="mobileTimeDur">0:00.0</span>
+            </div>
+
+        </div><!-- END OF TAB 1: VIDEO STUDIO -->
         </div>
 
         <!-- ============================================================== -->
@@ -3082,14 +3102,14 @@
                 mobVid.onplay = () => {
                     const btn = document.getElementById('btnPlayPause');
                     if (btn) btn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
-                    const overlay = document.getElementById('mobilePlayOverlay');
-                    if (overlay) overlay.style.display = 'none';
+                    const inshotBtn = document.getElementById('inshotPlayBtn');
+                    if (inshotBtn) inshotBtn.innerHTML = '<i class="fa-solid fa-pause text-base"></i>';
                 };
                 mobVid.onpause = () => {
                     const btn = document.getElementById('btnPlayPause');
                     if (btn) btn.innerHTML = '<i class="fa-solid fa-play text-xs ml-0.5"></i>';
-                    const overlay = document.getElementById('mobilePlayOverlay');
-                    if (overlay) overlay.style.display = 'flex';
+                    const inshotBtn = document.getElementById('inshotPlayBtn');
+                    if (inshotBtn) inshotBtn.innerHTML = '<i class="fa-solid fa-play text-base ml-0.5"></i>';
                 };
                 mobVid.onloadedmetadata = () => {
                     if (mobVid.duration && !isNaN(mobVid.duration) && mobVid.duration > 0) {
@@ -3152,7 +3172,12 @@
                 if (durLbl) durLbl.innerText = formatTime(vid.duration);
                 const tcLbl = document.getElementById('timelineTimecode');
                 if (tcLbl) tcLbl.innerText = `00:00:00 / ${formatTime(vid.duration)}`;
-                    document.getElementById('mobileTimeDur').innerText = formatTime(vid.duration);
+                    const mD = Math.floor(vid.duration / 60);
+                    const sD = Math.floor(vid.duration % 60);
+                    const msD = Math.floor((vid.duration % 1) * 10);
+                    const durText = `${mD}:${String(sD).padStart(2, '0')}.${msD}`;
+                    const durEl = document.getElementById('mobileTimeDur');
+                    if (durEl) durEl.innerText = durText;
                     
                     if (clips.length === 0 || (clips.length === 1 && (clips[0].end === 15 || clips[0].end === 10))) {
                         clips = [{
@@ -5624,6 +5649,41 @@ function setupPanelResizers() {
             }
         }
 
+        function toggleMobileFullscreen() {
+            const frame = document.getElementById('mobilePlayerFrame');
+            if (!document.fullscreenElement) {
+                if (frame.requestFullscreen) frame.requestFullscreen();
+                else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        let isMobileAudioMuted = false;
+        function toggleMobileMute() {
+            isMobileAudioMuted = !isMobileAudioMuted;
+            const mobVid = document.getElementById('mobileVideo');
+            const deskVid = document.getElementById('studioVideo');
+            if (mobVid) mobVid.muted = isMobileAudioMuted;
+            if (deskVid) deskVid.muted = isMobileAudioMuted;
+
+            const icon = document.getElementById('mobileMuteIcon');
+            const txt = document.getElementById('mobileMuteText');
+            if (isMobileAudioMuted) {
+                if (icon) icon.className = 'fa-solid fa-volume-xmark text-base mb-1 text-rose-400';
+                if (txt) { txt.innerText = 'Mudo'; txt.classList.add('text-rose-400'); }
+                showToast("Áudio silenciado");
+            } else {
+                if (icon) icon.className = 'fa-solid fa-volume-high text-base mb-1';
+                if (txt) { txt.innerText = 'Silenciar'; txt.classList.remove('text-rose-400'); }
+                showToast("Áudio reativado");
+            }
+        }
+
+        function openMobileEffectsSheet() {
+            openMobileFiltersSheet();
+        }
+
         function toggleMobilePlay() {
             const vid = document.getElementById('mobileVideo');
             const deskVid = document.getElementById('studioVideo');
@@ -5661,7 +5721,10 @@ function setupPanelResizers() {
             const ms = Math.floor((sec % 1) * 30);
             const str = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(ms).padStart(2, '0')}`;
             document.getElementById('timelineTimecode').innerText = str;
-            document.getElementById('mobileTimeCur').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            const msTenth = Math.floor((sec % 1) * 10);
+            const inshotCur = `${m}:${String(s).padStart(2, '0')}.${msTenth}`;
+            const mobCurEl = document.getElementById('mobileTimeCur');
+            if (mobCurEl) mobCurEl.innerText = inshotCur;
         }
 
         function showToast(msg, isError = false) {

@@ -616,15 +616,98 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                 return
 
             elif parsed.path == "/api/delete-media":
-                file_path = body.get("path")
-                if file_path and os.path.exists(file_path):
-                    try:
-                        os.remove(file_path)
-                        self._send_json({"status": "success", "message": "Arquivo removido com sucesso"})
-                    except Exception as err:
-                        self._send_json({"status": "error", "message": str(err)})
+                paths = body.get("server_paths") or body.get("paths")
+                if not paths:
+                    single = body.get("path") or body.get("server_path")
+                    if single:
+                        paths = [single]
+                
+                if paths:
+                    deleted_count = 0
+                    errors = []
+                    for p in paths:
+                        if not p:
+                            continue
+                        p_obj = Path(p)
+                        if not p_obj.exists():
+                            for fld in [DOWNLOADS_DIR, UPLOAD_DIR, OUTPUT_DIR]:
+                                candidate = fld / p_obj.name
+                                if candidate.exists():
+                                    p_obj = candidate
+                                    break
+                        if p_obj.exists() and p_obj.is_file():
+                            try:
+                                p_obj.unlink()
+                                deleted_count += 1
+                            except Exception as err:
+                                errors.append(f"{p_obj.name}: {err}")
+                        else:
+                            errors.append(f"{p_obj.name}: não encontrado")
+                    
+                    if deleted_count > 0:
+                        self._send_json({"status": "success", "message": f"{deleted_count} arquivo(s) removido(s) com sucesso", "deleted_count": deleted_count})
+                    else:
+                        self._send_json({"status": "error", "message": "; ".join(errors) or "Nenhum arquivo encontrado"})
                 else:
-                    self._send_json({"status": "error", "message": "Arquivo não encontrado"})
+                    self._send_json({"status": "error", "message": "Nenhum arquivo especificado"})
+                return
+
+            elif parsed.path == "/api/save-caption-segments":
+                segments = body.get("segments", [])
+                video_path = body.get("video_path")
+                out_base = Path(video_path).stem if video_path else "captions"
+                srt_path = DOWNLOADS_DIR / f"{out_base}_edited.srt"
+                ass_path = DOWNLOADS_DIR / f"{out_base}_edited.ass"
+                
+                srt_lines = []
+                ass_events = []
+                
+                def fmt_time_srt(secs: float) -> str:
+                    h = int(secs // 3600)
+                    m = int((secs % 3600) // 60)
+                    s = int(secs % 60)
+                    ms = int(round((secs - int(secs)) * 1000))
+                    return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+                
+                def fmt_time_ass(secs: float) -> str:
+                    h = int(secs // 3600)
+                    m = int((secs % 3600) // 60)
+                    s = int(secs % 60)
+                    cs = int(round((secs - int(secs)) * 100))
+                    return f"{h:d}:{m:02d}:{s:02d}.{cs:02d}"
+
+                for i, seg in enumerate(segments):
+                    s_start = float(seg.get("start", 0))
+                    s_end = float(seg.get("end", s_start + 1))
+                    text = str(seg.get("text", "")).strip()
+                    srt_lines.append(f"{i+1}\n{fmt_time_srt(s_start)} --> {fmt_time_srt(s_end)}\n{text}\n")
+                    ass_events.append(f"Dialogue: 0,{fmt_time_ass(s_start)},{fmt_time_ass(s_end)},CapCutStyle,,0,0,0,,{{\\c&H00FFFF&}}{text.upper()}")
+
+                with open(srt_path, "w", encoding="utf-8") as f:
+                    f.write("\n".join(srt_lines))
+
+                ass_header = """[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: CapCutStyle,Impact,80,&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,6,3,2,40,40,280,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+                with open(ass_path, "w", encoding="utf-8") as f:
+                    f.write(ass_header + "\n".join(ass_events))
+                
+                self._send_json({
+                    "status": "success",
+                    "message": f"{len(segments)} trechos de legendas salvos",
+                    "srt_path": str(srt_path),
+                    "ass_path": str(ass_path)
+                })
                 return
 
             elif parsed.path == "/api/open-folder":
