@@ -1528,7 +1528,7 @@
             <div class="h-20 bg-[#141414] px-3 flex items-center space-x-3 shrink-0 relative overflow-hidden select-none">
                 
                 <!-- Red InShot Add Media [+] Pill Button -->
-                <button onclick="openMobileMediaSheet()" class="w-11 h-11 rounded-2xl bg-[#FF3B5C] hover:bg-[#E02447] text-white flex items-center justify-center text-xl shrink-0 shadow-lg active:scale-90 transition" title="Adicionar Clipe / Foto">
+                <button onclick="openInShotAddPopup()" class="w-11 h-11 rounded-2xl bg-[#FF3B5C] hover:bg-[#E02447] text-white flex items-center justify-center text-xl shrink-0 shadow-lg active:scale-90 transition" title="Adicionar Clipe / Foto">
                     <i class="fa-solid fa-plus font-bold"></i>
                 </button>
 
@@ -2091,6 +2091,61 @@
 
     <!-- Hidden native file input for mobile uploads -->
     <input type="file" id="mobileNativeFileInput" multiple accept="video/*,audio/*,image/*" class="hidden" onchange="handleFileSelect(event)">
+
+    <!-- INSHOT ADD MEDIA POPUP (EM BRANCO / VÍDEO & FOTO) -->
+    <div id="inshotAddPopup" class="fixed inset-0 z-50 flex items-end justify-start p-4 pb-24 hidden bg-black/60 backdrop-blur-xs select-none" onclick="closeInShotAddPopup()">
+        <div class="bg-white text-black rounded-2xl p-2 shadow-2xl flex flex-col space-y-1 min-w-[200px] border border-black/10 animate-in fade-in zoom-in duration-150" onclick="event.stopPropagation()">
+            <!-- Option 1: Em branco (Bloco de cor/vazio na timeline) -->
+            <button onclick="insertInShotBlankClip()" class="flex items-center justify-between px-3.5 py-3 rounded-xl hover:bg-neutral-100 active:bg-neutral-200 transition text-left group">
+                <span class="font-bold text-xs text-neutral-900 group-hover:text-black">Em branco</span>
+                <i class="fa-regular fa-square text-base text-neutral-500 group-hover:text-black"></i>
+            </button>
+            <div class="h-px bg-neutral-200 mx-2"></div>
+            <!-- Option 2: Vídeo / Foto (Abre galeria com inserção direta) -->
+            <button onclick="openInShotNativePicker()" class="flex items-center justify-between px-3.5 py-3 rounded-xl hover:bg-neutral-100 active:bg-neutral-200 transition text-left group">
+                <span class="font-bold text-xs text-neutral-900 group-hover:text-black">Vídeo / Foto</span>
+                <i class="fa-regular fa-images text-base text-neutral-500 group-hover:text-black"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- INSHOT REORDER & DRAG-TO-DELETE DOCK MODAL (SEGREDO INSHOT) -->
+    <div id="inshotReorderModal" class="fixed inset-0 z-50 flex flex-col justify-end hidden bg-black/60 backdrop-blur-xs select-none">
+        <div class="flex-1" onclick="closeInShotReorderModal()"></div>
+
+        <!-- Drop/Trash Zone that appears when dragging clip down -->
+        <div id="inshotTrashDropZone" class="h-20 bg-rose-950/80 border-t-2 border-dashed border-rose-500 flex items-center justify-center space-x-2 text-rose-300 font-bold text-xs transition-all duration-200 hidden">
+            <i class="fa-solid fa-trash-can text-lg animate-bounce"></i>
+            <span>Arraste aqui para EXCLUIR</span>
+        </div>
+
+        <!-- Reorder Drawer Container -->
+        <div class="bg-[#181A20] border-t border-white/10 rounded-t-2xl p-3 flex flex-col shadow-2xl">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-2 pb-2 border-b border-white/5">
+                <div class="flex items-center space-x-2 text-white/90">
+                    <button onclick="closeInShotReorderModal()" class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white active:scale-95 transition">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <span class="font-bold text-xs">Organizar Clipes</span>
+                </div>
+                <span class="text-[10px] text-amber-400 font-medium">Arraste para trocar • Puxe para baixo para excluir</span>
+                <button onclick="closeInShotReorderModal()" class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-emerald-400 active:scale-95 transition">
+                    <i class="fa-solid fa-check text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Horizontal Carousel of Reorder Tiles -->
+            <div id="inshotReorderTilesContainer" class="flex items-center space-x-2.5 overflow-x-auto py-3 px-1 scrollbar-none min-h-[90px]">
+                <!-- Populated dynamically via renderInShotReorderTiles() -->
+            </div>
+
+            <div class="text-center text-[10px] text-white/40 font-medium pb-1">
+                Arrastar para trocar
+            </div>
+        </div>
+    </div>
+
 
     
 
@@ -4395,43 +4450,7 @@ function renderTimelineClips() {
             }
         }
 
-        // Import File PC
-        async function handleFileSelect(e) {
-            const file = e.target.files && e.target.files[0];
-            if (!file) return;
-
-            showToast(`Enviando ${file.name}...`);
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const res = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    const sPath = data.server_path || data.path;
-                    const dUrl = data.download_url || data.url;
-                    const dur = (data.info && data.info.duration) ? data.info.duration : 0;
-                    
-                    // Switch to video studio immediately so user sees the clip
-                    switchAppTab('video');
-                    loadVideoFile(sPath, dUrl, data.filename || file.name, dur);
-                    showToast(`✓ Arquivo [${data.filename || file.name}] carregado com sucesso!`);
-                    
-                    if (typeof loadAndRenderLibrary === 'function') {
-                        loadAndRenderLibrary();
-                    }
-                } else {
-                    showToast(data.message || "Erro no upload", true);
-                }
-            } catch (err) {
-                showToast(`Falha ao enviar arquivo: ${err.message}`, true);
-            } finally {
-                e.target.value = '';
-            }
-        }
+// Single file upload handled by batch handleFileSelect below
 
         // Pull Latest Video from Xiaomi Redmi 12 (ADB)
         async function pullLatestRedmiVideo() {
@@ -6509,9 +6528,28 @@ function setupPanelResizers() {
 
             if (firstVideoData) {
                 switchAppTab('video');
-                loadVideoFile(firstVideoData.path, firstVideoData.url, firstVideoData.name, firstVideoData.duration);
+                if (clips.length === 0) {
+                    loadVideoFile(firstVideoData.path, firstVideoData.url, firstVideoData.name, firstVideoData.duration);
+                } else {
+                    // Timeline already has clips, append first uploaded file directly as a clip
+                    const lastEnd = clips.length > 0 ? clips[clips.length - 1].end : 0;
+                    clips.push({
+                        id: 'clip_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                        start: lastEnd,
+                        end: lastEnd + (firstVideoData.duration || 5),
+                        label: firstVideoData.name,
+                        path: firstVideoData.path,
+                        url: firstVideoData.url,
+                        isImage: firstVideoData.isImage
+                    });
+                    currentVideoDuration = Math.max(currentVideoDuration, lastEnd + (firstVideoData.duration || 5));
+                    renderTimelineClips();
+                    renderMobileTimeline();
+                }
                 saveCurrentProject(false);
             }
+            renderTimelineClips();
+            renderMobileTimeline();
         }
 
         // --- PROJECT MANAGER (MULTI-PROJECTS) ---
@@ -7589,15 +7627,344 @@ function setupPanelResizers() {
         }
 
         // 4. INSHOT FILMSTRIP TIMELINE COM ARRASTO, ORDENAÇÃO E PREVIEW EM TEMPO REAL
+        
+        // ==============================================================
+        // INSHOT LONG-PRESS REORDER MODE, DRAG-TO-DELETE & DIRECT ADD
+        // ==============================================================
+
+        // 1. INSHOT ADD MEDIA POPUP (EM BRANCO / VÍDEO & FOTO)
+        function openInShotAddPopup() {
+            const popup = document.getElementById('inshotAddPopup');
+            if (popup) popup.classList.remove('hidden');
+        }
+
+        function closeInShotAddPopup() {
+            const popup = document.getElementById('inshotAddPopup');
+            if (popup) popup.classList.add('hidden');
+        }
+
+        function insertInShotBlankClip() {
+            closeInShotAddPopup();
+            saveHistory();
+            const lastEnd = clips.length > 0 ? clips[clips.length - 1].end : 0;
+            const dur = 3; // 3 seconds blank gap (InShot benchmark)
+
+            const blankClip = {
+                id: 'clip_blank_' + Date.now(),
+                start: lastEnd,
+                end: lastEnd + dur,
+                label: 'Em branco',
+                url: '',
+                path: '',
+                isBlank: true,
+                isImage: false
+            };
+
+            clips.push(blankClip);
+            currentVideoDuration = Math.max(currentVideoDuration || 0, lastEnd + dur);
+            selectedClipIndex = clips.length - 1;
+
+            renderTimelineClips();
+            renderMobileTimeline();
+            updateTimelineRuler();
+            showToast('✓ Bloco em branco inserido na trilha!');
+        }
+
+        function openInShotNativePicker() {
+            closeInShotAddPopup();
+            const nativeInput = document.getElementById('mobileNativeFileInput');
+            if (nativeInput) {
+                nativeInput.click();
+            }
+        }
+
+        // 2. INSHOT LONG-PRESS REORDER MODE & TILES ENGINE
+        let inshotLongPressTimer = null;
+        let isReorderModalOpen = false;
+        let reorderDragSourceIdx = null;
+
+        function attachMobileClipTouchHandlers(el, idx) {
+            el.addEventListener('touchstart', (e) => {
+                inshotLongPressTimer = setTimeout(() => {
+                    openInShotReorderModal(idx);
+                }, 400); // 400ms long press threshold
+            }, { passive: true });
+
+            el.addEventListener('touchend', () => {
+                if (inshotLongPressTimer) clearTimeout(inshotLongPressTimer);
+            });
+
+            el.addEventListener('touchmove', () => {
+                if (inshotLongPressTimer) clearTimeout(inshotLongPressTimer);
+            });
+
+            // Desktop Right-Click or Long Mouse Down fallback
+            el.addEventListener('mousedown', (e) => {
+                inshotLongPressTimer = setTimeout(() => {
+                    openInShotReorderModal(idx);
+                }, 500);
+            });
+
+            el.addEventListener('mouseup', () => {
+                if (inshotLongPressTimer) clearTimeout(inshotLongPressTimer);
+            });
+        }
+
+        function openInShotReorderModal(initialIndex = 0) {
+            isReorderModalOpen = true;
+            const modal = document.getElementById('inshotReorderModal');
+            if (modal) modal.classList.remove('hidden');
+            renderInShotReorderTiles(initialIndex);
+            if (navigator.vibrate) navigator.vibrate(40);
+            showToast('Modo de organização: arraste para trocar ou puxe para baixo para excluir');
+        }
+
+        function closeInShotReorderModal() {
+            isReorderModalOpen = false;
+            const modal = document.getElementById('inshotReorderModal');
+            if (modal) modal.classList.add('hidden');
+            const trash = document.getElementById('inshotTrashDropZone');
+            if (trash) trash.classList.add('hidden');
+            renderTimelineClips();
+            renderMobileTimeline();
+        }
+
+        function renderInShotReorderTiles(activeIdx = 0) {
+            const container = document.getElementById('inshotReorderTilesContainer');
+            if (!container) return;
+
+            if (clips.length === 0) {
+                container.innerHTML = '<div class="text-xs text-white/50 p-4 text-center">Nenhum clipe na trilha.</div>';
+                return;
+            }
+
+            let html = '';
+            clips.forEach((c, idx) => {
+                const dur = Math.max(1, Math.round(c.end - c.start));
+                const durStr = dur < 60 ? (':' + dur.toString().padStart(2, '0')) : formatTime(dur);
+                const isSelected = (idx === activeIdx);
+                const isBlank = c.isBlank || (!c.url && !c.path);
+
+                html += `
+                    <div id="reorderTile_${idx}" 
+                         data-index="${idx}"
+                         class="inshot-reorder-tile relative w-16 h-20 rounded-xl overflow-hidden shrink-0 border-2 ${isSelected ? 'border-white ring-2 ring-white/50 shadow-2xl scale-105' : 'border-white/20 opacity-90'} bg-[#252830] select-none flex flex-col justify-between p-1.5 transition cursor-grab active:cursor-grabbing active:scale-95"
+                         draggable="true">
+                        
+                        <!-- Top Index Badge & Type Icon -->
+                        <div class="flex items-center justify-between text-[10px] font-black drop-shadow text-white">
+                            <span class="w-4 h-4 rounded-full bg-black/60 flex items-center justify-center font-mono">${idx + 1}</span>
+                            <i class="fa-solid ${isBlank ? 'fa-square' : (c.isImage ? 'fa-image text-emerald-400' : 'fa-video text-amber-400')} text-[9px]"></i>
+                        </div>
+
+                        <!-- Center Thumb / Visual representation -->
+                        <div class="flex-1 flex items-center justify-center pointer-events-none">
+                            ${isBlank ? `
+                                <span class="text-[9px] text-white/40 uppercase font-bold text-center leading-tight">Em branco</span>
+                            ` : `
+                                <i class="fa-solid fa-play text-white/60 text-xs"></i>
+                            `}
+                        </div>
+
+                        <!-- Bottom Duration -->
+                        <div class="text-right text-[10px] font-mono font-bold text-white/90 drop-shadow">
+                            ${durStr}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            setupReorderDragAndDrop();
+        }
+
+        function setupReorderDragAndDrop() {
+            const container = document.getElementById('inshotReorderTilesContainer');
+            const trash = document.getElementById('inshotTrashDropZone');
+            if (!container) return;
+
+            const tiles = container.querySelectorAll('.inshot-reorder-tile');
+            tiles.forEach(tile => {
+                const idx = parseInt(tile.getAttribute('data-index'), 10);
+
+                // Touch drag support for mobile screens
+                let touchStartY = 0;
+                let touchStartX = 0;
+                let isDraggingDown = false;
+
+                tile.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                    reorderDragSourceIdx = idx;
+                    isDraggingDown = false;
+                }, { passive: true });
+
+                tile.addEventListener('touchmove', (e) => {
+                    const touch = e.touches[0];
+                    const deltaY = touch.clientY - touchStartY;
+                    const deltaX = Math.abs(touch.clientX - touchStartX);
+
+                    // Pulling downward activates delete area
+                    if (deltaY > 35 && deltaY > deltaX) {
+                        isDraggingDown = true;
+                        if (trash) {
+                            trash.classList.remove('hidden');
+                            trash.classList.add('bg-rose-900', 'border-rose-400');
+                        }
+                        tile.style.transform = `translateY(${deltaY}px) scale(0.9)`;
+                        tile.style.opacity = '0.6';
+                    } else if (isDraggingDown) {
+                        isDraggingDown = false;
+                        if (trash) trash.classList.add('hidden');
+                        tile.style.transform = '';
+                        tile.style.opacity = '1';
+                    }
+                }, { passive: true });
+
+                tile.addEventListener('touchend', (e) => {
+                    tile.style.transform = '';
+                    tile.style.opacity = '1';
+
+                    if (isDraggingDown) {
+                        // Drop in trash triggered delete!
+                        deleteClipByIndex(reorderDragSourceIdx);
+                        if (trash) trash.classList.add('hidden');
+                        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+                        showToast('✓ Foto/Vídeo excluído com sucesso!');
+                        renderInShotReorderTiles(Math.max(0, reorderDragSourceIdx - 1));
+                    } else {
+                        // Check if dragged horizontally over another tile
+                        const touch = e.changedTouches[0];
+                        const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const destTile = targetEl ? targetEl.closest('.inshot-reorder-tile') : null;
+                        if (destTile) {
+                            const destIdx = parseInt(destTile.getAttribute('data-index'), 10);
+                            if (!isNaN(destIdx) && destIdx !== reorderDragSourceIdx) {
+                                swapClips(reorderDragSourceIdx, destIdx);
+                            }
+                        }
+                    }
+                    if (trash) trash.classList.add('hidden');
+                });
+
+                // HTML5 Drag and Drop for pointer / mouse
+                tile.addEventListener('dragstart', (e) => {
+                    reorderDragSourceIdx = idx;
+                    e.dataTransfer.setData('text/plain', idx);
+                    if (trash) trash.classList.remove('hidden');
+                });
+
+                tile.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    tile.classList.add('ring-2', 'ring-cyan-400');
+                });
+
+                tile.addEventListener('dragleave', () => {
+                    tile.classList.remove('ring-2', 'ring-cyan-400');
+                });
+
+                tile.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    tile.classList.remove('ring-2', 'ring-cyan-400');
+                    const srcIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    if (!isNaN(srcIdx) && srcIdx !== idx) {
+                        swapClips(srcIdx, idx);
+                    }
+                    if (trash) trash.classList.add('hidden');
+                });
+
+                tile.addEventListener('dragend', () => {
+                    if (trash) trash.classList.add('hidden');
+                });
+            });
+
+            // Trash area drop listener
+            if (trash) {
+                trash.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    trash.classList.add('bg-rose-900', 'border-rose-400');
+                });
+                trash.addEventListener('dragleave', () => {
+                    trash.classList.remove('bg-rose-900', 'border-rose-400');
+                });
+                trash.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const srcIdx = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    if (!isNaN(srcIdx)) {
+                        deleteClipByIndex(srcIdx);
+                        showToast('✓ Foto/Vídeo excluído da trilha!');
+                        renderInShotReorderTiles(Math.max(0, srcIdx - 1));
+                    }
+                    trash.classList.add('hidden');
+                });
+            }
+        }
+
+        function swapClips(fromIdx, toIdx) {
+            if (fromIdx < 0 || fromIdx >= clips.length || toIdx < 0 || toIdx >= clips.length) return;
+            saveHistory();
+            const temp = clips[fromIdx];
+            clips[fromIdx] = clips[toIdx];
+            clips[toIdx] = temp;
+            selectedClipIndex = toIdx;
+
+            // Recalculate timeline bounds sequentially
+            let curTime = 0;
+            clips.forEach(c => {
+                const dur = c.end - c.start;
+                c.start = curTime;
+                c.end = curTime + dur;
+                curTime += dur;
+            });
+            currentVideoDuration = curTime;
+
+            renderTimelineClips();
+            renderMobileTimeline();
+            renderInShotReorderTiles(toIdx);
+            if (navigator.vibrate) navigator.vibrate(30);
+            showToast('✓ Clipes reorganizados!');
+        }
+
+        function deleteClipByIndex(idx) {
+            if (idx < 0 || idx >= clips.length) return;
+            saveHistory();
+            clips.splice(idx, 1);
+            if (selectedClipIndex >= clips.length) {
+                selectedClipIndex = Math.max(0, clips.length - 1);
+            }
+
+            // Recalculate bounds
+            let curTime = 0;
+            clips.forEach(c => {
+                const dur = c.end - c.start;
+                c.start = curTime;
+                c.end = curTime + dur;
+                curTime += dur;
+            });
+            currentVideoDuration = curTime;
+
+            if (clips.length === 0) {
+                const vid = document.getElementById('studioVideo');
+                const mobVid = document.getElementById('mobileVideo');
+                if (vid) { vid.removeAttribute('src'); vid.load(); }
+                if (mobVid) { mobVid.removeAttribute('src'); mobVid.load(); }
+            }
+
+            renderTimelineClips();
+            renderMobileTimeline();
+        }
+
+
         function renderMobileTimeline() {
             const stripContainer = document.getElementById('mobileClipsStripContainer');
             if (!stripContainer) return;
 
             if (clips.length === 0) {
                 stripContainer.innerHTML = `
-                    <div class="h-10 bg-[#333333] border border-white/20 rounded flex items-center px-3 text-xs text-white/90 font-medium truncate min-w-[200px] shadow-inner" onclick="openMobileMediaSheet()">
+                    <div class="h-10 bg-[#333333] border border-white/20 rounded flex items-center px-3 text-xs text-white/90 font-medium truncate min-w-[200px] shadow-inner" onclick="openInShotAddPopup()">
                         <i class="fa-solid fa-film mr-2 text-amber-400 text-xs"></i>
-                        <span>Carregue um vídeo</span>
+                        <span>Toque no [+] para adicionar vídeo</span>
                     </div>
                 `;
                 return;
@@ -7608,23 +7975,29 @@ function setupPanelResizers() {
                 const dur = c.end - c.start;
                 const isSelected = (idx === selectedClipIndex);
                 const widthPx = Math.max(90, dur * 20); // 20px per second for tactile filmstrip
+                const isBlank = c.isBlank || (!c.url && !c.path);
 
                 html += `
-                    <div class="h-12 rounded-lg relative overflow-hidden flex items-center select-none shrink-0 transition-transform ${isSelected ? 'border-2 border-white shadow-[0_0_12px_rgba(255,255,255,0.4)] ring-1 ring-black' : 'border border-white/20 opacity-85'}" style="width: ${widthPx}px; background-color: #2D313A;" onclick="selectMobileClip(${idx})">
+                    <div id="mobClipElem_${idx}" class="h-12 rounded-lg relative overflow-hidden flex items-center select-none shrink-0 transition-transform ${isSelected ? 'border-2 border-white shadow-[0_0_12px_rgba(255,255,255,0.4)] ring-1 ring-black' : 'border border-white/20 opacity-85'} ${isBlank ? 'bg-black/90' : 'bg-[#2D313A]'}" style="width: ${widthPx}px;" onclick="selectMobileClip(${idx})">
                         
-                        <!-- Filmstrip Fake Thumbnails Pattern (Visual InShot) -->
+                        <!-- Filmstrip Pattern or Blank Icon -->
                         <div class="absolute inset-0 flex space-x-1 opacity-40 pointer-events-none p-0.5">
-                            <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
-                            <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
-                            <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                            ${isBlank ? `
+                                <div class="flex-1 flex items-center justify-center text-[10px] text-white/40"><i class="fa-regular fa-square"></i></div>
+                            ` : `
+                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                            `}
                         </div>
 
                         <!-- Clip Label & Order Controls -->
                         <div class="relative z-10 px-2 w-full flex items-center justify-between text-white text-[11px] font-bold drop-shadow">
-                            <span class="truncate max-w-[70px]">${c.label || 'Clipe'}</span>
+                            <span class="truncate max-w-[70px]">${c.label || (isBlank ? 'Em branco' : 'Clipe')}</span>
                             <div class="flex items-center space-x-1">
-                                ${idx > 0 ? `<button onclick="event.stopPropagation(); moveClipOrder(${idx}, -1)" class="w-4 h-4 rounded bg-black/60 hover:bg-black text-[9px] flex items-center justify-center text-white" title="Mover para esquerda">◀</button>` : ''}
-                                ${idx < clips.length - 1 ? `<button onclick="event.stopPropagation(); moveClipOrder(${idx}, 1)" class="w-4 h-4 rounded bg-black/60 hover:bg-black text-[9px] flex items-center justify-center text-white" title="Mover para direita">▶</button>` : ''}
+                                <button onclick="event.stopPropagation(); openInShotReorderModal(${idx})" class="w-5 h-5 rounded bg-white/20 hover:bg-white text-black hover:text-black text-[9px] flex items-center justify-center" title="Segure ou toque para organizar clipes">
+                                    <i class="fa-solid fa-grip text-white hover:text-black"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -7642,6 +8015,12 @@ function setupPanelResizers() {
                 `;
             });
             stripContainer.innerHTML = html;
+
+            // Attach Long-Press Gestures to each element
+            clips.forEach((c, idx) => {
+                const el = document.getElementById('mobClipElem_' + idx);
+                if (el) attachMobileClipTouchHandlers(el, idx);
+            });
         }
 
         function selectMobileClip(idx) {
