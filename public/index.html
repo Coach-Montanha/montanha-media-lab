@@ -2259,6 +2259,20 @@
                 </button>
             </div>
             <div class="space-y-3 text-xs">
+                <!-- InShot Custom Text Adder -->
+                <div class="bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-sm)] border border-white/10 space-y-2">
+                    <label class="label-caps block text-white font-bold flex items-center justify-between">
+                        <span>Adicionar / Editar Texto no Vídeo:</span>
+                        <span class="text-[9px] text-amber-400">InShot Style</span>
+                    </label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="mobileCustomTextInput" placeholder="Digite seu texto aqui..." class="flex-1 bg-[var(--bg-base)] border border-[var(--border)] rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400">
+                        <button onclick="applyMobileCustomText()" class="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs rounded transition active:scale-95">
+                            Aplicar
+                        </button>
+                    </div>
+                </div>
+
                 <div>
                     <label class="label-caps block mb-1">Estilo Visual da Legenda:</label>
                     <select id="mobileSelCaptionPreset" onchange="applySubtitlePreset(this.value); document.getElementById('selCaptionPreset').value = this.value;" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-white">
@@ -3855,9 +3869,35 @@ function renderTimelineClips() {
             showToast(`Clipe dividido em ${curTime.toFixed(2)}s!`);
         }
 
+        function clearVideoProject() {
+            clips = [];
+            selectedClipIndex = 0;
+            currentVideoPath = '';
+            currentVideoUrl = '';
+            const mobVid = document.getElementById('mobileVideo');
+            const deskVid = document.getElementById('studioVideo');
+            if (mobVid) { mobVid.pause(); mobVid.src = ''; }
+            if (deskVid) { deskVid.pause(); deskVid.src = ''; }
+            
+            const mobEmpty = document.getElementById('mobileEmptyState');
+            if (mobEmpty) mobEmpty.classList.remove('hidden');
+            const mobTrackLabel = document.getElementById('mobileTrackLabel');
+            if (mobTrackLabel) mobTrackLabel.innerText = 'Carregue um vídeo';
+            const curTimeEl = document.getElementById('mobileTimeCur');
+            if (curTimeEl) curTimeEl.innerText = '0:00.0';
+            const durTimeEl = document.getElementById('mobileTimeDur');
+            if (durTimeEl) durTimeEl.innerText = '0:00.0';
+        }
+
         function deleteSelectedClip() {
             if (clips.length === 0) return showToast("Nenhum clipe para excluir!", true);
-            if (clips.length === 1) return showToast("Você não pode excluir o único clipe restante!", true);
+            if (clips.length === 1) {
+                if (confirm("Deseja remover o vídeo atual da timeline?")) {
+                    clearVideoProject();
+                    showToast("Vídeo removido da timeline!");
+                }
+                return;
+            }
 
             saveHistory();
             const removed = clips.splice(selectedClipIndex, 1)[0];
@@ -5827,6 +5867,29 @@ function setupPanelResizers() {
             showToast(`Formato: ${ratio}`);
         }
 
+        async function deleteSingleMedia(encodedPath, event) {
+            if (event) event.stopPropagation();
+            const filePath = decodeURIComponent(encodedPath);
+            if (!confirm(`Deseja excluir permanentemente este arquivo?`)) return;
+
+            try {
+                const res = await fetch('/api/delete-media', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ server_paths: [filePath], paths: [filePath], path: filePath })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast('Arquivo excluído com sucesso!');
+                    refreshMediaLibrary();
+                } else {
+                    showToast(data.message || 'Erro ao excluir arquivo', true);
+                }
+            } catch (err) {
+                showToast('Erro de conexão ao excluir arquivo', true);
+            }
+        }
+
         function renderMobileMediaList(items) {
             const container = document.getElementById('mobileMediaItemsContainer');
             if (!container) return;
@@ -5844,20 +5907,25 @@ function setupPanelResizers() {
                 const icon = isVideo ? 'fa-film text-cyan-400' : (item.type === 'audio' ? 'fa-music text-amber-400' : 'fa-image text-emerald-400');
                 const durStr = item.duration > 0 ? formatTime(item.duration) : '';
                 html += `
-                    <div onclick="handleMediaItemClickByIndex(${idx}); closeMobileMediaSheet()" class="p-2.5 bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] border border-[var(--border)] active:border-cyan-400 rounded-[var(--radius-sm)] flex items-center space-x-3 cursor-pointer transition">
-                        <div class="w-9 h-9 rounded-[var(--radius-sm)] bg-[var(--bg-panel)] flex items-center justify-center shrink-0">
+                    <div class="p-2.5 bg-[var(--bg-elevated)] hover:bg-[var(--bg-hover)] border border-[var(--border)] active:border-cyan-400 rounded-[var(--radius-sm)] flex items-center space-x-2.5 transition">
+                        <div onclick="handleMediaItemClickByIndex(${idx}); closeMobileMediaSheet()" class="w-9 h-9 rounded-[var(--radius-sm)] bg-[var(--bg-panel)] flex items-center justify-center shrink-0 cursor-pointer">
                             <i class="fa-solid ${icon} text-sm"></i>
                         </div>
-                        <div class="truncate flex-1">
+                        <div onclick="handleMediaItemClickByIndex(${idx}); closeMobileMediaSheet()" class="truncate flex-1 cursor-pointer">
                             <div class="font-semibold text-white text-xs truncate">${item.name}</div>
                             <div class="text-[10px] text-[var(--text-muted)] font-mono flex items-center space-x-1.5 mt-0.5">
                                 <span>${(item.size_bytes / (1024*1024)).toFixed(1)} MB</span>
                                 ${durStr ? `<span>• ${durStr}</span>` : ''}
                             </div>
                         </div>
-                        <div class="w-7 h-7 rounded-full bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xs shrink-0">
-                            <i class="fa-solid fa-play"></i>
-                        </div>
+                        <!-- Botão Aplicar Vídeo -->
+                        <button onclick="handleMediaItemClickByIndex(${idx}); closeMobileMediaSheet()" class="px-2.5 py-1.5 rounded-full bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500 hover:text-black text-xs font-bold shrink-0 transition" title="Usar este vídeo">
+                            Usar
+                        </button>
+                        <!-- Botão Apagar Vídeo -->
+                        <button onclick="deleteSingleMedia('${encodeURIComponent(item.server_path || item.name)}', event)" class="w-7 h-7 rounded-full bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center text-xs shrink-0 transition" title="Excluir arquivo permanentemente">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 `;
             });
@@ -5942,6 +6010,16 @@ function setupPanelResizers() {
 
         function openMobileEffectsSheet() {
             openMobileFiltersSheet();
+        }
+
+        let currentMobileRotation = 0;
+        function rotateVideo90() {
+            currentMobileRotation = (currentMobileRotation + 90) % 360;
+            const mobVid = document.getElementById('mobileVideo');
+            const deskVid = document.getElementById('studioVideo');
+            if (mobVid) mobVid.style.transform = `rotate(${currentMobileRotation}deg)`;
+            if (deskVid) deskVid.style.transform = `rotate(${currentMobileRotation}deg)`;
+            showToast(`Vídeo rotacionado: ${currentMobileRotation}°`);
         }
 
         function toggleMobilePlay() {
@@ -6155,6 +6233,25 @@ function setupPanelResizers() {
             window.addEventListener('pointerup', onPointerUp);
             window.addEventListener('touchmove', onPointerMove, { passive: false });
             window.addEventListener('touchend', onPointerUp);
+        }
+
+        function applyMobileCustomText() {
+            const input = document.getElementById('mobileCustomTextInput');
+            const val = input ? input.value.trim() : '';
+            if (!val) return showToast("Digite um texto para exibir!", true);
+
+            const deskBox = document.getElementById('subtitleBox');
+            const mobBox = document.getElementById('mobileSubtitleBox');
+            if (deskBox) deskBox.innerText = val;
+            if (mobBox) mobBox.innerText = val;
+
+            const deskWrap = document.getElementById('subtitleDraggableWrapper');
+            const mobWrap = document.getElementById('mobileSubtitleDraggableWrapper');
+            if (deskWrap) deskWrap.style.opacity = '1';
+            if (mobWrap) mobWrap.style.opacity = '1';
+
+            showToast(`Texto aplicado na tela!`);
+            closeMobileSubtitleSheet();
         }
 
         function applySubtitlePreset(styleKey) {
