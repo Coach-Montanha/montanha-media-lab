@@ -1426,9 +1426,11 @@
                 </div>
 
                 <!-- Mobile Video Canvas (Takes remaining vertical space, adapts to any phone screen) -->
-                <div class="flex-1 min-h-0 bg-black flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing" id="mobileCanvasContainer">
-                    <video id="mobileVideo" class="w-full h-full object-cover transition-transform" playsinline preload="auto">
-                    </video>
+                <div class="flex-1 min-h-0 bg-black flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing p-1" id="mobileCanvasContainer">
+                    <div id="mobilePlayerFrame" class="relative max-h-full max-w-full flex items-center justify-center overflow-hidden shadow-2xl rounded-lg" style="aspect-ratio: 9/16; height: 100%;">
+                        <video id="mobileVideo" class="w-full h-full object-contain transition-transform" playsinline preload="auto">
+                        </video>
+                    </div>
                     
                     <!-- Mobile Play Button Overlay -->
                     <div id="mobilePlayOverlay" onclick="toggleMobilePlay()" class="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer z-10">
@@ -1506,11 +1508,11 @@
                     </div>
                 </div>
 
-                <!-- CapCut Authentic Timeline Reel with Fixed Center Playhead (84px) -->
-                <div class="h-[84px] bg-[var(--bg-panel)] border-t border-[var(--border)] flex flex-col p-1.5 select-none relative overflow-hidden shrink-0">
-                    <!-- Fixed Center White Needle (CapCut Signature) -->
-                    <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 bg-white z-30 pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.8)]">
-                        <div class="w-2.5 h-2.5 rounded-full bg-white absolute -top-1 left-1/2 -translate-x-1/2"></div>
+                <!-- CapCut Authentic Timeline Reel with Dynamic Synchronized Playhead (84px) -->
+                <div class="h-[84px] bg-[var(--bg-panel)] border-t border-[var(--border)] flex flex-col p-1.5 select-none relative overflow-hidden shrink-0" id="mobileTimelineContainer">
+                    <!-- Dynamic Synchronized Needle -->
+                    <div id="mobilePlayheadNeedle" class="absolute inset-y-0 left-4 w-0.5 bg-white z-30 pointer-events-none shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-[left] duration-75">
+                        <div class="w-3 h-3 rounded-full bg-cyan-400 border border-white absolute -top-1 left-1/2 -translate-x-1/2 shadow-sm"></div>
                     </div>
 
                     <!-- Scrollable Filmstrip Reel -->
@@ -1521,8 +1523,8 @@
                             <i class="fa-solid fa-plus text-xs bg-white/20 rounded-full w-5 h-5 flex items-center justify-center shrink-0"></i>
                         </div>
                         <!-- Secondary Audio Reel -->
-                        <div id="mobileAudioTrackPill" onclick="extractAudioFromCurrentVideo()" class="h-6 bg-emerald-950/60 border border-emerald-500/30 rounded-[var(--radius-sm)] min-w-full flex items-center justify-between px-3 text-[10px] text-emerald-300 font-medium cursor-pointer">
-                            <span class="flex items-center truncate"><i class="fa-solid fa-music mr-2 text-emerald-400"></i><span id="mobileAudioLabel">+ Adicionar áudio extraído</span></span>
+                        <div id="mobileAudioTrackPill" onclick="openMobileAudioSheet()" class="h-6 bg-emerald-950/60 border border-emerald-500/30 rounded-[var(--radius-sm)] min-w-full flex items-center justify-between px-3 text-[10px] text-emerald-300 font-medium cursor-pointer">
+                            <span class="flex items-center truncate"><i class="fa-solid fa-music mr-2 text-emerald-400"></i><span id="mobileAudioLabel">+ Adicionar / Gerenciar Áudio</span></span>
                         </div>
                     </div>
                 </div>
@@ -1549,7 +1551,7 @@
                         <i class="fa-solid fa-circle-half-stroke text-sm text-amber-400"></i>
                         <span class="leading-none">Filtros</span>
                     </button>
-                    <button onclick="extractAudioFromCurrentVideo()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-pink-400 space-y-0.5 active:scale-95 transition">
+                    <button onclick="openMobileAudioSheet()" class="flex flex-col items-center justify-center min-w-[54px] h-full hover:text-pink-400 space-y-0.5 active:scale-95 transition">
                         <i class="fa-solid fa-music text-sm text-pink-400"></i>
                         <span class="leading-none">Áudio</span>
                     </button>
@@ -2353,6 +2355,60 @@
         </div>
     </div>
 
+    <!-- BOTTOM SHEET: ÁUDIO & NARRAÇÃO NEURAL (MOBILE) -->
+    <div id="mobileAudioSheet" class="fixed inset-0 z-50 flex flex-col justify-end hidden bg-black/70 backdrop-blur-xs select-none">
+        <div onclick="closeMobileAudioSheet()" class="flex-1"></div>
+        <div class="bg-[var(--bg-panel)] border-t border-[var(--border)] rounded-t-[18px] p-4 flex flex-col space-y-3.5 shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+                <span class="font-bold text-xs text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-music text-pink-400"></i>
+                    <span>Áudio, Trilha Sonora & Locução</span>
+                </span>
+                <button onclick="closeMobileAudioSheet()" class="w-7 h-7 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] flex items-center justify-center hover:text-white active:scale-95 transition">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="extractAudioFromCurrentVideo(); closeMobileAudioSheet()" class="p-3 rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-emerald-400 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition">
+                    <i class="fa-solid fa-file-audio text-emerald-400 text-lg"></i>
+                    <span class="text-[11px] font-bold text-white">Extrair MP3 do Vídeo</span>
+                    <span class="text-[9px] text-[var(--text-muted)]">Cria trilha separada</span>
+                </button>
+                <button onclick="document.getElementById('fileInput').click(); closeMobileAudioSheet()" class="p-3 rounded-[var(--radius-sm)] bg-[var(--bg-elevated)] border border-[var(--border)] hover:border-cyan-400 flex flex-col items-center justify-center space-y-1.5 active:scale-95 transition">
+                    <i class="fa-solid fa-folder-open text-cyan-400 text-lg"></i>
+                    <span class="text-[11px] font-bold text-white">Importar Áudio / Trilha</span>
+                    <span class="text-[9px] text-[var(--text-muted)]">Do armazenamento</span>
+                </button>
+            </div>
+
+            <!-- Mobile Neural TTS (Gerar Voz) -->
+            <div class="bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-sm)] border border-[var(--border)] space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-cyan-400 flex items-center space-x-1.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Gerar Locução Neural (TTS)</span>
+                    </span>
+                </div>
+                <textarea id="mobileTtsText" rows="3" placeholder="Digite o texto que a voz neural brasileira deve falar..." class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] p-2 text-xs text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-cyan-400 resize-none"></textarea>
+                <button onclick="generateMobileTts()" id="btnMobileTts" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-[var(--radius-sm)] text-white text-xs font-bold active:scale-95 transition shadow">
+                    <i class="fa-solid fa-sparkles mr-1"></i> Gerar e Adicionar à Timeline
+                </button>
+            </div>
+
+            <!-- Volume Slider -->
+            <div class="bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-sm)] border border-[var(--border)] space-y-1.5">
+                <div class="flex justify-between text-[11px]">
+                    <span class="text-[var(--text-secondary)] font-medium">Volume do Áudio:</span>
+                    <span id="mobileAudioVolVal" class="text-cyan-400 font-mono font-bold">100%</span>
+                </div>
+                <input type="range" id="mobileAudioVolSlider" min="0" max="100" value="100" oninput="setMobileAudioVolume(this.value)" class="w-full h-1.5 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-[var(--accent)]">
+            </div>
+        </div>
+    </div>
+
+
     </div>
 
     <!-- ============================================================== -->
@@ -2949,7 +3005,9 @@
             };
 
             const cfg = ratioMap[ratio] || ratioMap['9/16'];
-            frame.style.aspectRatio = cfg.style;
+            if (frame) frame.style.aspectRatio = cfg.style;
+            const mobFrame = document.getElementById('mobilePlayerFrame');
+            if (mobFrame) mobFrame.style.aspectRatio = cfg.style;
             const activeBtn = document.getElementById(cfg.id);
             if (activeBtn) activeBtn.classList.add('active');
 
@@ -3010,6 +3068,38 @@
         function setupVideoEventListeners() {
             const vid = document.getElementById('studioVideo');
             const mobVid = document.getElementById('mobileVideo');
+
+            if (mobVid) {
+                mobVid.ontimeupdate = () => {
+                    const cur = mobVid.currentTime;
+                    updateTimecodeDisplay(cur);
+                    updateMobilePlayheadPosition(cur);
+                    updateLiveSubtitles(cur);
+                    if (vid && Math.abs(vid.currentTime - cur) > 0.3) {
+                        vid.currentTime = cur;
+                    }
+                };
+                mobVid.onplay = () => {
+                    const btn = document.getElementById('btnPlayPause');
+                    if (btn) btn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+                    const overlay = document.getElementById('mobilePlayOverlay');
+                    if (overlay) overlay.style.display = 'none';
+                };
+                mobVid.onpause = () => {
+                    const btn = document.getElementById('btnPlayPause');
+                    if (btn) btn.innerHTML = '<i class="fa-solid fa-play text-xs ml-0.5"></i>';
+                    const overlay = document.getElementById('mobilePlayOverlay');
+                    if (overlay) overlay.style.display = 'flex';
+                };
+                mobVid.onloadedmetadata = () => {
+                    if (mobVid.duration && !isNaN(mobVid.duration) && mobVid.duration > 0) {
+                        currentVideoDuration = mobVid.duration;
+                        const durLbl = document.getElementById('mobileTimeDur');
+                        if (durLbl) durLbl.innerText = formatTime(mobVid.duration);
+                        updateMobilePlayheadPosition(0);
+                    }
+                };
+            }
 
             vid.ontimeupdate = () => {
                 const cur = vid.currentTime;
@@ -3279,6 +3369,21 @@
         }
 
         // High-Visibility Playhead Drag & Seek with Auto-Scroll (Compensation)
+        function updateMobilePlayheadPosition(curTime) {
+            const needle = document.getElementById('mobilePlayheadNeedle');
+            const strip = document.getElementById('mobileTimelineStrip');
+            if (!needle || !strip) return;
+            const total = currentVideoDuration || 1;
+            const pct = Math.min(1, Math.max(0, curTime / total));
+            const stripRect = strip.getBoundingClientRect();
+            // Map percentage across strip width (16px padding on edges)
+            const padding = 16;
+            const width = Math.max(100, stripRect.width - (padding * 2));
+            const leftPos = padding + (pct * width);
+            needle.style.left = `${leftPos}px`;
+            updateMobilePlayheadPosition(vid.currentTime);
+        }
+
         function updatePlayheadPosition() {
             const vid = document.getElementById('studioVideo');
             const needle = document.getElementById('playheadContainer');
@@ -5365,6 +5470,59 @@ function setupPanelResizers() {
         function closeMobileRatioSheet() {
             const s = document.getElementById('mobileRatioSheet');
             if (s) s.classList.add('hidden');
+        }
+
+        function openMobileAudioSheet() {
+            const s = document.getElementById('mobileAudioSheet');
+            if (s) s.classList.remove('hidden');
+        }
+        function closeMobileAudioSheet() {
+            const s = document.getElementById('mobileAudioSheet');
+            if (s) s.classList.add('hidden');
+        }
+
+        function setMobileAudioVolume(v) {
+            document.getElementById('mobileAudioVolVal').innerText = v + '%';
+            const vid = document.getElementById('studioVideo');
+            const mobVid = document.getElementById('mobileVideo');
+            const vol = v / 100;
+            if (vid) vid.volume = vol;
+            if (mobVid) mobVid.volume = vol;
+        }
+
+        async function generateMobileTts() {
+            const text = document.getElementById('mobileTtsText').value.trim();
+            if (!text) return showToast("Digite o texto para narrar!", true);
+            const btn = document.getElementById('btnMobileTts');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Sintetizando Voz...';
+
+            try {
+                const res = await fetch('/api/tts/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        text: text,
+                        voice: 'pt-BR-FranciscaNeural',
+                        rate: 0,
+                        pitch: 0
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    showToast("Áudio neural gerado com sucesso!");
+                    closeMobileAudioSheet();
+                    refreshMediaLibrary();
+                    document.getElementById('mobileTtsText').value = '';
+                } else {
+                    showToast(data.message || "Erro ao gerar áudio", true);
+                }
+            } catch (err) {
+                showToast("Erro ao conectar com servidor TTS", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-sparkles mr-1"></i> Gerar e Adicionar à Timeline';
+            }
         }
 
         function openMobileSpeedSheet() {
