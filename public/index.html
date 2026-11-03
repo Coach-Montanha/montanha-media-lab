@@ -272,8 +272,8 @@
                     <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Pro</span>
                 </div>
                 <div class="flex items-center space-x-3 text-white/60">
-                    <button onclick="openProjectsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition">
-                        <i class="fa-solid fa-crown text-amber-400 text-xs"></i>
+                    <button onclick="openProjectsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition" title="Gerenciar Projetos">
+                        <i class="fa-solid fa-folder-closed text-xs"></i>
                     </button>
                     <button onclick="switchAppTab('video')" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition" title="Ir para o Editor">
                         <i class="fa-solid fa-sliders text-xs"></i>
@@ -313,10 +313,26 @@
 
             <!-- InShot Projects & Drafts Drawer -->
             <div class="px-5 py-2 flex-1 flex flex-col min-h-0">
+                <div class="mb-3">
+                    <button onclick="openProjectsModal()" class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-[#1e2028] to-[#252834] border border-white/10 hover:border-amber-400/50 flex items-center justify-between text-white shadow-xl active:scale-[0.98] transition">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-xs font-black uppercase tracking-wider text-white">Gerenciar Projetos Salvos</div>
+                                <div class="text-[10px] text-white/50">Abrir, renomear, duplicar ou excluir</div>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/60">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </div>
+                    </button>
+                </div>
                 <div class="flex items-center justify-between mb-2.5">
                     <span id="inshotDraftCountText" class="text-[11px] font-black uppercase tracking-wider text-white/50 font-mono">0 RASCUNHOS</span>
                     <button onclick="openProjectsModal()" class="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center space-x-1">
-                        <span>TODAS</span>
+                        <span>VER TODOS</span>
                         <i class="fa-solid fa-chevron-right text-[9px]"></i>
                     </button>
                 </div>
@@ -1389,8 +1405,8 @@
             <!-- 2. INSHOT VIDEO CANVAS (Clean Central Viewing Area) -->
             <main class="flex-1 min-h-0 bg-[#141414] flex items-center justify-center relative overflow-hidden p-2" id="mobileCanvasContainer">
                 <div id="mobilePlayerFrame" class="relative max-h-full max-w-full flex items-center justify-center overflow-hidden shadow-2xl rounded-sm bg-black" style="aspect-ratio: 9/16; height: 100%;">
-                    <video id="mobileVideo" class="w-full h-full object-contain pointer-events-auto" playsinline preload="auto" onclick="toggleMobilePlay()">
-                    </video>
+                    <video id="mobileVideo" class="w-full h-full object-contain pointer-events-auto" playsinline preload="auto" onclick="toggleMobilePlay()"></video>
+                    <img id="mobileImage" class="w-full h-full object-contain pointer-events-auto hidden" onclick="toggleMobilePlay()" alt="Preview da Foto" />
 
                     <!-- Draggable Subtitle Box InShot Style -->
                     <div id="mobileSubtitleDraggableWrapper" onpointerdown="startSubtitleDrag(event, 'mobile')" class="absolute left-1/2 top-[75%] -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing select-none z-25 touch-none">
@@ -1579,6 +1595,16 @@
         <!-- ============================================================== -->
         <div id="tabContent_pdf" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-3xl mx-auto w-full space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                    <button onclick="switchAppTab('home')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar ao Início</span>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-sliders text-amber-400"></i>
+                        <span>Ir ao Editor</span>
+                    </button>
+                </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
                         <i class="fa-solid fa-file-pdf text-red-400"></i>
@@ -1642,6 +1668,16 @@
         <!-- ============================================================== -->
         <div id="tabContent_downloader" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                    <button onclick="switchAppTab('home')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar ao Início</span>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-sliders text-amber-400"></i>
+                        <span>Ir ao Editor</span>
+                    </button>
+                </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
                         <i class="fa-solid fa-download text-emerald-400"></i>
@@ -1698,6 +1734,16 @@
         <!-- ============================================================== -->
         <div id="tabContent_foto" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+                    <button onclick="switchAppTab('home')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Voltar ao Início</span>
+                    </button>
+                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
+                        <i class="fa-solid fa-sliders text-amber-400"></i>
+                        <span>Ir ao Editor</span>
+                    </button>
+                </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
                         <i class="fa-solid fa-camera text-purple-400"></i>
@@ -3897,11 +3943,19 @@ function renderTimelineClips() {
             if (c) {
                 const vid = document.getElementById('studioVideo');
                 const img = document.getElementById('studioImage');
+                const mobVid = document.getElementById('mobileVideo');
+                const mobImg = document.getElementById('mobileImage');
+                const mobEmpty = document.getElementById('mobileEmptyState');
+                if (mobEmpty) mobEmpty.classList.add('hidden');
+
                 if (c.isImage && c.url) {
                     if (img) { img.src = c.url; img.classList.remove('hidden'); }
                     if (vid) { vid.classList.add('hidden'); vid.pause(); }
+                    if (mobImg) { mobImg.src = c.url; mobImg.classList.remove('hidden'); }
+                    if (mobVid) { mobVid.classList.add('hidden'); mobVid.pause(); }
                 } else if (c.url) {
                     if (img) img.classList.add('hidden');
+                    if (mobImg) mobImg.classList.add('hidden');
                     if (vid) {
                         vid.classList.remove('hidden');
                         if (vid.src !== c.url && !vid.src.endsWith(c.url)) {
@@ -3910,10 +3964,19 @@ function renderTimelineClips() {
                         }
                         vid.currentTime = c.start;
                     }
-                } else if (vid) {
+                    if (mobVid) {
+                        mobVid.classList.remove('hidden');
+                        if (mobVid.src !== c.url && !mobVid.src.endsWith(c.url)) {
+                            mobVid.src = c.url;
+                            mobVid.load();
+                        }
+                        mobVid.currentTime = c.start;
+                    }
+                } else {
                     if (img) img.classList.add('hidden');
-                    vid.classList.remove('hidden');
-                    vid.currentTime = c.start;
+                    if (mobImg) mobImg.classList.add('hidden');
+                    if (vid) vid.classList.remove('hidden');
+                    if (mobVid) mobVid.classList.remove('hidden');
                 }
                 updateTimecodeDisplay(c.start);
                 updatePlayheadPosition();
@@ -6089,15 +6152,59 @@ function setupPanelResizers() {
             showToast(`Vídeo rotacionado: ${currentMobileRotation}°`);
         }
 
+        let mobilePlayTimer = null;
+        let isMobilePlaying = false;
+
         function toggleMobilePlay() {
             const vid = document.getElementById('mobileVideo');
             const deskVid = document.getElementById('studioVideo');
-            if (vid.paused) {
-                vid.play();
-                deskVid.play();
+            const playIcon = document.querySelector('#inshotPlayBtn i');
+            const currentClip = clips[selectedClipIndex];
+
+            if (isMobilePlaying) {
+                // Pause
+                isMobilePlaying = false;
+                if (mobilePlayTimer) { clearInterval(mobilePlayTimer); mobilePlayTimer = null; }
+                if (vid && !vid.paused) vid.pause();
+                if (deskVid && !deskVid.paused) deskVid.pause();
+                if (playIcon) playIcon.className = 'fa-solid fa-play text-white text-base';
+                return;
+            }
+
+            // Play
+            if (clips.length === 0) {
+                openInShotAddPopup();
+                return;
+            }
+
+            isMobilePlaying = true;
+            if (playIcon) playIcon.className = 'fa-solid fa-pause text-white text-base';
+
+            if (currentClip && currentClip.isImage) {
+                // Image timer slideshow playback
+                let currentTime = currentClip.start;
+                const endTime = currentClip.end;
+                const stepMs = 100;
+                mobilePlayTimer = setInterval(() => {
+                    currentTime += stepMs / 1000;
+                    updateTimecodeDisplay(currentTime);
+                    if (currentTime >= endTime) {
+                        if (selectedClipIndex + 1 < clips.length) {
+                            selectClip(selectedClipIndex + 1);
+                            renderMobileTimeline();
+                        } else {
+                            toggleMobilePlay();
+                        }
+                    }
+                }, stepMs);
             } else {
-                vid.pause();
-                deskVid.pause();
+                // Video playback
+                if (vid) {
+                    vid.play().catch(e => console.warn('Mobile video play:', e));
+                }
+                if (deskVid) {
+                    deskVid.play().catch(e => console.warn('Desk video play:', e));
+                }
             }
         }
 
@@ -7980,15 +8087,26 @@ function setupPanelResizers() {
                 html += `
                     <div id="mobClipElem_${idx}" class="h-12 rounded-lg relative overflow-hidden flex items-center select-none shrink-0 transition-transform ${isSelected ? 'border-2 border-white shadow-[0_0_12px_rgba(255,255,255,0.4)] ring-1 ring-black' : 'border border-white/20 opacity-85'} ${isBlank ? 'bg-black/90' : 'bg-[#2D313A]'}" style="width: ${widthPx}px;" onclick="selectMobileClip(${idx})">
                         
-                        <!-- Filmstrip Pattern or Blank Icon -->
-                        <div class="absolute inset-0 flex space-x-1 opacity-40 pointer-events-none p-0.5">
-                            ${isBlank ? `
-                                <div class="flex-1 flex items-center justify-center text-[10px] text-white/40"><i class="fa-regular fa-square"></i></div>
+                        <!-- Filmstrip Pattern / Real Thumbnail Image -->
+                        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+                            ${c.url ? `
+                                ${c.isImage ? `
+                                    <img src="${c.url}" class="w-full h-full object-cover opacity-60" alt="thumb" />
+                                ` : `
+                                    <div class="w-full h-full relative flex space-x-0.5 opacity-50 bg-black/40">
+                                        <div class="flex-1 bg-cover bg-center" style="background-image: url('${c.thumbnail || c.url}');"></div>
+                                        <div class="flex-1 bg-cover bg-center" style="background-image: url('${c.thumbnail || c.url}');"></div>
+                                        <div class="flex-1 bg-cover bg-center" style="background-image: url('${c.thumbnail || c.url}');"></div>
+                                    </div>
+                                `}
+                            ` : (isBlank ? `
+                                <div class="w-full h-full flex items-center justify-center text-[10px] text-white/40 bg-black/60"><i class="fa-regular fa-square"></i></div>
                             ` : `
-                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
-                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
-                                <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
-                            `}
+                                <div class="w-full h-full flex space-x-1 opacity-40 p-0.5">
+                                    <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                                    <div class="flex-1 bg-black/40 rounded-xs flex items-center justify-center text-[10px] text-white/60"><i class="fa-solid fa-film"></i></div>
+                                </div>
+                            `)}
                         </div>
 
                         <!-- Clip Label & Order Controls -->
