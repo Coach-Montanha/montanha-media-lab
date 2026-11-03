@@ -7,8 +7,17 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon.png">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Montanha Media Lab">
+    <meta name="theme-color" content="#121316">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;600;700;900&family=Montserrat:wght@700;900&family=Outfit:wght@700;900&family=Bangers&display=swap" rel="stylesheet">
@@ -1851,20 +1860,34 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="label-caps block mb-1">Voz Neural Brasileira:</label>
-                            <select id="standaloneTtsVoice" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
-                                <option value="pt-BR-FranciscaNeural" selected>pt-BR-Francisca (Feminina Natural)</option>
-                                <option value="pt-BR-AntonioNeural">pt-BR-Antonio (Masculino Dinâmico)</option>
-                                <option value="pt-BR-ThalitaMultilingualNeural">pt-BR-Thalita (Suave / Narradora)</option>
+                            <label class="label-caps block mb-1">Voz Neural de Alta Fidelidade:</label>
+                            <select id="standaloneTtsVoice" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2.5 text-xs text-white focus:border-cyan-400 focus:outline-none">
+                                <optgroup label="🇧🇷 Vozes Brasileiras (Naturais)">
+                                    <option value="pt-BR-AntonioNeural" selected>pt-BR-Antonio (Masculino Enérgico / Dinâmico)</option>
+                                    <option value="pt-BR-FranciscaNeural">pt-BR-Francisca (Feminina Natural / Clara)</option>
+                                    <option value="pt-BR-ThalitaMultilingualNeural">pt-BR-Thalita (Multilíngue Suave / Narradora)</option>
+                                </optgroup>
+                                <optgroup label="🇵🇹 Vozes Português Europeu">
+                                    <option value="pt-PT-DuarteNeural">pt-PT-Duarte (Masculino Profissional)</option>
+                                    <option value="pt-PT-RaquelNeural">pt-PT-Raquel (Feminina Expressiva)</option>
+                                </optgroup>
+                                <optgroup label="🌐 Vozes Globais de Alta Fidelidade">
+                                    <option value="en-US-AndrewMultilingualNeural">en-US-Andrew (Masculino Deep Pro)</option>
+                                    <option value="en-US-AvaMultilingualNeural">en-US-Ava (Feminina Studio Natural)</option>
+                                    <option value="en-US-BrianMultilingualNeural">en-US-Brian (Masculino Documentário)</option>
+                                    <option value="es-ES-AlvaroNeural">es-ES-Alvaro (Espanhol Narrador)</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div>
-                            <label class="label-caps block mb-1">Velocidade / Ritmo:</label>
-                            <select id="standaloneTtsRate" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2 text-xs text-white focus:border-cyan-400 focus:outline-none">
-                                <option value="0">1.0x (Padrão)</option>
-                                <option value="-15">0.85x (Mais lento)</option>
-                                <option value="15">1.15x (Dinâmico / Reels)</option>
-                                <option value="30">1.3x (Rápido)</option>
+                            <label class="label-caps block mb-1">Velocidade Calibrada (Ritmo Real):</label>
+                            <select id="standaloneTtsRate" class="w-full bg-[var(--bg-base)] border border-[var(--border)] rounded-[var(--radius-sm)] px-3 py-2.5 text-xs text-white focus:border-cyan-400 focus:outline-none font-mono">
+                                <option value="-10">0.90x — Calmo e Pausado</option>
+                                <option value="0">1.00x — Conversa Natural</option>
+                                <option value="6" selected>1.06x — Dinâmico Equilibrado (Reels/Shorts)</option>
+                                <option value="12">1.12x — Alta Conversão / Ritmo Rápido</option>
+                                <option value="18">1.18x — Energético / Acelerado</option>
+                                <option value="25">1.25x — Velocidade Máxima sem Distorção</option>
                             </select>
                         </div>
                     </div>
@@ -8353,7 +8376,8 @@ function setupPanelResizers() {
             const text = document.getElementById('standaloneTtsInput').value.trim();
             if (!text) return showToast("Digite um texto para narrar!", true);
             const voice = document.getElementById('standaloneTtsVoice').value;
-            const rate = parseInt(document.getElementById('standaloneTtsRate').value || 0);
+            const rateVal = parseInt(document.getElementById('standaloneTtsRate').value || 0);
+            const rateStr = `${rateVal >= 0 ? '+' : ''}${rateVal}%`;
             const btn = document.getElementById('btnStandaloneTts');
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Sintetizando Voz Neural...</span>';
@@ -8365,7 +8389,7 @@ function setupPanelResizers() {
                     body: JSON.stringify({
                         text: text,
                         voice: voice,
-                        rate: rate,
+                        rate: rateStr,
                         pitch: 0
                     })
                 });
