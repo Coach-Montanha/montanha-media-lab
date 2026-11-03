@@ -268,8 +268,11 @@
             <!-- InShot Header (Logo + Settings) -->
             <div class="px-5 pt-6 pb-2 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <span class="text-2xl font-black tracking-tight text-white">InShot</span>
-                    <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Pro</span>
+                    <span class="text-xl font-black tracking-tight text-white flex items-center space-x-1.5">
+                        <i class="fa-solid fa-mountain text-amber-400 text-sm"></i>
+                        <span>Montanha Media Lab</span>
+                    </span>
+                    <span class="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Studio</span>
                 </div>
                 <div class="flex items-center space-x-3 text-white/60">
                     <button onclick="openProjectsModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:text-white transition" title="Gerenciar Projetos">
@@ -383,20 +386,7 @@
                 </div>
             </div>
 
-            <!-- Quick ArtCraft Tools Footer -->
-            <div class="px-5 py-4 border-t border-white/5 mt-auto">
-                <div class="text-[10px] font-bold uppercase tracking-wider text-white/30 mb-2">Ferramentas Rápidas</div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <button onclick="pullLatestRedmiVideo(); switchAppTab('video')" class="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 flex items-center space-x-2 text-left">
-                        <i class="fa-solid fa-mobile-screen text-cyan-400"></i>
-                        <span class="truncate text-white/80">Câmera Redmi 12</span>
-                    </button>
-                    <button onclick="switchAppTab('downloader')" class="p-2.5 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 flex items-center space-x-2 text-left">
-                        <i class="fa-solid fa-cloud-arrow-down text-amber-400"></i>
-                        <span class="truncate text-white/80">Downloader Web</span>
-                    </button>
-                </div>
-            </div>
+
 
         </div>
 
@@ -3187,7 +3177,7 @@
             // Detecção Técnica Estrita: App Mobile no Celular vs Versão Desktop no PC Browser
             const isMobileApp = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
             setUIMode(isMobileApp ? 'mobile' : 'desktop');
-            if (isMobileApp) switchAppTab('video');
+            switchAppTab('home');
             initCanvasDirectDrag();
             setupVideoEventListeners();
             setupKeyboardShortcuts();
