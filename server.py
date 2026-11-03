@@ -65,6 +65,14 @@ except ImportError:
 
 PDF_CACHE = {"texto_completo": "", "secoes": []}
 
+def notify_android_media_scanner(file_path: str):
+    """Notifica o scanner do Android para que o arquivo apareça instantaneamente na galeria e downloads."""
+    if shutil.which("termux-media-scan"):
+        try:
+            subprocess.run(["termux-media-scan", str(file_path)], capture_output=True, timeout=5)
+        except Exception:
+            pass
+
 def dividir_em_capitulos(texto):
     linhas = texto.split("\n")
     secoes = []
@@ -430,6 +438,7 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
 
                     asyncio.run(_run_tts())
                     tts_success = True
+                    notify_android_media_scanner(out_file)
                 except Exception as e_edge:
                     err_msg = str(e_edge)
                     # 2. Fallback robusto nativo sem dependências de compilação (Google Neural TTS pt-BR)
@@ -462,6 +471,7 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                             with open(out_file, "wb") as f_out:
                                 f_out.write(combined_bytes)
                             tts_success = True
+                            notify_android_media_scanner(out_file)
                     except Exception as e_fallback:
                         err_msg += f" | Fallback: {str(e_fallback)}"
 

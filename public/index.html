@@ -8379,22 +8379,38 @@ function setupPanelResizers() {
 
         
         async function downloadAudioFileDirectly(url, filename) {
-            showToast("Baixando áudio MP3...");
-            // No Android / Edge Mobile, navegação direta para URL com Content-Disposition attachment aciona o download nativo do sistema
-            const directUrl = url + (url.includes('?') ? '&' : '?') + 'dl=1';
-            
-            // Criar iframe oculto ou âncora com target _self para forçar o download nativo do Android
-            const link = document.createElement('a');
-            link.href = directUrl;
-            link.setAttribute('download', filename);
-            link.setAttribute('target', '_self');
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                document.body.removeChild(link);
-            }, 500);
+            showToast("Preparando download do áudio...");
+            try {
+                // 1. Fetch dos bytes reais via Blob no navegador
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Status HTTP: " + response.status);
+                const blob = await response.blob();
+                
+                // 2. Se o dispositivo suportar Web Share API com arquivos, tenta compartilhar ou salvar direto
+                const audioFile = new File([blob], filename, { type: 'audio/mpeg' });
+                
+                // 3. Gerar URL de objeto para download imediato
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(blobUrl);
+                }, 1500);
 
-            showToast("✓ Áudio enviado para a pasta Downloads!");
+                showToast("✓ Download concluído! Verifique a barra de notificações ou Downloads.");
+            } catch (err) {
+                console.warn("Download Blob fallback:", err);
+                // Fallback direto: navegação para a URL com forçamento
+                const directUrl = url + (url.includes('?') ? '&' : '?') + 'download=1&time=' + Date.now();
+                window.location.href = directUrl;
+                showToast("Iniciando download nativo pelo navegador...");
+            }
         }
 // === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
         async function executeStandaloneTts() {
