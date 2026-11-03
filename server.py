@@ -212,7 +212,7 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
             return
 
         # 3. Stream Video/Audio with HTTP 206 Byte-Range (Zero-Buffer Streaming)
-        elif parsed.path == "/stream":
+        elif parsed.path in ["/stream", "/download"]:
             query = urllib.parse.parse_qs(parsed.query)
             file_param = query.get("file", [""])[0]
             if not file_param:
@@ -222,7 +222,9 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
             if not target_path.exists() or not target_path.is_file():
                 self.send_error(404, "File not found")
                 return
-            self._serve_file_with_range(target_path)
+            is_dl = (parsed.path == "/download") or bool(query.get("download", [""])[0])
+            custom_name = query.get("name", [""])[0] or target_path.name
+            self._serve_file_with_range(target_path, as_attachment=is_dl, download_name=custom_name)
             return
 
         elif parsed.path.startswith("/media/"):
@@ -908,13 +910,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         self._send_json(res)
 
-    def _serve_file_with_range(self, file_path: Path):
+    def _serve_file_with_range(self, file_path: Path, as_attachment: bool = False, download_name: str = None):
         file_size = file_path.stat().st_size
         range_header = self.headers.get("Range")
 
         mime_type, _ = mimetypes.guess_type(str(file_path))
         if not mime_type:
             mime_type = "video/mp4" if file_path.suffix.lower() == ".mp4" else "application/octet-stream"
+
+        filename = download_name or file_path.name
+        safe_filename = urllib.parse.quote(filename)
 
         if range_header:
             match = re.match(r"bytes=(\d+)-(\d*)", range_header)
@@ -929,6 +934,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 self.send_header("Content-Range", f"bytes {start}-{end}/{file_size}")
                 self.send_header("Content-Length", str(length))
                 self.send_header("Accept-Ranges", "bytes")
+                if as_attachment:
+                    self.send_header("Content-Disposition", f'attachment; filename="{filename}"; filename*=UTF-8\'\'{safe_filename}')
                 self.end_headers()
 
                 with open(file_path, "rb") as f:
@@ -951,6 +958,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         self.send_header("Content-Length", str(file_size))
         self.send_header("Accept-Ranges", "bytes")
         self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        if as_attachment:
+            self.send_header("Content-Disposition", f'attachment; filename="{filename}"; filename*=UTF-8\'\'{safe_filename}')
         self.end_headers()
 
         with open(file_path, "rb") as f:

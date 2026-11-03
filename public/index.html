@@ -8371,7 +8371,33 @@ function setupPanelResizers() {
             window.addEventListener('pointerup', () => { isScrubbing = false; });
         }
 
-        // === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
+        
+        async function downloadAudioFileDirectly(url, filename) {
+            showToast("Iniciando download do áudio MP3...");
+            try {
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error("Erro no servidor: " + resp.status);
+                const blob = await resp.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(blobUrl);
+                }, 1000);
+                showToast("✓ Áudio baixado com sucesso!");
+            } catch (err) {
+                console.warn("Fallback download direto:", err);
+                // Fallback para navegação padrão
+                window.location.href = url;
+            }
+        }
+
+// === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
         async function executeStandaloneTts() {
             const text = document.getElementById('standaloneTtsInput').value.trim();
             if (!text) return showToast("Digite um texto para narrar!", true);
@@ -8400,8 +8426,16 @@ function setupPanelResizers() {
                     const player = document.getElementById('playerStandaloneTts');
                     const link = document.getElementById('linkDownloadStandaloneTts');
                     if (card) card.classList.remove('hidden');
+                    const downloadUrl = `/download?file=${encodeURIComponent(data.server_path)}&name=${encodeURIComponent(data.filename || 'locucao_neural.mp3')}&download=1`;
                     if (player) { player.src = data.download_url; player.play(); }
-                    if (link) { link.href = data.download_url; link.setAttribute('download', data.filename || 'locucao_neural.mp3'); }
+                    if (link) {
+                        link.href = downloadUrl;
+                        link.setAttribute('download', data.filename || 'locucao_neural.mp3');
+                        link.onclick = (e) => {
+                            e.preventDefault();
+                            downloadAudioFileDirectly(downloadUrl, data.filename || 'locucao_neural.mp3');
+                        };
+                    }
                 } else {
                     showToast(data.message || "Erro ao sintetizar áudio", true);
                 }
