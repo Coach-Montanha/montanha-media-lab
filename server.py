@@ -987,9 +987,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         mime_type, _ = mimetypes.guess_type(str(file_path))
         if not mime_type:
-            mime_type = "video/mp4" if file_path.suffix.lower() == ".mp4" else "application/octet-stream"
+            if file_path.suffix.lower() == ".mp3":
+                mime_type = "audio/mpeg"
+            elif file_path.suffix.lower() == ".mp4":
+                mime_type = "video/mp4"
+            else:
+                mime_type = "application/octet-stream"
 
         filename = download_name or file_path.name
+        # Remove caracteres inválidos para nomes de arquivos
+        filename = re.sub(r'[\/\:\*\?"<>\|]', '_', filename)
         safe_filename = urllib.parse.quote(filename)
 
         if range_header:
