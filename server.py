@@ -594,30 +594,88 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
             # Final Video Export (Cuts + Burn Subtitles + Aspect Ratio)
             elif parsed.path == "/api/export-final":
                 video_path = body.get("video_path")
-                clips = body.get("clips", [])
+                timeline_clips = body.get("clips", [])
                 ass_path = body.get("ass_path")
-                ratio = body.get("ratio", "9/16")
-                
+                ratio = body.get("aspect_ratio") or body.get("ratio") or "9/16"
+                mute_video_audio = bool(body.get("mute_video_audio", False))
+                extra_audio_path = body.get("extra_audio_path") or ""
+
+                # Se video_path não foi informado diretamente, buscar no primeiro clipe da timeline
+                if not video_path and timeline_clips:
+                    for c in timeline_clips:
+                        if c.get("path") and os.path.exists(c.get("path")):
+                            video_path = c.get("path")
+                            break
+
                 if not video_path or not os.path.exists(video_path):
-                    self._send_json({"status": "error", "message": "Vídeo fonte não encontrado"})
+                    self._send_json({"status": "error", "message": "Nenhum arquivo de vídeo carregado para exportação"}, 400)
                     return
-                
-                out_name = f"export_{Path(video_path).stem}_{int(os.times().elapsed)}.mp4"
+
+                # Normalizar dimensões conforme proporção
+                scale_filter = "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black"
+                if ratio in ["16/9", "16:9"]:
+                    scale_filter = "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black"
+                elif ratio in ["1/1", "1:1"]:
+                    scale_filter = "scale=1080:1080:force_original_aspect_ratio=decrease,pad=1080:1080:(ow-iw)/2:(oh-ih)/2:black"
+
+                timestamp = int(time.time())
+                out_name = f"montanha_{Path(video_path).stem}_{timestamp}.mp4"
                 out_final = OUTPUT_DIR / out_name
-                
-                if engine:
-                    try:
-                        res = engine.render_final_video(video_path, str(out_final), clips, ass_path, ratio)
+
+                # Montar comando FFmpeg nativo de alta compatibilidade e performance
+                ffmpeg_bin = shutil.which("ffmpeg") or "ffmpeg"
+                cmd = [ffmpeg_bin, "-y"]
+
+                # Input do vídeo principal
+                cmd.extend(["-i", str(video_path)])
+
+                # Input de áudio extra se fornecido
+                has_extra_audio = bool(extra_audio_path and os.path.exists(extra_audio_path))
+                if has_extra_audio:
+                    cmd.extend(["-i", str(extra_audio_path)])
+
+                # Filtros de vídeo (Escala + Legendas se houver)
+                vf_parts = [scale_filter]
+                if ass_path and os.path.exists(ass_path):
+                    # Escapar caminho para filtro ass/subtitles do ffmpeg
+                    escaped_ass = str(Path(ass_path).resolve()).replace("\\", "/").replace(":", "\\:")
+                    vf_parts.append(f"subtitles='{escaped_ass}'")
+
+                cmd.extend(["-vf", ",".join(vf_parts)])
+
+                # Tratamento de Áudio
+                if mute_video_audio and not has_extra_audio:
+                    cmd.append("-an")
+                elif has_extra_audio:
+                    cmd.extend(["-map", "0:v:0", "-map", "1:a:0", "-c:a", "aac", "-b:a", "192k"])
+                else:
+                    cmd.extend(["-c:a", "aac", "-b:a", "192k"])
+
+                # Codec de vídeo universal H.264
+                cmd.extend([
+                    "-c:v", "libx264",
+                    "-preset", "veryfast",
+                    "-crf", "22",
+                    "-pix_fmt", "yuv420p",
+                    "-movflags", "+faststart",
+                    str(out_final)
+                ])
+
+                try:
+                    res = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+                    if res.returncode == 0 and out_final.exists():
                         self._send_json({
                             "status": "success",
-                            "download_url": f"/stream?file={urllib.parse.quote(str(out_final))}",
+                            "download_url": f"/download?file={urllib.parse.quote(str(out_final))}&name={urllib.parse.quote(out_name)}&download=1",
+                            "stream_url": f"/stream?file={urllib.parse.quote(str(out_final))}",
                             "filename": out_name,
                             "path": str(out_final)
                         })
-                    except Exception as err:
-                        self._send_json({"status": "error", "message": f"Erro na renderização: {str(err)}"})
-                else:
-                    self._send_json({"status": "error", "message": "Engine indisponível"})
+                    else:
+                        err_out = res.stderr[-400:] if res.stderr else "Erro desconhecido no FFmpeg"
+                        self._send_json({"status": "error", "message": f"Falha na renderização: {err_out}"}, 500)
+                except Exception as err:
+                    self._send_json({"status": "error", "message": f"Erro na execução da renderização: {str(err)}"}, 500)
                 return
 
             # Save Project

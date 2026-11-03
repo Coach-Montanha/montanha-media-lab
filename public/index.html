@@ -5445,7 +5445,8 @@ function setupPanelResizers() {
         async function startExportFinal() {
             const btn = document.getElementById('btnConfirmExport');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando FFmpeg...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Renderizando com FFmpeg...';
+            showToast("Iniciando renderização de vídeo...");
 
             try {
                 const res = await fetch('/api/export-final', {
@@ -5453,6 +5454,7 @@ function setupPanelResizers() {
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         video_path: currentVideoPath,
+                        clips: clips,
                         ass_path: generatedAss,
                         filter_name: currentFilter !== 'none' ? currentFilter : '',
                         aspect_ratio: currentRatio,
@@ -5463,16 +5465,20 @@ function setupPanelResizers() {
                 const data = await res.json();
                 if (data.status === 'success') {
                     closeExportModal();
-                    window.open(data.download_url, '_blank');
-                    showToast("Vídeo exportado com sucesso em 1080p!");
+                    showToast("✓ Vídeo renderizado! Baixando arquivo MP4...");
+                    if (typeof downloadAudioFileDirectly === 'function') {
+                        downloadAudioFileDirectly(data.download_url, data.filename || 'montanha_video_final.mp4');
+                    } else {
+                        window.location.href = data.download_url;
+                    }
                 } else {
-                    showToast(data.message || "Erro na exportação", true);
+                    showToast(data.message || "Erro na renderização", true);
                 }
             } catch (err) {
-                showToast("Erro durante a exportação", true);
+                showToast("Erro durante a renderização do vídeo", true);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> Renderizar & Baixar MP4';
+                btn.innerHTML = '<i class="fa-solid fa-check text-xs mr-1"></i> Renderizar & Baixar MP4';
             }
         }
 
