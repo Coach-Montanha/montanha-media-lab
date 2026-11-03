@@ -412,6 +412,10 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                     out_name = f"tts_{voice_tag}_{timestamp}_{uuid.uuid4().hex[:6]}.mp3"
                     out_file = DOWNLOADS_DIR / out_name
 
+                tts_success = False
+                err_msg = ""
+
+                # 1. Tentar edge_tts (se instalado)
                 try:
                     import edge_tts
 
@@ -420,7 +424,43 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                         await comm.save(str(out_file))
 
                     asyncio.run(_run_tts())
+                    tts_success = True
+                except Exception as e_edge:
+                    err_msg = str(e_edge)
+                    # 2. Fallback robusto nativo sem dependências de compilação (Google Neural TTS pt-BR)
+                    try:
+                        import re
 
+                        sentences = re.split(r'([.?!,;\n]+)', text)
+                        chunks = []
+                        curr = ""
+                        for part in sentences:
+                            if len(curr) + len(part) < 180:
+                                curr += part
+                            else:
+                                if curr.strip():
+                                    chunks.append(curr.strip())
+                                curr = part
+                        if curr.strip():
+                            chunks.append(curr.strip())
+
+                        combined_bytes = bytearray()
+                        for chunk in chunks:
+                            if not chunk.strip():
+                                continue
+                            url_tts = f"https://translate.google.com/translate_tts?ie=UTF-8&q={urllib.parse.quote(chunk)}&tl=pt-BR&client=tw-ob"
+                            req = urllib.request.Request(url_tts, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+                            with urllib.request.urlopen(req, timeout=12) as resp:
+                                combined_bytes.extend(resp.read())
+
+                        if len(combined_bytes) > 0:
+                            with open(out_file, "wb") as f_out:
+                                f_out.write(combined_bytes)
+                            tts_success = True
+                    except Exception as e_fallback:
+                        err_msg += f" | Fallback: {str(e_fallback)}"
+
+                if tts_success and out_file.exists():
                     duration = 0.0
                     if engine:
                         try:
@@ -439,8 +479,8 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                         "voice": selected_voice,
                         "text": text
                     })
-                except Exception as err:
-                    self._send_json({"status": "error", "message": f"Erro na geração de TTS: {str(err)}"}, 500)
+                else:
+                    self._send_json({"status": "error", "message": f"Erro na geração de TTS: {err_msg}"}, 500)
                 return
 
             # Silence Detection for AutoCut
