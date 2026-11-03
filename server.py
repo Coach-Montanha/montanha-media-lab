@@ -41,10 +41,13 @@ PUBLIC_DIR = BASE_DIR / "public"
 PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
 # Shared Media Storage (Termux Android & Windows fallback)
+# Storage no Android (Salva diretamente na pasta pública Downloads do celular)
 if os.path.exists("/sdcard/Download"):
-    DOWNLOADS_DIR = Path("/sdcard/Download/MontanhaMediaLab")
+    DOWNLOADS_DIR = Path("/sdcard/Download")
+elif os.path.exists("/storage/emulated/0/Download"):
+    DOWNLOADS_DIR = Path("/storage/emulated/0/Download")
 else:
-    DOWNLOADS_DIR = Path.home() / "Downloads" / "MontanhaMediaLab"
+    DOWNLOADS_DIR = Path.home() / "Downloads"
 DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 UPLOAD_DIR = BASE_DIR / "uploads"
