@@ -493,10 +493,6 @@
                                         <button id="btnDeleteSelectedMedia" onclick="deleteSelectedMediaBatch()" class="hidden btn-secondary py-0.5 px-2 text-rose-400 hover:text-rose-300 text-[10px] border-rose-500/30" title="Excluir selecionados">
                                             <i class="fa-solid fa-trash-can mr-1"></i>Excluir (<span id="deleteSelectedCountText">0</span>)
                                         </button>
-                                        <button onclick="cleanupTtsAudioCache()" class="px-2 py-0.5 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-[10px] flex items-center space-x-1 transition" title="Limpar locuções TTS geradas em testes">
-                                            <i class="fa-solid fa-broom text-[9px]"></i>
-                                            <span>Limpar TTS</span>
-                                        </button>
                                         <button onclick="refreshMediaLibrary()" title="Atualizar Lista de Mídias" class="btn-icon w-6 h-6 text-xs text-[var(--text-muted)] hover:text-[var(--accent)]"><i id="btnRefreshMediaIcon" class="fa-solid fa-rotate"></i></button>
                                     </div>
                                 </div>
@@ -799,6 +795,32 @@
                                     <i class="fa-solid fa-microphone text-xs"></i>
                                     <span>Gerar Legendas Sincronizadas</span>
                                 </button>
+                            </div>
+
+                            <!-- Editor Individual de Legendas Estilo CapCut -->
+                            <div class="bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)] space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-list-check text-cyan-400 text-xs"></i>
+                                        <span class="label-caps font-bold text-[var(--text-primary)]">Editar Legenda Individual (CapCut)</span>
+                                    </div>
+                                    <span id="captionSegmentsCount" class="text-[10px] text-cyan-400 font-mono font-semibold px-1.5 py-0.2 bg-[var(--bg-base)] rounded border border-[var(--border)]">0</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-1.5">
+                                    <button type="button" onclick="addCaptionSegmentAtPlayhead()" class="flex-1 py-1 px-2 rounded-[var(--radius-sm)] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] flex items-center justify-center space-x-1 transition" title="Adicionar novo trecho de legenda na posição atual da agulha">
+                                        <i class="fa-solid fa-plus text-[9px]"></i>
+                                        <span>+ Nova Legenda no Ponto</span>
+                                    </button>
+                                    <button type="button" onclick="saveEditedCaptionSegments()" id="btnSaveCaptions" class="py-1 px-2.5 rounded-[var(--radius-sm)] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] flex items-center justify-center space-x-1 transition" title="Salvar legendas editadas">
+                                        <i class="fa-solid fa-floppy-disk text-[9px]"></i>
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                                <div id="captionSegmentsList" class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                                    <div class="text-[var(--text-muted)] text-[11px] p-3 text-center italic bg-[var(--bg-base)] rounded-[var(--radius-sm)] border border-[var(--border)]">
+                                        Nenhuma legenda gerada ainda. Clique em "Gerar Legendas Sincronizadas" acima.
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1353,6 +1375,32 @@
                                         <button type="button" onclick="setSubtitlePositionPreset('bottom')" class="py-1 px-2 rounded-[var(--radius-sm)] bg-[var(--bg-base)] border border-[var(--border)] hover:border-cyan-400 text-[11px] font-medium text-white flex items-center justify-center space-x-1">
                                             <i class="fa-solid fa-arrow-down text-[10px] text-cyan-400"></i><span>Base</span>
                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Inspector: CapCut Individual Subtitle Segments -->
+                            <div class="bg-[var(--bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--border)] space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-1.5">
+                                        <i class="fa-solid fa-list-check text-cyan-400 text-xs"></i>
+                                        <span class="label-caps font-bold text-[var(--text-primary)]">Trechos de Legenda (CapCut)</span>
+                                    </div>
+                                    <span id="insCaptionSegmentsCount" class="text-[10px] text-cyan-400 font-mono font-semibold px-1.5 py-0.2 bg-[var(--bg-base)] rounded border border-[var(--border)]">0</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-1.5">
+                                    <button type="button" onclick="addCaptionSegmentAtPlayhead()" class="flex-1 py-1 px-2 rounded-[var(--radius-sm)] bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[10px] flex items-center justify-center space-x-1 transition" title="Adicionar novo trecho de legenda na posição atual da agulha">
+                                        <i class="fa-solid fa-plus text-[9px]"></i>
+                                        <span>+ Nova Legenda no Ponto</span>
+                                    </button>
+                                    <button type="button" onclick="saveEditedCaptionSegments()" class="py-1 px-2.5 rounded-[var(--radius-sm)] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] flex items-center justify-center space-x-1 transition" title="Salvar legendas editadas">
+                                        <i class="fa-solid fa-floppy-disk text-[9px]"></i>
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                                <div id="insCaptionSegmentsList" class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                                    <div class="text-[var(--text-muted)] text-[11px] p-3 text-center italic bg-[var(--bg-base)] rounded-[var(--radius-sm)] border border-[var(--border)]">
+                                        Nenhuma legenda gerada ainda.
                                     </div>
                                 </div>
                             </div>
@@ -2680,6 +2728,8 @@
         let generatedSrt = '';
         let extractedAudioPath = '';
         let liveSubwords = [];
+        let captionSegments = [];
+        let lastActiveCardId = null;
         let currentFilter = 'none';
         let currentRatio = '9/16';
         let fitCoverMode = 'cover';
@@ -3826,28 +3876,43 @@ function renderTimelineClips() {
             const deskWrap = document.getElementById('subtitleDraggableWrapper');
             const mobWrap = document.getElementById('mobileSubtitleDraggableWrapper');
 
-            if (!liveSubwords || liveSubwords.length === 0 || isMutedSubs) {
-                const vid = document.getElementById('studioVideo');
-                if (vid && !vid.paused) {
-                    if (deskBox) deskBox.innerText = '';
-                    if (mobBox) mobBox.innerText = '';
-                }
+            if (isMutedSubs) {
+                if (deskBox) deskBox.innerText = '';
+                if (mobBox) mobBox.innerText = '';
                 return;
             }
 
-            const activeWords = liveSubwords.filter(w => time >= w.start && time <= w.end);
-            if (activeWords.length > 0) {
-                const text = activeWords.map(w => w.word).join(' ');
-                if (deskBox) deskBox.innerText = text;
-                if (mobBox) mobBox.innerText = text;
-                if (deskWrap) deskWrap.style.opacity = '1';
-                if (mobWrap) mobWrap.style.opacity = '1';
-            } else {
-                const vid = document.getElementById('studioVideo');
-                if (vid && !vid.paused) {
-                    if (deskBox) deskBox.innerText = '';
-                    if (mobBox) mobBox.innerText = '';
+            // CapCut Subtitle Segments check
+            if (captionSegments && captionSegments.length > 0) {
+                const activeSeg = captionSegments.find(s => time >= s.start && time <= s.end);
+                if (activeSeg) {
+                    const txt = (activeSeg.text || '').toUpperCase();
+                    if (deskBox) deskBox.innerText = txt;
+                    if (mobBox) mobBox.innerText = txt;
+                    if (deskWrap) deskWrap.style.opacity = '1';
+                    if (mobWrap) mobWrap.style.opacity = '1';
+                    highlightActiveCaptionCard(activeSeg.id);
+                    return;
                 }
+            } else if (liveSubwords && liveSubwords.length > 0) {
+                captionSegments = buildCaptionSegmentsFromWords(liveSubwords);
+                renderCaptionSegmentsList();
+                const activeSeg = captionSegments.find(s => time >= s.start && time <= s.end);
+                if (activeSeg) {
+                    const txt = (activeSeg.text || '').toUpperCase();
+                    if (deskBox) deskBox.innerText = txt;
+                    if (mobBox) mobBox.innerText = txt;
+                    if (deskWrap) deskWrap.style.opacity = '1';
+                    if (mobWrap) mobWrap.style.opacity = '1';
+                    highlightActiveCaptionCard(activeSeg.id);
+                    return;
+                }
+            }
+
+            const vid = document.getElementById('studioVideo');
+            if (vid && !vid.paused) {
+                if (deskBox) deskBox.innerText = '';
+                if (mobBox) mobBox.innerText = '';
             }
         }
 
@@ -3943,6 +4008,8 @@ function renderTimelineClips() {
                     generatedAss = data.ass_path || '';
                     generatedSrt = data.srt_path || '';
                     liveSubwords = data.words || [];
+                    captionSegments = buildCaptionSegmentsFromWords(liveSubwords);
+                    renderCaptionSegmentsList();
                     
                     const subTrack = document.getElementById('trackSubs');
                     if (subTrack) {
@@ -3974,6 +4041,199 @@ function renderTimelineClips() {
                     btnModal.disabled = false;
                     btnModal.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles text-xs mr-1.5"></i><span>Transcrever mídia</span>';
                 }
+            }
+        }
+
+
+        // --- CAPCUT INDIVIDUAL SUBTITLE EDITOR ENGINE ---
+        function buildCaptionSegmentsFromWords(words) {
+            if (!words || words.length === 0) return [];
+            const segments = [];
+            let currentWords = [];
+            
+            for (let i = 0; i < words.length; i++) {
+                const w = words[i];
+                currentWords.push(w);
+                
+                const isLast = (i === words.length - 1);
+                const nextW = !isLast ? words[i + 1] : null;
+                const pause = nextW ? (nextW.start - w.end) : 0;
+                const endsWithPunct = /[.?!,]$/.test(w.word.trim());
+                const count = currentWords.length;
+                
+                if (isLast || pause > 0.45 || (count >= 3 && endsWithPunct) || count >= 5) {
+                    const segStart = currentWords[0].start;
+                    const segEnd = currentWords[currentWords.length - 1].end;
+                    const segText = currentWords.map(item => item.word).join(' ').trim();
+                    segments.push({
+                        id: 'seg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                        start: Math.round(segStart * 100) / 100,
+                        end: Math.round(Math.max(segEnd, segStart + 0.6) * 100) / 100,
+                        text: segText
+                    });
+                    currentWords = [];
+                }
+            }
+            return segments;
+        }
+
+        function renderCaptionSegmentsList() {
+            const list = document.getElementById('captionSegmentsList');
+            const insList = document.getElementById('insCaptionSegmentsList');
+            const badge = document.getElementById('captionSegmentsCount');
+            const insBadge = document.getElementById('insCaptionSegmentsCount');
+            
+            if (badge) badge.innerText = captionSegments.length;
+            if (insBadge) insBadge.innerText = captionSegments.length;
+            
+            if (!captionSegments || captionSegments.length === 0) {
+                const emptyHtml = `
+                    <div class="text-[var(--text-muted)] text-[11px] p-3 text-center italic bg-[var(--bg-base)] rounded-[var(--radius-sm)] border border-[var(--border)]">
+                        Nenhuma legenda gerada ainda. Clique em "Gerar Legendas Sincronizadas" acima.
+                    </div>
+                `;
+                if (list) list.innerHTML = emptyHtml;
+                if (insList) insList.innerHTML = emptyHtml;
+                return;
+            }
+            
+            let html = '';
+            captionSegments.forEach((seg) => {
+                const startStr = formatTimeWithMs(seg.start);
+                const endStr = formatTimeWithMs(seg.end);
+                html += `
+                    <div id="captionCard_${seg.id}" class="caption-segment-card bg-[var(--bg-base)] hover:bg-[var(--bg-hover)] border border-[var(--border)] hover:border-cyan-500/50 p-2 rounded-[var(--radius-sm)] space-y-1.5 transition">
+                        <div class="flex items-center justify-between text-[10px] font-mono">
+                            <button type="button" onclick="seekToCaption('${seg.id}')" class="px-1.5 py-0.5 rounded bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 flex items-center space-x-1 font-semibold transition" title="Ir para este ponto do vídeo">
+                                <i class="fa-solid fa-play text-[8px]"></i>
+                                <span>${startStr} - ${endStr}</span>
+                            </button>
+                            <div class="flex items-center space-x-1">
+                                <button type="button" onclick="deleteCaptionSegment('${seg.id}')" class="w-5 h-5 rounded hover:bg-rose-500/10 text-[var(--text-muted)] hover:text-rose-400 flex items-center justify-center transition" title="Excluir este trecho">
+                                    <i class="fa-regular fa-trash-can text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <input type="text" value="${escapeCaptionHtml(seg.text)}" oninput="updateCaptionText('${seg.id}', this.value)" onfocus="seekToCaption('${seg.id}')" class="w-full bg-[var(--bg-elevated)] border border-[var(--border)] focus:border-cyan-400 rounded px-2 py-1 text-xs text-[var(--text-primary)] font-medium focus:outline-none focus:ring-1 focus:ring-cyan-400/40" placeholder="Texto da legenda...">
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (list) list.innerHTML = html;
+            if (insList) insList.innerHTML = html;
+        }
+
+        function formatTimeWithMs(secs) {
+            if (isNaN(secs) || secs < 0) secs = 0;
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            const ms = Math.floor((secs - Math.floor(secs)) * 10);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${ms}`;
+        }
+
+        function escapeCaptionHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function seekToCaption(segId) {
+            const seg = captionSegments.find(s => s.id === segId);
+            if (!seg) return;
+            const vid = document.getElementById('studioVideo');
+            if (vid) {
+                vid.currentTime = seg.start;
+                updatePlayheadUI();
+                updateActiveSubtitles(seg.start);
+            }
+        }
+
+        function updateCaptionText(segId, newText) {
+            const seg = captionSegments.find(s => s.id === segId);
+            if (seg) {
+                seg.text = newText;
+                const vid = document.getElementById('studioVideo');
+                const curr = vid ? vid.currentTime : 0;
+                if (curr >= seg.start && curr <= seg.end) {
+                    const deskBox = document.getElementById('subtitleBox');
+                    const mobBox = document.getElementById('mobileSubtitleBox');
+                    if (deskBox) deskBox.innerText = newText.toUpperCase();
+                    if (mobBox) mobBox.innerText = newText.toUpperCase();
+                }
+            }
+        }
+
+        function deleteCaptionSegment(segId) {
+            captionSegments = captionSegments.filter(s => s.id !== segId);
+            renderCaptionSegmentsList();
+            const vid = document.getElementById('studioVideo');
+            updateActiveSubtitles(vid ? vid.currentTime : 0);
+            showToast("Trecho de legenda removido");
+        }
+
+        function addCaptionSegmentAtPlayhead() {
+            const vid = document.getElementById('studioVideo');
+            const t = vid ? vid.currentTime : 0;
+            const newSeg = {
+                id: 'seg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                start: Math.round(t * 100) / 100,
+                end: Math.round((t + 2.0) * 100) / 100,
+                text: "NOVA LEGENDA"
+            };
+            captionSegments.push(newSeg);
+            captionSegments.sort((a, b) => a.start - b.start);
+            renderCaptionSegmentsList();
+            seekToCaption(newSeg.id);
+            showToast("Novo trecho de legenda adicionado");
+        }
+
+        function highlightActiveCaptionCard(segId) {
+            if (lastActiveCardId === segId) return;
+            lastActiveCardId = segId;
+            document.querySelectorAll('.caption-segment-card').forEach(c => {
+                c.classList.remove('border-cyan-400', 'bg-cyan-500/10', 'ring-1', 'ring-cyan-400/40');
+            });
+            const card = document.getElementById(`captionCard_${segId}`);
+            if (card) {
+                card.classList.add('border-cyan-400', 'bg-cyan-500/10', 'ring-1', 'ring-cyan-400/40');
+                const container = card.closest('#captionSegmentsList, #insCaptionSegmentsList');
+                if (container) {
+                    const cardTop = card.offsetTop - container.offsetTop;
+                    if (cardTop < container.scrollTop || cardTop > container.scrollTop + container.clientHeight - 80) {
+                        container.scrollTo({ top: Math.max(0, cardTop - 40), behavior: 'smooth' });
+                    }
+                }
+            }
+        }
+
+        async function saveEditedCaptionSegments() {
+            if (!captionSegments || captionSegments.length === 0) {
+                return showToast("Nenhuma legenda para salvar", true);
+            }
+            const btn = document.getElementById('btnSaveCaptions');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-[9px]"></i><span>Salvando...</span>';
+            try {
+                const res = await fetch('/api/save-caption-segments', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        segments: captionSegments,
+                        video_path: currentVideoPath
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    if (data.ass_path) generatedAss = data.ass_path;
+                    if (data.srt_path) generatedSrt = data.srt_path;
+                    showToast("✓ Legendas sincronizadas salvas com sucesso!");
+                } else {
+                    showToast(data.message || "Erro ao salvar legendas", true);
+                }
+            } catch (e) {
+                showToast("Erro de rede ao salvar legendas", true);
+            } finally {
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-floppy-disk text-[9px]"></i><span>Salvar</span>';
             }
         }
 
@@ -4512,7 +4772,7 @@ function setupPanelResizers() {
                 const res = await fetch('/api/delete-media', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ server_paths: paths })
+                    body: JSON.stringify({ server_paths: paths, paths: paths })
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
@@ -4627,7 +4887,7 @@ function setupPanelResizers() {
                 const res = await fetch('/api/delete-media', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ server_path: item.server_path })
+                    body: JSON.stringify({ server_path: item.server_path, path: item.server_path })
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
