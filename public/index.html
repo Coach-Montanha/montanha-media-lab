@@ -8379,22 +8379,54 @@ function setupPanelResizers() {
 
         
         async function downloadAudioFileDirectly(url, filename) {
-            showToast("Abrindo download no navegador...");
-            // URL direta com parâmetros que forçam o Edge e o Android Download Manager a gravar o arquivo
-            const directUrl = url + (url.includes('?') ? '&' : '?') + 'download=1&time=' + Date.now();
-            
-            // 1. Tenta acionar link oculto com download
+            showToast("Iniciando download do arquivo...");
+
+            // 1. Tentar Web Share API se suportada (permite salvar em qualquer pasta ou WhatsApp/Telegram/Files)
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const file = new File([blob], filename, { type: 'audio/mpeg' });
+                    
+                    // Se o navegador móvel suportar compartilhamento/salvamento nativo de arquivos
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: filename,
+                            text: 'Áudio narrado gerado no Montanha Media Lab'
+                        });
+                        showToast("✓ Áudio compartilhado/salvo com sucesso!");
+                        return;
+                    }
+
+                    // 2. Fallback via Blob URL nativo (funciona 100% no Android Edge/Chrome)
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = blobUrl;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(blobUrl);
+                    }, 2000);
+                    showToast("✓ Arquivo gravado com sucesso!");
+                    return;
+                }
+            } catch (err) {
+                console.warn("Share/Blob download catch:", err);
+            }
+
+            // 3. Fallback clássico por link direto
+            const directUrl = url + (url.includes('?') ? '&' : '?') + 'download=1&t=' + Date.now();
             const a = document.createElement('a');
             a.href = directUrl;
-            a.setAttribute('download', filename);
+            a.download = filename;
+            a.target = '_blank';
             document.body.appendChild(a);
             a.click();
             setTimeout(() => { document.body.removeChild(a); }, 1000);
-
-            // 2. Garante abertura no Edge Mobile via window.location (o Android intercepta Content-Disposition: attachment)
-            setTimeout(() => {
-                window.location.assign(directUrl);
-            }, 300);
         }
 // === STANDALONE FUNCTIONS (USO ISOLADO NA TELA INICIAL) ===
         async function executeStandaloneTts() {
