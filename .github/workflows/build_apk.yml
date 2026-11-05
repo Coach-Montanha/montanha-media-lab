@@ -23,11 +23,21 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK Tools
-        uses: android-actions/setup-android@v3
-
-      - name: Build Standalone APK
+      - name: Build Standalone APK via Native Android Tools
         run: |
+          set -e
+          echo "==> Verificando Android SDK do runner..."
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          PLATFORM_DIR=$(ls -d $ANDROID_HOME/platforms/* | sort -V | tail -n 1)
+          ANDROID_JAR="$PLATFORM_DIR/android.jar"
+          export PATH="$BUILD_TOOLS_DIR:$PATH"
+
+          echo "Android JAR: $ANDROID_JAR"
+          echo "Build Tools: $BUILD_TOOLS_DIR"
+
           mkdir -p build_apk/src/com/montanhamedialab/app
           mkdir -p build_apk/res/values
           mkdir -p build_apk/obj
@@ -41,8 +51,8 @@ jobs:
               android:versionName="1.0">
               <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
               <application
                   android:label="Montanha Media Lab"
                   android:usesCleartextTraffic="true"
@@ -72,6 +82,7 @@ jobs:
           import android.os.Environment;
           import android.view.WindowManager;
           import android.webkit.DownloadListener;
+          import android.webkit.PermissionRequest;
           import android.webkit.WebChromeClient;
           import android.webkit.WebSettings;
           import android.webkit.WebView;
@@ -102,7 +113,12 @@ jobs:
                   ws.setMediaPlaybackRequiresUserGesture(false);
 
                   webView.setWebViewClient(new WebViewClient());
-                  webView.setWebChromeClient(new WebChromeClient());
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public void onPermissionRequest(final PermissionRequest request) {
+                          request.grant(request.getResources());
+                      }
+                  });
 
                   webView.setDownloadListener(new DownloadListener() {
                       @Override
@@ -124,7 +140,7 @@ jobs:
                       }
                   });
 
-                  webView.loadUrl("http://localhost:4190");
+                  webView.loadUrl("https://montanha-media-lab.vercel.app");
               }
 
               @Override
@@ -137,11 +153,6 @@ jobs:
               }
           }
           EOF
-
-          ANDROID_JAR="$ANDROID_HOME/platforms/android-34/android.jar"
-          if [ ! -f "$ANDROID_JAR" ]; then
-              ANDROID_JAR=$(find $ANDROID_HOME/platforms -name "android.jar" | head -n 1)
-          fi
 
           aapt package -f -m -J build_apk/src -M build_apk/AndroidManifest.xml -S build_apk/res -I "$ANDROID_JAR"
           javac -d build_apk/obj -classpath "$ANDROID_JAR" $(find build_apk/src -name "*.java")
@@ -159,11 +170,11 @@ jobs:
           name: MontanhaMediaLab-APK
           path: build_apk/bin/MontanhaMediaLab.apk
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: build_apk/bin/MontanhaMediaLab.apk
           tag_name: ${{ github.ref_name }}
           name: Montanha Media Lab ${{ github.ref_name }}
-          body: "Download do arquivo APK do Montanha Media Lab compilado na nuvem pelo GitHub Actions."
+          body: "Download direto do arquivo APK do Montanha Media Lab compilado automaticamente pelo GitHub Actions."
