@@ -2090,7 +2090,11 @@
                         <i class="fa-solid fa-keyboard text-xs w-4 text-yellow-400"></i>
                         <span>Atalhos de Teclado</span>
                     </button>
-                    <button onclick="setSettingsTab('about')" id="setTab_about" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                    <button onclick="setSettingsTab('about')" <button onclick="setSettingsTab('updates')" id="setTab_updates" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
+                        <i class="fa-brands fa-android text-xs w-4 text-emerald-400"></i>
+                        <span>Baixar Atualizações</span>
+                    </button>
+                    id="setTab_about" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-left text-[var(--text-secondary)] hover:text-white hover:bg-[var(--bg-hover)] transition">
                         <i class="fa-solid fa-circle-info text-xs w-4 text-gray-400"></i>
                         <span>Sobre</span>
                     </button>
@@ -2222,7 +2226,37 @@
                     </div>
 
                     <!-- TAB 6: SOBRE -->
-                    <div id="setPanel_about" class="hidden space-y-3 text-center py-4">
+                    <div <!-- TAB 7: ATUALIZACOES APK -->
+                    <div id="setPanel_updates" class="hidden space-y-4">
+                        <div class="p-4 rounded-xl bg-[#121317] border border-[#2B2F3A] space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                                        <i class="fa-brands fa-android"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-white text-xs">Montanha Media Lab (APK Android)</div>
+                                        <div class="text-[10px] text-emerald-400 font-mono">v1.0.0 Oficial Release</div>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 text-[10px] bg-emerald-500/10 text-emerald-300 rounded-full border border-emerald-500/20 font-semibold">Mais Recente</span>
+                            </div>
+                            <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">
+                                Baixe o aplicativo diretamente para o seu celular Android. Sempre que uma atualização for publicada no repositório, o link abaixo fornecerá a versão mais recente compilada no GitHub Actions.
+                            </p>
+                            <div class="pt-2 flex items-center space-x-3">
+                                <a href="https://github.com/Coach-Montanha/montanha-media-lab/releases/download/v1.0.0/MontanhaMediaLab.apk" target="_blank" rel="noopener noreferrer" class="btn-primary py-2 px-4 text-xs font-bold flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Baixar APK Atualizado</span>
+                                </a>
+                                <a href="https://github.com/Coach-Montanha/montanha-media-lab/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer" class="text-xs text-[var(--text-secondary)] hover:text-white underline">
+                                    Ver Notas de Lançamento
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    id="setPanel_about" class="hidden space-y-3 text-center py-4">
                         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-extrabold mx-auto shadow-lg">
                             ⛰️
                         </div>
@@ -7142,7 +7176,7 @@ function setupPanelResizers() {
         }
 
         function setSettingsTab(tabName) {
-            const tabs = ['general', 'downloads', 'device', 'export', 'keybinds', 'about'];
+            const tabs = ['general', 'downloads', 'device', 'export', 'keybinds', 'updates', 'about'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`setTab_${t}`);
                 const panel = document.getElementById(`setPanel_${t}`);
