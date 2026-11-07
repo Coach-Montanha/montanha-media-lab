@@ -166,31 +166,27 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Apple Quick Action Cards on Home Dashboard
         binding.cardSubtitles.setBounceClickListener {
-            switchTab(1)
-            binding.webViewStudio.postDelayed({
-                binding.webViewStudio.evaluateJavascript("if (typeof openAiTranscribeModal === 'function') openAiTranscribeModal();", null)
-            }, 400)
+            openStudioTab("subtitles")
+        }
+
+        binding.cardTts.setBounceClickListener {
+            openStudioTab("tts")
         }
 
         binding.cardPdf.setBounceClickListener {
-            switchTab(1)
-            binding.webViewStudio.postDelayed({
-                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navPdfBtn')) document.getElementById('navPdfBtn').click();", null)
-            }, 400)
+            openStudioTab("pdf")
         }
 
         binding.cardAudio.setBounceClickListener {
-            switchTab(1)
-            binding.webViewStudio.postDelayed({
-                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navAudioBtn')) document.getElementById('navAudioBtn').click();", null)
-            }, 400)
+            openStudioTab("tts")
         }
 
         binding.cardDownloader.setBounceClickListener {
-            switchTab(1)
-            binding.webViewStudio.postDelayed({
-                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navDownloaderBtn')) document.getElementById('navDownloaderBtn').click();", null)
-            }, 400)
+            openStudioTab("downloader")
+        }
+
+        binding.cardFoto.setBounceClickListener {
+            openStudioTab("foto")
         }
         
         // Setup Settings Actions
@@ -517,6 +513,16 @@ class MainActivity : AppCompatActivity() {
             binding.webViewStudio.loadUrl("file:///android_asset/studio/index.html")
             isStudioLoaded = true
         }
+    }
+
+    private fun openStudioTab(tabKey: String) {
+        switchTab(1)
+        binding.webViewStudio.postDelayed({
+            binding.webViewStudio.evaluateJavascript(
+                "if (typeof switchAppTab === 'function') switchAppTab('$tabKey');",
+                null
+            )
+        }, 350)
     }
 
     private fun switchTab(tabIndex: Int) {
