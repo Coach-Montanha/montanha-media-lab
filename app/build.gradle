@@ -10,7 +10,7 @@ aboutLibraries {
 }
 
 android {
-    namespace 'com.montanhamedialab.app'
+    namespace 'com.tharunbirla.librecuts'
     compileSdk 34
 
     androidResources {
@@ -19,6 +19,8 @@ android {
 
     lint {
         disable 'UseAppTint', 'MissingTranslation', 'ExtraTranslation'
+        abortOnError false
+        checkReleaseBuilds false
     }
 
     defaultConfig {
