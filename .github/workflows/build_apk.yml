@@ -42,13 +42,15 @@ jobs:
           mkdir -p build_apk/res/values
           mkdir -p build_apk/obj
           mkdir -p build_apk/bin
+          mkdir -p build_apk/assets
+          cp -r public/* build_apk/assets/
 
           cat << 'EOF' > build_apk/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
               package="com.montanhamedialab.app"
-              android:versionCode="2"
-              android:versionName="1.1">
+              android:versionCode="3"
+              android:versionName="1.2">
               <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
               <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -98,10 +100,8 @@ jobs:
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
 
-                  getWindow().setFlags(
-                      WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                      WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                  );
+                  // Respeita as areas seguras do sistema (notch, status bar e navigation bar)
+                  getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
                   webView = new WebView(this);
                   setContentView(webView);
@@ -141,7 +141,14 @@ jobs:
                       }
                   });
 
-                  webView.loadUrl("https://montanha-media-lab.vercel.app");
+                  // Carrega a interface offline local do APK (ou conecta no Termux localhost:8080 se ativo)
+                  webView.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                          view.loadUrl("file:///android_asset/index.html");
+                      }
+                  });
+                  webView.loadUrl("file:///android_asset/index.html");
               }
 
               @Override
@@ -158,7 +165,7 @@ jobs:
           aapt package -f -m --min-sdk-version 26 --target-sdk-version 34 -J build_apk/src -M build_apk/AndroidManifest.xml -S build_apk/res -I "$ANDROID_JAR"
           javac -source 8 -target 8 -d build_apk/obj -classpath "$ANDROID_JAR" $(find build_apk/src -name "*.java")
           d8 --min-api 26 --output build_apk/bin build_apk/obj/com/montanhamedialab/app/*.class
-          aapt package -f --min-sdk-version 26 --target-sdk-version 34 -M build_apk/AndroidManifest.xml -S build_apk/res -I "$ANDROID_JAR" -F build_apk/bin/unsigned.apk
+          aapt package -f --min-sdk-version 26 --target-sdk-version 34 -M build_apk/AndroidManifest.xml -S build_apk/res -A build_apk/assets -I "$ANDROID_JAR" -F build_apk/bin/unsigned.apk
           cd build_apk/bin
           aapt add unsigned.apk classes.dex
 
