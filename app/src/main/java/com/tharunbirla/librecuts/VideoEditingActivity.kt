@@ -5132,14 +5132,6 @@ class VideoEditingActivity : AppCompatActivity() {
             showLoading("Loading...")
 
             player.addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    if (isPlaying) {
-                        syncBackgroundAudio()
-                        bgAudioPlayer?.play()
-                    } else {
-                        bgAudioPlayer?.pause()
-                    }
-                }
                 override fun onPlaybackStateChanged(state: Int) {
                     if (state == Player.STATE_ENDED) {
                         // Reset UI components when video reaches the end
@@ -5186,8 +5178,11 @@ class VideoEditingActivity : AppCompatActivity() {
 
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     if (isPlaying) {
+                        syncBackgroundAudio()
+                        bgAudioPlayer?.play()
                         startProgressUpdater()
                     } else {
+                        bgAudioPlayer?.pause()
                         stopProgressUpdater()
                     }
                 }
