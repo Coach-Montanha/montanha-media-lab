@@ -31,27 +31,27 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon -x test -x lint
+      - name: Build Release APKs
+        run: ./gradlew assembleRelease --stacktrace --no-daemon -x test -x lint
 
-      - name: Upload build logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gradle-build-logs
-          path: |
-            app/build/reports/
-            ~/.gradle/daemon/
-
-      - name: Prepare APKs for Release
+      - name: Sign & Prepare Release APKs
         run: |
+          echo "==> Assinando APKs com apksigner do runner..."
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          export PATH="$BUILD_TOOLS_DIR:$PATH"
+
+          keytool -genkeypair -v -keystore release.keystore -alias montanhakey -keypass montanha123 -storepass montanha123 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=MontanhaMediaLab,O=Montanha,C=BR"
+
           mkdir -p release_apks
-          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} release_apks/ \;
-          cd release_apks
-          for f in *.apk; do
-            mv "$f" "MontanhaMediaLab-${f}"
+          for apk in app/build/outputs/apk/release/*.apk; do
+            [ -f "$apk" ] || continue
+            fname=$(basename "$apk")
+            echo "Assinando $fname..."
+            apksigner sign --ks release.keystore --ks-pass pass:montanha123 --out "release_apks/MontanhaMediaLab-${fname}" "$apk"
           done
-          ls -la
+
+          ls -lh release_apks/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -66,4 +66,4 @@ jobs:
           files: release_apks/*.apk
           tag_name: ${{ github.ref_name }}
           name: Montanha Media Lab ${{ github.ref_name }}
-          body: "Download direto do aplicativo nativo Montanha Media Lab compilado automaticamente pelo GitHub Actions."
+          body: "Download direto do aplicativo nativo oficial Montanha Media Lab compilado pelo GitHub Actions."
