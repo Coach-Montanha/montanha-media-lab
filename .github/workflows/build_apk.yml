@@ -46,9 +46,11 @@ jobs:
           mkdir -p release_apks
           for apk in app/build/outputs/apk/release/*.apk; do
             [ -f "$apk" ] || continue
-            fname=$(basename "$apk")
-            echo "Assinando $fname..."
-            apksigner sign --ks release.keystore --ks-pass pass:montanha123 --out "release_apks/MontanhaMediaLab-${fname}" "$apk"
+            raw_base=$(basename "$apk" .apk)
+            clean_name=$(echo "$raw_base" | sed 's/app-//g' | sed 's/-release-unsigned//g' | sed 's/-unsigned//g' | sed 's/-release//g')
+            outname="MontanhaMediaLab-${clean_name}.apk"
+            echo "Assinando $apk -> release_apks/$outname..."
+            apksigner sign --ks release.keystore --ks-pass pass:montanha123 --out "release_apks/$outname" "$apk"
           done
 
           ls -lh release_apks/
