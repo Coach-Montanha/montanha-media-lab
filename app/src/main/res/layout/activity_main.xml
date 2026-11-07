@@ -32,7 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Video Editor"
+                android:text="Estúdio Oficial • Coach Montanha"
                 android:textColor="@color/iconSecondary"
                 android:textSize="11sp"
                 android:fontFamily="sans-serif" />
@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Your next edit starts right here."
+                    android:text="Novo projeto, timeline multi-faixas, cortes rápidos e GPU"
                     android:textColor="@color/iconSecondary"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif" />
@@ -175,6 +175,258 @@
 
             </LinearLayout>
 
+            
+            <!-- Section Header: Intelligence & Media Studio -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Inteligência Editorial & Mídia"
+                    android:textColor="@color/textColor"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Ferramentas rápidas de produção Coach Montanha"
+                    android:textColor="@color/iconSecondary"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif" />
+            </LinearLayout>
+
+            <!-- Quick Action 1: Subtitles IA -->
+            <LinearLayout
+                android:id="@+id/cardSubtitles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="76dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_apple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
+
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_subtitles_24"
+                    app:tint="@color/colorPrimary" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Legendas com IA & Whisper"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Transcrição automática sincronizada (.srt / .ass)"
+                        android:textColor="@color/iconSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right_24"
+                    app:tint="@color/iconSecondary"
+                    android:alpha="0.5" />
+            </LinearLayout>
+
+            <!-- Quick Action 2: PDF Intelligence Pro -->
+            <LinearLayout
+                android:id="@+id/cardPdf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="76dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_apple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
+
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_format_24"
+                    app:tint="#FF9F0A" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PDF Intelligence Pro (5 em 1)"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Capítulos, Resumos, Carrosséis e Roteiros 10x"
+                        android:textColor="@color/iconSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right_24"
+                    app:tint="@color/iconSecondary"
+                    android:alpha="0.5" />
+            </LinearLayout>
+
+            <!-- Quick Action 3: Audio Studio -->
+            <LinearLayout
+                android:id="@+id/cardAudio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="76dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_apple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
+
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_audio_extract_24"
+                    app:tint="#30D158" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Áudio Studio &amp; Extração MP3"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Extração instantânea e mixagem sem perda"
+                        android:textColor="@color/iconSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right_24"
+                    app:tint="@color/iconSecondary"
+                    android:alpha="0.5" />
+            </LinearLayout>
+
+            <!-- Quick Action 4: Downloader -->
+            <LinearLayout
+                android:id="@+id/cardDownloader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="76dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_apple_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
+
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="@drawable/bg_nav_active_pill"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_arrow_down_24"
+                    app:tint="#BF5AF2" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Downloader Rápido de Redes"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Download do Instagram, TikTok e YouTube sem marca"
+                        android:textColor="@color/iconSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right_24"
+                    app:tint="@color/iconSecondary"
+                    android:alpha="0.5" />
+            </LinearLayout>
+
             <!-- App Tagline -->
             <TextView
                 android:layout_width="wrap_content"
@@ -192,6 +444,24 @@
         </LinearLayout>
 
     </ScrollView>
+
+    
+    <!-- Studio AI Offline Web Suite Content -->
+    <FrameLayout
+        android:id="@+id/layoutStudioContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/layoutTopHeader"
+        android:layout_above="@id/bottomNavBar"
+        android:background="@color/background"
+        android:visibility="gone">
+
+        <WebView
+            android:id="@+id/webViewStudio"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background" />
+    </FrameLayout>
 
     <!-- Settings Page Content (Bento Style Layout) -->
     <ScrollView
@@ -803,7 +1073,41 @@
             </LinearLayout>
         </FrameLayout>
 
-        <FrameLayout
+                <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <LinearLayout
+                android:id="@+id/tabStudio"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp">
+                <ImageView
+                    android:id="@+id/ivStudio"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_subtitles_24"
+                    app:tint="@color/inactiveTool" />
+                <TextView
+                    android:id="@+id/tvStudioLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Estúdio IA"
+                    android:textColor="@color/inactiveTool"
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:maxLines="1"
+                    android:fontFamily="sans-serif-medium" />
+            </LinearLayout>
+        </FrameLayout>
+
+<FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">

@@ -1,57 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- PRIMARY: Electric Pink -->
-    <color name="colorPrimary">#FF2A6D</color>
-    <color name="colorPrimaryVariant">#C81D52</color>
+    <!-- PRIMARY: Apple iOS Pro Blue -->
+    <color name="colorPrimary">#007AFF</color>
+    <color name="colorPrimaryVariant">#0056B3</color>
     <color name="colorOnPrimary">#FFFFFF</color>
 
-    <!-- SECONDARY: Bright Pink Accent -->
-    <color name="colorSecondary">#FF2A6D</color>
-    <color name="colorSecondaryVariant">#C81D52</color>
+    <!-- SECONDARY: Apple Accent Blue / Cyan -->
+    <color name="colorSecondary">#0A84FF</color>
+    <color name="colorSecondaryVariant">#22D3EE</color>
     <color name="colorOnSecondary">#FFFFFF</color>
 
-    <!-- BACKGROUND: OLED Black -->
+    <!-- BACKGROUND: Apple OLED Pure Black -->
     <color name="background">#000000</color>
-    <color name="colorOnBackground">#F2F2F2</color>
+    <color name="colorOnBackground">#F5F5F7</color>
 
-    <!-- SURFACE: Subtle Grays -->
-    <color name="colorSurface">#111114</color>
-    <color name="colorOnSurface">#F2F2F2</color>
+    <!-- SURFACE: Apple Dark Glass Surface -->
+    <color name="colorSurface">#121316</color>
+    <color name="colorOnSurface">#F5F5F7</color>
 
     <!-- UI SPECIFIC -->
     <color name="statusBarColor">#000000</color>
-    <color name="navigationBarColor">#000000</color> <!-- Transparent/floating effect works better if base is black -->
+    <color name="navigationBarColor">#000000</color>
     <color name="cinemaBlack">#000000</color>
-    <color name="textColor">#F2F2F2</color>
+    <color name="textColor">#F5F5F7</color>
 
     <!-- CONTAINERS (Elevation levels) -->
     <color name="surfaceContainerLowest">#000000</color>
-    <color name="surfaceContainer">#111114</color>
-    <color name="surfaceContainerHigh">#1A1A20</color>
-    <color name="surfaceVariant">#212128</color>
-    <color name="floatingPanelBackground">#1A1A20</color>
+    <color name="surfaceContainer">#121316</color>
+    <color name="surfaceContainerHigh">#1A1D24</color>
+    <color name="surfaceVariant">#222630</color>
+    <color name="floatingPanelBackground">#1A1D24</color>
 
-    <color name="primaryContainer">#FF2A6D</color>
+    <color name="primaryContainer">#007AFF</color>
     <color name="onPrimaryContainer">#FFFFFF</color>
 
-    <color name="tertiary">#FFC107</color>
-    <color name="tertiaryContainer">#FFA000</color>
+    <color name="tertiary">#FF9F0A</color>
+    <color name="tertiaryContainer">#D97706</color>
     <color name="onTertiary">#FFFFFF</color>
 
-    <!-- OUTLINES -->
-    <color name="outline">#3F3F4A</color>
-    <color name="outlineVariant">#2C2C35</color>
-    <color name="iconSecondary">#8A8A93</color>
+    <!-- OUTLINES & BORDERS -->
+    <color name="outline">#2A2D35</color>
+    <color name="outlineVariant">#1C1E24</color>
+    <color name="iconSecondary">#8E8E93</color>
 
     <!-- TOOL COLORS -->
-    <color name="activeTool">#FF2A6D</color>
-    <color name="activeToolBackground">#2A1118</color> <!-- Subtle pink tint for active tool -->
-    <color name="inactiveTool">#8A8A93</color>
-    <color name="inactiveToolBackground">#111114</color>
+    <color name="activeTool">#0A84FF</color>
+    <color name="activeToolBackground">#152A4A</color>
+    <color name="inactiveTool">#8E8E93</color>
+    <color name="inactiveToolBackground">#121316</color>
 
-    <color name="toolTextActive">#FF2A6D</color>
-    <color name="toolTextInactive">#8A8A93</color>
+    <color name="toolTextActive">#0A84FF</color>
+    <color name="toolTextInactive">#8E8E93</color>
 
-    <color name="sliderHalo">#1A1A20</color>
+    <color name="sliderHalo">#1A1D24</color>
 
 </resources>

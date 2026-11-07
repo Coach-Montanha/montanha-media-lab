@@ -151,13 +151,46 @@ class MainActivity : AppCompatActivity() {
         binding.tabHome.setBounceClickListener {
             switchTab(0)
         }
+
+        binding.tabStudio.setBounceClickListener {
+            switchTab(1)
+        }
         
         binding.tabSettings.setBounceClickListener {
-            switchTab(1)
+            switchTab(2)
         }
 
         binding.tabAbout.setBounceClickListener {
-            switchTab(2)
+            switchTab(3)
+        }
+
+        // Setup Apple Quick Action Cards on Home Dashboard
+        binding.cardSubtitles.setBounceClickListener {
+            switchTab(1)
+            binding.webViewStudio.postDelayed({
+                binding.webViewStudio.evaluateJavascript("if (typeof openAiTranscribeModal === 'function') openAiTranscribeModal();", null)
+            }, 400)
+        }
+
+        binding.cardPdf.setBounceClickListener {
+            switchTab(1)
+            binding.webViewStudio.postDelayed({
+                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navPdfBtn')) document.getElementById('navPdfBtn').click();", null)
+            }, 400)
+        }
+
+        binding.cardAudio.setBounceClickListener {
+            switchTab(1)
+            binding.webViewStudio.postDelayed({
+                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navAudioBtn')) document.getElementById('navAudioBtn').click();", null)
+            }, 400)
+        }
+
+        binding.cardDownloader.setBounceClickListener {
+            switchTab(1)
+            binding.webViewStudio.postDelayed({
+                binding.webViewStudio.evaluateJavascript("if (document.getElementById('navDownloaderBtn')) document.getElementById('navDownloaderBtn').click();", null)
+            }, 400)
         }
         
         // Setup Settings Actions
@@ -245,16 +278,16 @@ class MainActivity : AppCompatActivity() {
 
         // Setup GitHub and Translation button listeners
         binding.btnStarGithub.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts")
+            openUrl("https://github.com/Coach-Montanha/montanha-media-lab")
         }
         binding.btnTranslate.setBounceClickListener {
-            openUrl("https://hosted.weblate.org/engage/librecuts/")
+            openUrl("https://github.com/Coach-Montanha")
         }
         binding.btnReportBug.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts/issues")
+            openUrl("https://github.com/Coach-Montanha/montanha-media-lab/issues")
         }
         binding.btnSponsor.setBounceClickListener {
-            openUrl("https://github.com/sponsors/tharunbirla")
+            openUrl("https://github.com/Coach-Montanha")
         }
 
         // Onboarding / Welcome Dialog
@@ -465,6 +498,27 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private var isStudioLoaded = false
+
+    private fun loadStudioIfNeeded() {
+        if (!isStudioLoaded) {
+            binding.webViewStudio.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                allowFileAccess = true
+                allowContentAccess = true
+                allowFileAccessFromFileURLs = true
+                allowUniversalAccessFromFileURLs = true
+                mediaPlaybackRequiresUserGesture = false
+                databaseEnabled = true
+            }
+            binding.webViewStudio.webViewClient = android.webkit.WebViewClient()
+            binding.webViewStudio.webChromeClient = android.webkit.WebChromeClient()
+            binding.webViewStudio.loadUrl("file:///android_asset/studio/index.html")
+            isStudioLoaded = true
+        }
+    }
+
     private fun switchTab(tabIndex: Int) {
         val activeBg = ContextCompat.getDrawable(this, R.drawable.bg_nav_active_pill)
         val attrs = intArrayOf(android.R.attr.selectableItemBackgroundBorderless)
@@ -477,12 +531,17 @@ class MainActivity : AppCompatActivity() {
 
         // Reset all tabs to inactive
         binding.layoutHomeContent.visibility = View.GONE
+        binding.layoutStudioContent.visibility = View.GONE
         binding.layoutSettingsContent.visibility = View.GONE
         binding.layoutAboutContent.visibility = View.GONE
 
         binding.tabHome.background = inactiveBg
         binding.ivHome.setColorFilter(inactiveColor)
         binding.tvHomeLabel.setTextColor(inactiveColor)
+
+        binding.tabStudio.background = inactiveBg
+        binding.ivStudio.setColorFilter(inactiveColor)
+        binding.tvStudioLabel.setTextColor(inactiveColor)
 
         binding.tabSettings.background = inactiveBg
         binding.ivSettings.setColorFilter(inactiveColor)
@@ -500,17 +559,37 @@ class MainActivity : AppCompatActivity() {
                 binding.tvHomeLabel.setTextColor(activeColor)
             }
             1 -> {
+                binding.layoutStudioContent.visibility = View.VISIBLE
+                binding.tabStudio.background = activeBg
+                binding.ivStudio.setColorFilter(activeColor)
+                binding.tvStudioLabel.setTextColor(activeColor)
+                loadStudioIfNeeded()
+            }
+            2 -> {
                 binding.layoutSettingsContent.visibility = View.VISIBLE
                 binding.tabSettings.background = activeBg
                 binding.ivSettings.setColorFilter(activeColor)
                 binding.tvSettingsLabel.setTextColor(activeColor)
             }
-            2 -> {
+            3 -> {
                 binding.layoutAboutContent.visibility = View.VISIBLE
                 binding.tabAbout.background = activeBg
                 binding.ivAbout.setColorFilter(activeColor)
                 binding.tvAboutLabel.setTextColor(activeColor)
             }
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (binding.layoutStudioContent.visibility == View.VISIBLE) {
+            if (binding.webViewStudio.canGoBack()) {
+                binding.webViewStudio.goBack()
+            } else {
+                switchTab(0)
+            }
+        } else {
+            super.onBackPressed()
         }
     }
 
@@ -614,11 +693,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         view.findViewById<View>(R.id.layoutStarGithub)?.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts")
+            openUrl("https://github.com/Coach-Montanha/montanha-media-lab")
         }
 
         view.findViewById<View>(R.id.layoutSponsorGithub)?.setBounceClickListener {
-            openUrl("https://github.com/sponsors/tharunbirla")
+            openUrl("https://github.com/Coach-Montanha")
         }
 
         view.findViewById<View>(R.id.layoutDiscord)?.setBounceClickListener {
@@ -626,7 +705,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         view.findViewById<View>(R.id.layoutTroubleshooting)?.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts/wiki/Error-Codes-&-Troubleshooting")
+            openUrl("https://github.com/Coach-Montanha/montanha-media-lab/wiki/Error-Codes-&-Troubleshooting")
         }
 
         view.findViewById<View>(R.id.btnOnboardingGetStarted)?.setBounceClickListener {
@@ -644,6 +723,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkForUpdates() {
         showToast("Checking for updates in browser...")
-        openUrl("https://github.com/tharunbirla/LibreCuts/releases/latest")
+        openUrl("https://github.com/Coach-Montanha/montanha-media-lab/releases/latest")
     }
 }

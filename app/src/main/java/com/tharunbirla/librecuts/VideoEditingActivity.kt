@@ -81,6 +81,8 @@ class VideoEditingActivity : AppCompatActivity() {
 
     // UI Components
     private lateinit var player: ExoPlayer
+    private var bgAudioPlayer: com.google.android.exoplayer2.ExoPlayer? = null
+    private var mainVideoVolume: Float = 1.0f
     private lateinit var playerView: StyledPlayerView
     private lateinit var tvDuration: TextView
     private lateinit var sequenceTrackContainer: FrameLayout
@@ -631,7 +633,7 @@ class VideoEditingActivity : AppCompatActivity() {
             if (::player.isInitialized) {
                 val isCurrentlyMuted = player.volume == 0f
                 if (isCurrentlyMuted) {
-                    player.volume = 1f
+                    player.volume = mainVideoVolume
                     btnMute.setImageResource(R.drawable.ic_volume_up_24)
                     viewModel.project.value?.let { proj ->
                         val muteOp = proj.operations.find { it is EditOperation.MuteAudio } as? EditOperation.MuteAudio
@@ -645,6 +647,10 @@ class VideoEditingActivity : AppCompatActivity() {
                     viewModel.addMuteAudioOperation()
                 }
             }
+        }
+        btnMute.setOnLongClickListener {
+            showMainVideoVolumeDialog()
+            true
         }
 
         val btnCaptureFrame = findViewById<ImageButton>(R.id.btnCaptureFrame)
@@ -2455,7 +2461,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun saveBitmapToGallery(bitmap: android.graphics.Bitmap) {
-        val filename = "LibreCuts_Frame_${System.currentTimeMillis()}.png"
+        val filename = "MontanhaMediaLabs_Frame_${System.currentTimeMillis()}.png"
         var fos: java.io.OutputStream? = null
         var imageUri: Uri? = null
         try {
@@ -2487,7 +2493,7 @@ class VideoEditingActivity : AppCompatActivity() {
                     val contentValues = android.content.ContentValues().apply {
                         put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
                         put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/LibreCuts")
+                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/MontanhaMediaLabs")
                     }
                     imageUri = resolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                     fos = imageUri?.let { resolver.openOutputStream(it) }
@@ -4931,7 +4937,7 @@ class VideoEditingActivity : AppCompatActivity() {
                     
                     val mimeType = if (isAudioOnly) "audio/mpeg" else "video/mp4"
                     val ext = if (isAudioOnly) ".mp3" else ".mp4"
-                    val prefix = if (isAudioOnly) "LibreCuts_Audio_" else "LibreCuts_"
+                    val prefix = if (isAudioOnly) "MontanhaMediaLabs_Audio_" else "MontanhaMediaLabs_"
 
                     if (customUriString != null) {
                         try {
@@ -4997,7 +5003,7 @@ class VideoEditingActivity : AppCompatActivity() {
                         val displayPath = if (customFileUri != null) {
                             "Custom Folder"
                         } else {
-                            outputFile?.absolutePath ?: "Downloads/LibreCuts"
+                            outputFile?.absolutePath ?: "Downloads/MontanhaMediaLabs"
                         }
                         Toast.makeText(
                             this@VideoEditingActivity,
@@ -5061,7 +5067,7 @@ class VideoEditingActivity : AppCompatActivity() {
             pathView.text = customUri.path ?: customUriString
         } else {
             titleView.text = "LibreCuts (Default)"
-            pathView.text = if (isAudioOnly) "Music/LibreCuts" else "Movies/LibreCuts"
+            pathView.text = if (isAudioOnly) "Music/MontanhaMediaLabs" else "Movies/MontanhaMediaLabs"
         }
     }
 
@@ -5121,10 +5127,19 @@ class VideoEditingActivity : AppCompatActivity() {
         
         if (videoUri != null) {
             player = ExoPlayer.Builder(this).build()
+            bgAudioPlayer = com.google.android.exoplayer2.ExoPlayer.Builder(this).build()
             playerView.player = player
             showLoading("Loading...")
 
             player.addListener(object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    if (isPlaying) {
+                        syncBackgroundAudio()
+                        bgAudioPlayer?.play()
+                    } else {
+                        bgAudioPlayer?.pause()
+                    }
+                }
                 override fun onPlaybackStateChanged(state: Int) {
                     if (state == Player.STATE_ENDED) {
                         // Reset UI components when video reaches the end
@@ -5574,6 +5589,7 @@ class VideoEditingActivity : AppCompatActivity() {
         pendingSeekRunnable?.let { customVideoSeeker.removeCallbacks(it) }
         lastSoughtGlobalPos = globalPos
         lastSeekCallTimeMs = currentTime
+        syncBackgroundAudio(globalPos)
 
         var remainingPos = globalPos
         var index = 0
@@ -5905,6 +5921,16 @@ class VideoEditingActivity : AppCompatActivity() {
         val mediaSourceFactory = com.google.android.exoplayer2.source.DefaultMediaSourceFactory(this)
         
         val exoAudioOps = viewModel.project.value?.operations?.filterIsInstance<com.tharunbirla.librecuts.models.EditOperation.AddBackgroundAudio>() ?: emptyList()
+        val firstBgOp = exoAudioOps.firstOrNull()
+        if (firstBgOp != null && bgAudioPlayer != null) {
+            val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(firstBgOp.audioUri)
+            bgAudioPlayer?.setMediaItem(mediaItem)
+            bgAudioPlayer?.volume = firstBgOp.volume
+            bgAudioPlayer?.prepare()
+        } else {
+            bgAudioPlayer?.stop()
+            bgAudioPlayer?.clearMediaItems()
+        }
         
         val boundaries = mutableSetOf<Long>()
         boundaries.add(0L)
@@ -7402,7 +7428,7 @@ class VideoEditingActivity : AppCompatActivity() {
         val isAudioOnly = videoFile.name.endsWith(".mp3")
         val mimeType = if (isAudioOnly) "audio/mpeg" else "video/mp4"
         val ext = if (isAudioOnly) ".mp3" else ".mp4"
-        val prefix = if (isAudioOnly) "LibreCuts_Audio_" else "LibreCuts_"
+        val prefix = if (isAudioOnly) "MontanhaMediaLabs_Audio_" else "MontanhaMediaLabs_"
         
         val sharedPreferences = getSharedPreferences("librecuts_prefs", Context.MODE_PRIVATE)
         val prefKey = if (isAudioOnly) "export_audio_directory_uri" else "export_directory_uri"
@@ -7431,15 +7457,15 @@ class VideoEditingActivity : AppCompatActivity() {
             }
         }
 
-        // Fallback or Default to Movies/LibreCuts
+        // Fallback or Default to Movies/MontanhaMediaLabs
         return try {
             val contentValues = android.content.ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, "${prefix}${System.currentTimeMillis()}$ext")
                 put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
                 if (isAudioOnly) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC + "/LibreCuts")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC + "/MontanhaMediaLabs")
                 } else {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/LibreCuts")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/MontanhaMediaLabs")
                 }
             }
             val collectionUri = if (isAudioOnly) MediaStore.Audio.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -7638,7 +7664,69 @@ class VideoEditingActivity : AppCompatActivity() {
         previewJob?.cancel()
     }
 
+
+    private fun syncBackgroundAudio(globalPosMs: Long = getGlobalPosition()) {
+        val bgOps = viewModel.project.value?.operations?.filterIsInstance<EditOperation.AddBackgroundAudio>() ?: return
+        val firstOp = bgOps.firstOrNull()
+        if (firstOp != null && bgAudioPlayer != null) {
+            val startMs = firstOp.startTimeMs ?: 0L
+            val endMs = firstOp.endTimeMs ?: Long.MAX_VALUE
+            if (globalPosMs in startMs..endMs) {
+                val audioOffset = (globalPosMs - startMs) + firstOp.internalStartMs
+                bgAudioPlayer?.seekTo(audioOffset)
+                bgAudioPlayer?.volume = firstOp.volume
+                if (player.isPlaying && bgAudioPlayer?.isPlaying == false) {
+                    bgAudioPlayer?.play()
+                }
+            } else {
+                bgAudioPlayer?.pause()
+            }
+        } else {
+            bgAudioPlayer?.pause()
+        }
+    }
+
+    private fun showMainVideoVolumeDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_adjustments, null, false)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        
+        val slider = com.google.android.material.slider.Slider(this).apply {
+            valueFrom = 0f
+            valueTo = 2f
+            stepSize = 0.05f
+            value = mainVideoVolume.coerceIn(0f, 2f)
+        }
+        val tvTitle = TextView(this).apply {
+            text = "Volume do Vídeo Principal: ${(mainVideoVolume * 100).toInt()}%"
+            textSize = 16f
+            setTextColor(android.graphics.Color.WHITE)
+            setPadding(0, 0, 0, 16)
+        }
+        slider.addOnChangeListener { _, value, _ ->
+            mainVideoVolume = value
+            if (::player.isInitialized) {
+                player.volume = value
+            }
+            tvTitle.text = "Volume do Vídeo Principal: ${(value * 100).toInt()}%"
+            findViewById<ImageButton>(R.id.btnMute)?.setImageResource(
+                if (value == 0f) R.drawable.ic_volume_off_24 else R.drawable.ic_volume_up_24
+            )
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 48, 48, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+            addView(tvTitle)
+            addView(slider)
+        }
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
     override fun onDestroy() {
+        bgAudioPlayer?.release()
+        bgAudioPlayer = null
         if (::sequenceTrackContainer.isInitialized) {
             pendingRenderRunnable?.let { sequenceTrackContainer.removeCallbacks(it) }
         }

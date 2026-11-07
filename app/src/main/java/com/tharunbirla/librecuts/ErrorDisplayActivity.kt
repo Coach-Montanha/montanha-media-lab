@@ -91,7 +91,7 @@ class ErrorDisplayActivity : AppCompatActivity() {
                 "\n```\n\n" +
                 "*Note: The complete error log has been copied to your clipboard.*"
             )
-            val url = "https://github.com/tharunbirla/librecuts/issues/new?title=$issueTitle&body=$issueBody"
+            val url = "https://github.com/Coach-Montanha/montanha-media-lab/issues/new?title=$issueTitle&body=$issueBody"
             try {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 Toast.makeText(this, "Full crash log copied to clipboard!", Toast.LENGTH_LONG).show()
