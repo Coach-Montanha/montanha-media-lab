@@ -3,3 +3,11 @@ __pycache__/
 temp_*
 *.log
 .DS_Store
+
+# Gradle & Android
+.gradle/
+build/
+app/build/
+*.apk
+release_apks/
+local.properties

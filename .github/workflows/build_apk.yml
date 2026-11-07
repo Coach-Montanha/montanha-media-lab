@@ -3,6 +3,8 @@ name: Build Android APK Release
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -23,173 +25,36 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build Standalone APK via Native Android Tools
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Prepare APKs for Release
         run: |
-          set -e
-          echo "==> Verificando Android SDK do runner..."
-          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
-          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
-
-          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
-          PLATFORM_DIR=$(ls -d $ANDROID_HOME/platforms/* | sort -V | tail -n 1)
-          ANDROID_JAR="$PLATFORM_DIR/android.jar"
-          export PATH="$BUILD_TOOLS_DIR:$PATH"
-
-          echo "Android JAR: $ANDROID_JAR"
-          echo "Build Tools: $BUILD_TOOLS_DIR"
-
-          mkdir -p build_apk/src/com/montanhamedialab/app
-          mkdir -p build_apk/res/values
-          mkdir -p build_apk/res/drawable
-          mkdir -p build_apk/obj
-          mkdir -p build_apk/bin
-          mkdir -p build_apk/assets
-          cp public/icon-192.png build_apk/res/drawable/ic_launcher.png
-          cp -r public/* build_apk/assets/
-
-          cat << 'EOF' > build_apk/AndroidManifest.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-              package="com.montanhamedialab.app"
-              android:versionCode="5"
-              android:versionName="1.4">
-              <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
-              <uses-permission android:name="android.permission.INTERNET" />
-              <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-              <uses-permission android:name="android.permission.RECORD_AUDIO" />
-              <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-              <application
-                  android:label="Montanha Media Lab"
-                  android:icon="@drawable/ic_launcher"
-                  android:roundIcon="@drawable/ic_launcher"
-                  android:usesCleartextTraffic="true"
-                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:configChanges="orientation|screenSize|keyboardHidden">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
-
-          cat << 'EOF' > build_apk/src/com/montanhamedialab/app/MainActivity.java
-          package com.montanhamedialab.app;
-
-          import android.annotation.SuppressLint;
-          import android.app.Activity;
-          import android.app.DownloadManager;
-          import android.content.Context;
-          import android.net.Uri;
-          import android.os.Bundle;
-          import android.os.Environment;
-          import android.view.WindowManager;
-          import android.webkit.DownloadListener;
-          import android.webkit.PermissionRequest;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          import android.widget.Toast;
-
-          public class MainActivity extends Activity {
-              private WebView webView;
-
-              @SuppressLint("SetJavaScriptEnabled")
-              @Override
-              protected void onCreate(Bundle savedInstanceState) {
-                  super.onCreate(savedInstanceState);
-
-                  // Respeita as areas seguras do sistema (notch, status bar e navigation bar)
-                  getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-                  webView = new WebView(this);
-                  setContentView(webView);
-
-                  WebSettings ws = webView.getSettings();
-                  ws.setJavaScriptEnabled(true);
-                  ws.setDomStorageEnabled(true);
-                  ws.setAllowFileAccess(true);
-                  ws.setAllowContentAccess(true);
-                  ws.setAllowFileAccessFromFileURLs(true);
-                  ws.setAllowUniversalAccessFromFileURLs(true);
-                  ws.setMediaPlaybackRequiresUserGesture(false);
-                  webView.clearCache(true);
-
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.setWebChromeClient(new WebChromeClient() {
-                      @Override
-                      public void onPermissionRequest(final PermissionRequest request) {
-                          request.grant(request.getResources());
-                      }
-                  });
-
-                  webView.setDownloadListener(new DownloadListener() {
-                      @Override
-                      public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
-                          try {
-                              DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                              request.setMimeType(mimeType);
-                              request.setDescription("Baixando...");
-                              request.setTitle(url.substring(url.lastIndexOf("/") + 1));
-                              request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                              request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, url.substring(url.lastIndexOf("/") + 1));
-
-                              DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-                              if (dm != null) {
-                                  dm.enqueue(request);
-                                  Toast.makeText(MainActivity.this, "Baixando para pasta Downloads...", Toast.LENGTH_SHORT).show();
-                              }
-                          } catch (Exception e) {}
-                      }
-                  });
-
-                  // Carrega a interface offline local do APK (ou conecta no Termux localhost:8080 se ativo)
-                  webView.setWebViewClient(new WebViewClient() {
-                      @Override
-                      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                          view.loadUrl("file:///android_asset/index.html");
-                      }
-                  });
-                  webView.loadUrl("file:///android_asset/index.html");
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (webView.canGoBack()) {
-                      webView.goBack();
-                  } else {
-                      super.onBackPressed();
-                  }
-              }
-          }
-          EOF
-
-          aapt package -f -m --min-sdk-version 26 --target-sdk-version 34 -J build_apk/src -M build_apk/AndroidManifest.xml -S build_apk/res -I "$ANDROID_JAR"
-          javac -source 8 -target 8 -d build_apk/obj -classpath "$ANDROID_JAR" $(find build_apk/src -name "*.java")
-          d8 --min-api 26 --output build_apk/bin build_apk/obj/com/montanhamedialab/app/*.class
-          aapt package -f --min-sdk-version 26 --target-sdk-version 34 -M build_apk/AndroidManifest.xml -S build_apk/res -A build_apk/assets -I "$ANDROID_JAR" -F build_apk/bin/unsigned.apk
-          cd build_apk/bin
-          aapt add unsigned.apk classes.dex
-
-          keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey -keypass android -storepass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=AndroidDebug,O=Android,C=US"
-          apksigner sign --ks debug.keystore --ks-pass pass:android --out MontanhaMediaLab_v1.0.4.apk unsigned.apk
+          mkdir -p release_apks
+          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} release_apks/ \;
+          cd release_apks
+          for f in *.apk; do
+            mv "$f" "MontanhaMediaLab-${f}"
+          done
+          ls -la
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MontanhaMediaLab-APK
-          path: build_apk/bin/MontanhaMediaLab_v1.0.4.apk
+          name: MontanhaMediaLab-APKs
+          path: release_apks/*.apk
 
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: build_apk/bin/MontanhaMediaLab_v1.0.4.apk
+          files: release_apks/*.apk
           tag_name: ${{ github.ref_name }}
           name: Montanha Media Lab ${{ github.ref_name }}
-          body: "Download direto do arquivo APK do Montanha Media Lab compilado automaticamente pelo GitHub Actions."
+          body: "Download direto do aplicativo nativo Montanha Media Lab compilado automaticamente pelo GitHub Actions."
