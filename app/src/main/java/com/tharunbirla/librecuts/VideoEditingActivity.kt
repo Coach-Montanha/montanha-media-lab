@@ -1874,11 +1874,6 @@ class VideoEditingActivity : AppCompatActivity() {
             voiceOverAction()
         }
 
-        findViewById<ImageButton>(R.id.btnCanvasBackground)?.setBounceClickListener {
-            setActiveToolButton(R.id.btnCanvasBackground)
-            canvasBackgroundAction()
-        }
-
         try {
             btnUndo = findViewById(R.id.btnUndo)
             btnRedo = findViewById(R.id.btnRedo)

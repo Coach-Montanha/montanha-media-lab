@@ -32,7 +32,19 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Release APKs
-        run: ./gradlew assembleRelease --stacktrace --no-daemon -x test -x lint
+        run: |
+          set -o pipefail
+          ./gradlew assembleRelease --stacktrace --no-daemon -x test -x lint 2>&1 | tee build.log || {
+            echo "::error::Gradle assembleRelease failed. See build.log artifact for details."
+            exit 1
+          }
+
+      - name: Upload Build Log On Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-log
+          path: build.log
 
       - name: Sign & Prepare Release APKs
         run: |
