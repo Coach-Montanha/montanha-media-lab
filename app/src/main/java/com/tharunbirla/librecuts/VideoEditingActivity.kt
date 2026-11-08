@@ -9156,10 +9156,18 @@ class VideoEditingActivity : AppCompatActivity() {
                     srtBuilder.toString()
                 }
 
-                val cues = com.tharunbirla.librecuts.utils.SubtitleParser.parseSrt(srtContent)
+                val cues = com.tharunbirla.librecuts.utils.SubtitleParser.parse(srtContent)
                 withContext(Dispatchers.Main) {
                     if (cues.isNotEmpty()) {
+                        val srtFile = File(cacheDir, "whisper_${System.currentTimeMillis()}.srt")
+                        try {
+                            srtFile.writeText(srtContent)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Error writing srt cache file", e)
+                        }
                         val subOp = EditOperation.AddSubtitles(
+                            subtitlesUri = Uri.fromFile(srtFile),
+                            srtContent = srtContent,
                             fileName = "whisper_ia_legendas.srt",
                             cues = cues,
                             fontSize = 24
