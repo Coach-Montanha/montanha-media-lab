@@ -35,6 +35,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.speech.tts.TextToSpeech
 import java.util.Locale
+import com.tharunbirla.librecuts.utils.PersistentVaultManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -281,6 +282,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnChangeDefaultEncoder.setBounceClickListener {
             showEncoderDialog()
+        }
+
+        binding.cardPersistentVault.setBounceClickListener {
+            showPersistentVaultDialog()
         }
 
         // Set dynamic About version tag
@@ -562,6 +567,21 @@ class MainActivity : AppCompatActivity() {
                         showToast("Reproduzindo fala com motor nativo...")
                     }
                 }
+
+                @android.webkit.JavascriptInterface
+                fun saveAccountData(key: String, value: String) {
+                    PersistentVaultManager.saveCredential(this@MainActivity, key, value)
+                }
+
+                @android.webkit.JavascriptInterface
+                fun getAccountData(key: String): String {
+                    return PersistentVaultManager.getCredential(this@MainActivity, key, "")
+                }
+
+                @android.webkit.JavascriptInterface
+                fun syncVault() {
+                    PersistentVaultManager.syncPrefsToVault(this@MainActivity)
+                }
             }, "AndroidBridge")
 
             binding.webViewStudio.webViewClient = object : android.webkit.WebViewClient() {
@@ -820,6 +840,120 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Log.d("ToastMessage", "Showing toast: $message")
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showPersistentVaultDialog() {
+        val dialog = BottomSheetDialog(this)
+        val container = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Login & Backup Permanente"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 8)
+        }
+        container.addView(title)
+
+        val desc = TextView(this).apply {
+            text = "As informações salvas aqui ficam gravadas no armazenamento permanente do telefone (Documentos/MontanhaMediaLab/.vault/) com criptografia AES-256 e retornam automaticamente mesmo se você desinstalar o aplicativo."
+            textSize = 12f
+            setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            setPadding(0, 0, 0, 20)
+        }
+        container.addView(desc)
+
+        val currentEmail = PersistentVaultManager.getCredential(this, "user_email", "")
+        val currentToken = PersistentVaultManager.getCredential(this, "user_token", "")
+
+        val tvEmailLabel = TextView(this).apply {
+            text = "Usuário / E-mail / Identificador"
+            textSize = 13f
+            setTextColor(android.graphics.Color.WHITE)
+            setPadding(0, 0, 0, 6)
+        }
+        container.addView(tvEmailLabel)
+
+        val inputEmail = android.widget.EditText(this).apply {
+            hint = "ex: coach@montanha.com"
+            setHintTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            setTextColor(android.graphics.Color.WHITE)
+            textSize = 14f
+            setText(currentEmail)
+            setPadding(24, 20, 24, 20)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+        }
+        container.addView(inputEmail)
+
+        val tvTokenLabel = TextView(this).apply {
+            text = "Senha / Token de Acesso / Chave API"
+            textSize = 13f
+            setTextColor(android.graphics.Color.WHITE)
+            setPadding(0, 16, 0, 6)
+        }
+        container.addView(tvTokenLabel)
+
+        val inputToken = android.widget.EditText(this).apply {
+            hint = "Senha da conta ou token"
+            setHintTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            setTextColor(android.graphics.Color.WHITE)
+            textSize = 14f
+            transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+            setText(currentToken)
+            setPadding(24, 20, 24, 20)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+        }
+        container.addView(inputToken)
+
+        val btnSave = android.widget.Button(this).apply {
+            text = "Salvar Credenciais no Cofre Permanente"
+            textSize = 14f
+            setTextColor(android.graphics.Color.WHITE)
+            setBackgroundResource(R.drawable.bg_hero_bento_primary)
+            val params = android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 120).apply {
+                topMargin = 24
+            }
+            layoutParams = params
+            setOnClickListener {
+                val email = inputEmail.text.toString().trim()
+                val token = inputToken.text.toString().trim()
+                PersistentVaultManager.saveUserAccount(this@MainActivity, email, email, token)
+                Toast.makeText(this@MainActivity, "✓ Dados salvos permanentemente no telefone!", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        }
+        container.addView(btnSave)
+
+        val btnRestore = android.widget.Button(this).apply {
+            text = "Forçar Restauração do Arquivo do Telefone"
+            textSize = 13f
+            setTextColor(android.graphics.Color.parseColor("#2997FF"))
+            setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            val params = android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = 8
+            }
+            layoutParams = params
+            setOnClickListener {
+                val ok = PersistentVaultManager.restoreFromVault(this@MainActivity)
+                if (ok) {
+                    Toast.makeText(this@MainActivity, "✓ Dados restaurados com sucesso!", Toast.LENGTH_SHORT).show()
+                    val reloadedEmail = PersistentVaultManager.getCredential(this@MainActivity, "user_email", "")
+                    val reloadedToken = PersistentVaultManager.getCredential(this@MainActivity, "user_token", "")
+                    inputEmail.setText(reloadedEmail)
+                    inputToken.setText(reloadedToken)
+                } else {
+                    Toast.makeText(this@MainActivity, "Nenhum arquivo de backup anterior encontrado.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        container.addView(btnRestore)
+
+        dialog.setContentView(container)
+        dialog.show()
     }
 
     private fun checkForUpdates() {

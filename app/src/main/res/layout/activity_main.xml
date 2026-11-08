@@ -655,6 +655,60 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
+            <!-- Conta & Backup Permanente Bento Card -->
+            <LinearLayout
+                android:id="@+id/cardPersistentVault"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_hero_bento_secondary"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:elevation="4dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Login &amp; Backup Permanente"
+                        android:textColor="@color/textColor"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_check_24"
+                        app:tint="#30D158" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/tvVaultStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="✓ Ativo no telefone: Documentos/MontanhaMediaLab/.vault"
+                    android:textColor="#30D158"
+                    android:textSize="13sp"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Suas credenciais, senhas e configurações permanecem no aparelho mesmo se você atualizar ou desinstalar o app."
+                    android:textColor="@color/iconSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
             <!-- General Settings Bento Card -->
             <LinearLayout
                 android:layout_width="match_parent"

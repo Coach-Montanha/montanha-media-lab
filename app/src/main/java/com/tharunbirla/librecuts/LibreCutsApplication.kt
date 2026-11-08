@@ -4,11 +4,13 @@ import android.app.Application
 import android.content.Intent
 import android.util.Log
 import com.tharunbirla.librecuts.utils.ErrorCode
+import com.tharunbirla.librecuts.utils.PersistentVaultManager
 
 class LibreCutsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         setupGlobalCrashHandler()
+        PersistentVaultManager.init(this)
     }
 
     private fun setupGlobalCrashHandler() {
