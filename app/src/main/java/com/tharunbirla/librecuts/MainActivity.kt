@@ -272,18 +272,18 @@ class MainActivity : AppCompatActivity() {
             binding.tvAboutVersion.text = "v1.0-beta5"
         }
 
-        // Setup GitHub and Translation button listeners
+        // Setup Social, Pix and Support listeners
         binding.btnStarGithub.setBounceClickListener {
-            openUrl("https://github.com/Coach-Montanha/montanha-media-lab")
+            openUrl("https://www.instagram.com/coachmontanha/")
         }
         binding.btnTranslate.setBounceClickListener {
-            openUrl("https://github.com/Coach-Montanha")
+            openUrl("https://wa.me/5583999259385")
         }
         binding.btnReportBug.setBounceClickListener {
             openUrl("https://github.com/Coach-Montanha/montanha-media-lab/issues")
         }
         binding.btnSponsor.setBounceClickListener {
-            openUrl("https://github.com/Coach-Montanha")
+            copyPixKey()
         }
 
         // Onboarding / Welcome Dialog
@@ -495,6 +495,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var isStudioLoaded = false
+    private var pendingStudioTab: String? = null
+
+    private fun copyPixKey() {
+        try {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("Chave Pix", "00891652418")
+            clipboard.setPrimaryClip(clip)
+            showToast("Chave Pix (00891652418) copiada!")
+        } catch (e: Exception) {
+            showToast("Chave Pix: 00891652418")
+        }
+    }
 
     private fun loadStudioIfNeeded() {
         if (!isStudioLoaded) {
@@ -508,7 +520,29 @@ class MainActivity : AppCompatActivity() {
                 mediaPlaybackRequiresUserGesture = false
                 databaseEnabled = true
             }
-            binding.webViewStudio.webViewClient = android.webkit.WebViewClient()
+
+            // Bridge to allow webview tool headers to navigate back to native home
+            binding.webViewStudio.addJavascriptInterface(object {
+                @android.webkit.JavascriptInterface
+                fun goNativeHome() {
+                    runOnUiThread {
+                        switchTab(0)
+                    }
+                }
+            }, "AndroidBridge")
+
+            binding.webViewStudio.webViewClient = object : android.webkit.WebViewClient() {
+                override fun onPageFinished(view: android.webkit.WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    pendingStudioTab?.let { tab ->
+                        binding.webViewStudio.evaluateJavascript(
+                            "if (typeof switchAppTab === 'function') switchAppTab('$tab');",
+                            null
+                        )
+                        pendingStudioTab = null
+                    }
+                }
+            }
             binding.webViewStudio.webChromeClient = android.webkit.WebChromeClient()
             binding.webViewStudio.loadUrl("file:///android_asset/studio/index.html")
             isStudioLoaded = true
@@ -516,13 +550,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openStudioTab(tabKey: String) {
+        pendingStudioTab = tabKey
         switchTab(1)
-        binding.webViewStudio.postDelayed({
+        if (isStudioLoaded) {
             binding.webViewStudio.evaluateJavascript(
                 "if (typeof switchAppTab === 'function') switchAppTab('$tabKey');",
                 null
             )
-        }, 350)
+        }
     }
 
     private fun switchTab(tabIndex: Int) {
@@ -699,15 +734,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         view.findViewById<View>(R.id.layoutStarGithub)?.setBounceClickListener {
-            openUrl("https://github.com/Coach-Montanha/montanha-media-lab")
+            openUrl("https://www.instagram.com/coachmontanha/")
         }
 
         view.findViewById<View>(R.id.layoutSponsorGithub)?.setBounceClickListener {
-            openUrl("https://github.com/Coach-Montanha")
+            copyPixKey()
         }
 
         view.findViewById<View>(R.id.layoutDiscord)?.setBounceClickListener {
-            openUrl("https://discord.gg/gwr3nE7YW")
+            openUrl("https://wa.me/5583999259385")
         }
 
         view.findViewById<View>(R.id.layoutTroubleshooting)?.setBounceClickListener {

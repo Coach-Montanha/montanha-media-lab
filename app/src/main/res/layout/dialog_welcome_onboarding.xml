@@ -105,7 +105,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_star_on_github"
+                        android:text="Seguir no Instagram"
                         android:textColor="@color/textColor"
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-medium" />
@@ -113,7 +113,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_show_your_appreciation_by_star"
+                        android:text="Acompanhe @coachmontanha no Instagram"
                         android:textColor="@color/inactiveTool"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -149,7 +149,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_github_sponsors"
+                        android:text="Pagar um café"
                         android:textColor="@color/textColor"
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-medium" />
@@ -157,7 +157,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_support_our_open_source_develo"
+                        android:text="Chave Pix CPF: 00891652418 (toque para copiar)"
                         android:textColor="@color/inactiveTool"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -193,7 +193,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_discord_server"
+                        android:text="Mensagem no WhatsApp"
                         android:textColor="@color/textColor"
                         android:textSize="14sp"
                         android:fontFamily="sans-serif-medium" />
@@ -201,7 +201,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_join_us_for_app_updates_and_co"
+                        android:text="Fale direto com o Coach: (83) 99925-9385"
                         android:textColor="@color/inactiveTool"
                         android:textSize="11sp" />
                 </LinearLayout>
