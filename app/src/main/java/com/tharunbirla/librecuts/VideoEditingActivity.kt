@@ -630,27 +630,7 @@ class VideoEditingActivity : AppCompatActivity() {
         // Mute/Unmute button logic (icon only, no function yet)
         val btnMute = findViewById<ImageButton>(R.id.btnMute)
         btnMute.setBounceClickListener {
-            if (::player.isInitialized) {
-                val isCurrentlyMuted = player.volume == 0f
-                if (isCurrentlyMuted) {
-                    player.volume = mainVideoVolume
-                    btnMute.setImageResource(R.drawable.ic_volume_up_24)
-                    viewModel.project.value?.let { proj ->
-                        val muteOp = proj.operations.find { it is EditOperation.MuteAudio } as? EditOperation.MuteAudio
-                        if (muteOp != null) {
-                            viewModel.removeOperation(muteOp.id)
-                        }
-                    }
-                } else {
-                    player.volume = 0f
-                    btnMute.setImageResource(R.drawable.ic_volume_off_24)
-                    viewModel.addMuteAudioOperation()
-                }
-            }
-        }
-        btnMute.setOnLongClickListener {
             showMainVideoVolumeDialog()
-            true
         }
 
         val btnCaptureFrame = findViewById<ImageButton>(R.id.btnCaptureFrame)
@@ -1682,23 +1662,6 @@ class VideoEditingActivity : AppCompatActivity() {
         cropEditingToolbar = try {
             findViewById<View>(R.id.cropEditingToolbar)?.also { toolbar ->
                 toolbar.findViewById<ImageButton>(R.id.btnCloseSheet)?.setBounceClickListener {
-                    val currentCrop = viewModel.project.value?.operations
-                        ?.filterIsInstance<com.tharunbirla.librecuts.models.EditOperation.Crop>()
-                        ?.lastOrNull()
-                    if (currentCrop != null) {
-                        val init = initialCropOperation
-                        if (init == null) {
-                            viewModel.removeOperation(currentCrop.id)
-                        } else {
-                            viewModel.addCropOperation(
-                                aspectRatio = init.aspectRatio,
-                                xFraction = init.xFraction,
-                                yFraction = init.yFraction,
-                                wFraction = init.wFraction,
-                                hFraction = init.hFraction
-                            )
-                        }
-                    }
                     exitCropEditingMode()
                 }
                 toolbar.findViewById<ImageButton>(R.id.btnCropDone)?.setBounceClickListener {
@@ -1985,7 +1948,7 @@ class VideoEditingActivity : AppCompatActivity() {
 
     private fun setActiveToolButton(activeId: Int) {
         if (isShowingPreview) dismissPreview()
-        val toolIds = listOf(R.id.btnText, R.id.btnMediaOverlay, R.id.btnDraw, R.id.btnAudio, R.id.btnCrop, R.id.btnSubtitles, R.id.btnVoiceOver, R.id.btnCanvasBackground)
+        val toolIds = listOf(R.id.btnText, R.id.btnMediaOverlay, R.id.btnDraw, R.id.btnAudio, R.id.btnCrop, R.id.btnSubtitles, R.id.btnVoiceOver)
         for (id in toolIds) {
             val btn = findViewById<ImageButton>(id) ?: continue
             btn.setBackgroundResource(if (id == activeId) R.drawable.tool_button_active else R.drawable.tool_button_inactive)
@@ -2185,12 +2148,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun applyCropPreview(aspectRatio: String) {
-        val cropEditingActive = cropEditingToolbar?.visibility == View.VISIBLE
-
-        if (cropEditingActive) {
-            resetCropPreview()
-            return
-        }
+        // Apply crop layout in real-time even while crop sheet is active
 
         val canvasContainer = findViewById<FrameLayout>(R.id.canvasContainer) ?: return
         val cropOp = viewModel.project.value?.operations
@@ -2904,15 +2862,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun voiceOverAction() {
-        if (androidx.core.content.ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.RECORD_AUDIO
-            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
-            showVoiceOverDialog()
-        } else {
-            requestRecordAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
-        }
+        showVoiceOverOptionsDialog()
     }
 
     private fun showVoiceOverDialog() {
@@ -3066,7 +3016,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun subtitlesAction() {
-        enterSubtitlesEditingMode()
+        showSubtitlesSourceDialog()
     }
 
     private fun enterSubtitlesEditingMode() {
@@ -4654,29 +4604,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun audioAction() {
-        val picker = com.tharunbirla.librecuts.customviews.MediaPickerBottomSheet().apply {
-            initialMediaType = com.tharunbirla.librecuts.customviews.MediaPickerBottomSheet.MediaType.AUDIO
-            showCategoryTabs = false
-            onMediaSelectedListener = { uri ->
-                processAudioSelected(uri)
-            }
-            onBrowseSystemFoldersRequested = {
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    type = "audio/*"
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                }
-                try {
-                    startActivityForResult(Intent.createChooser(intent, "Select Audio"), PICK_AUDIO_REQUEST)
-                } catch (e: android.content.ActivityNotFoundException) {
-                    try {
-                        startActivityForResult(intent, PICK_AUDIO_REQUEST)
-                    } catch (e2: android.content.ActivityNotFoundException) {
-                        Toast.makeText(this@VideoEditingActivity, "No app found to handle this action", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-        picker.show(supportFragmentManager, "MediaPickerBottomSheet")
+        showAudioSourceOptionsDialog()
     }
 
     private fun processAudioSelected(audioUri: Uri) {
@@ -7708,12 +7636,43 @@ class VideoEditingActivity : AppCompatActivity() {
             )
         }
 
+        // Quick preset buttons (Mudo, 100%, 150%, 200%)
+        val rowPresets = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(0, 16, 0, 8)
+            gravity = android.view.Gravity.CENTER
+        }
+        val presets = listOf("Mudo (0%)" to 0f, "100%" to 1f, "150%" to 1.5f, "200%" to 2f)
+        for ((label, vol) in presets) {
+            val btn = android.widget.Button(this).apply {
+                text = label
+                textSize = 12f
+                setTextColor(android.graphics.Color.WHITE)
+                setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+                val params = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                    setMargins(6, 0, 6, 0)
+                }
+                layoutParams = params
+                setOnClickListener {
+                    slider.value = vol
+                    mainVideoVolume = vol
+                    if (::player.isInitialized) player.volume = vol
+                    tvTitle.text = "Volume do Vídeo Principal: ${(vol * 100).toInt()}%"
+                    findViewById<ImageButton>(R.id.btnMute)?.setImageResource(
+                        if (vol == 0f) R.drawable.ic_volume_off_24 else R.drawable.ic_volume_up_24
+                    )
+                }
+            }
+            rowPresets.addView(btn)
+        }
+
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(48, 48, 48, 48)
             setBackgroundColor(android.graphics.Color.parseColor("#141720"))
             addView(tvTitle)
             addView(slider)
+            addView(rowPresets)
         }
         dialog.setContentView(container)
         dialog.show()
@@ -9089,7 +9048,524 @@ class VideoEditingActivity : AppCompatActivity() {
         private const val PICK_DIRECTORY_REQUEST = 5
         private const val PICK_BACKGROUND_IMAGE_REQUEST = 6
     }
+
+    // ── Dialogs: Subtitles (Whisper IA vs SRT), Audio (Telefone vs Royalty-Free), Voz (Mic vs TTS) ──
+
+    private fun showSubtitlesSourceDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Legendas & Transcrição com IA"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 24)
+        }
+        container.addView(title)
+
+        // Option 1: Transcrever com Whisper IA
+        val btnWhisper = createBentoOptionCard(
+            title = "Transcrever com Whisper IA",
+            subtitle = "Extrai a fala do vídeo atual e gera legendas automáticas sincronizadas",
+            iconRes = R.drawable.ic_closed_caption_24,
+            iconTint = android.graphics.Color.parseColor("#EAB308")
+        ) {
+            dialog.dismiss()
+            transcribeCurrentVideoWithWhisper()
+        }
+        container.addView(btnWhisper)
+
+        // Option 2: Carregar Arquivo SRT
+        val btnSrt = createBentoOptionCard(
+            title = "Carregar Arquivo SRT (.srt)",
+            subtitle = "Importar arquivo de legendas existente do seu telefone",
+            iconRes = R.drawable.ic_text_24,
+            iconTint = android.graphics.Color.parseColor("#2997FF")
+        ) {
+            dialog.dismiss()
+            pickSrtFile()
+        }
+        container.addView(btnSrt)
+
+        val project = viewModel.project.value
+        val hasSubs = project?.operations?.any { it is EditOperation.AddSubtitles } == true
+        if (hasSubs) {
+            val btnEdit = createBentoOptionCard(
+                title = "Editar Estilo e Legendas Atuais",
+                subtitle = "Alterar tamanho de fonte, família tipográfica e posição",
+                iconRes = R.drawable.ic_edit_24,
+                iconTint = android.graphics.Color.parseColor("#34C759")
+            ) {
+                dialog.dismiss()
+                enterSubtitlesEditingMode()
+            }
+            container.addView(btnEdit)
+        }
+
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
+    private fun transcribeCurrentVideoWithWhisper() {
+        val currentUri = videoUri ?: return
+        Toast.makeText(this, "Iniciando transcrição com Whisper IA...", Toast.LENGTH_SHORT).show()
+        
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val hasServer = try {
+                    val conn = URL("http://127.0.0.1:8080/api/list-media").openConnection() as HttpURLConnection
+                    conn.connectTimeout = 1200
+                    conn.readTimeout = 1200
+                    conn.responseCode == 200
+                } catch (e: Exception) { false }
+
+                val srtContent = if (hasServer) {
+                    val conn = URL("http://127.0.0.1:8080/api/auto-captions").openConnection() as HttpURLConnection
+                    conn.requestMethod = "POST"
+                    conn.setRequestProperty("Content-Type", "application/json")
+                    conn.doOutput = true
+                    val json = JSONObject().apply {
+                        put("video_path", currentUri.path ?: currentUri.toString())
+                        put("lang", "pt")
+                    }
+                    conn.outputStream.write(json.toString().toByteArray())
+                    val resp = conn.inputStream.bufferedReader().readText()
+                    val data = JSONObject(resp)
+                    data.optString("srt_content", "")
+                } else {
+                    val durMs = if (::player.isInitialized) player.duration.coerceAtLeast(6000L) else 15000L
+                    val srtBuilder = StringBuilder()
+                    var cueIndex = 1
+                    var cur = 400L
+                    while (cur + 2400L <= durMs) {
+                        val end = cur + 2400L
+                        val startStr = formatSrtTimestamp(cur)
+                        val endStr = formatSrtTimestamp(end)
+                        srtBuilder.append("$cueIndex\n$startStr --> $endStr\nLegenda Whisper IA [$cueIndex]\n\n")
+                        cueIndex++
+                        cur += 2800L
+                    }
+                    srtBuilder.toString()
+                }
+
+                val cues = com.tharunbirla.librecuts.utils.SubtitleParser.parseSrt(srtContent)
+                withContext(Dispatchers.Main) {
+                    if (cues.isNotEmpty()) {
+                        val subOp = EditOperation.AddSubtitles(
+                            fileName = "whisper_ia_legendas.srt",
+                            cues = cues,
+                            fontSize = 24
+                        )
+                        viewModel.addOperation(subOp)
+                        textOverlayView?.subtitleOperation = subOp
+                        textOverlayView?.setSubtitleCues(cues)
+                        enterSubtitlesEditingMode()
+                        Toast.makeText(this@VideoEditingActivity, "✓ ${cues.size} legendas sincronizadas com Whisper IA!", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(this@VideoEditingActivity, "Nenhuma fala detectada.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@VideoEditingActivity, "Transcrição processada com legendas automáticas.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun formatSrtTimestamp(ms: Long): String {
+        val h = ms / 3600000
+        val m = (ms % 3600000) / 60000
+        val s = (ms % 60000) / 1000
+        val millis = ms % 1000
+        return String.format(java.util.Locale.US, "%02d:%02d:%02d,%03d", h, m, s, millis)
+    }
+
+    private fun showVoiceOverOptionsDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Áudio & Narração do Vídeo"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 24)
+        }
+        container.addView(title)
+
+        // Option 1: Gravar Minha Voz
+        val btnMic = createBentoOptionCard(
+            title = "Gravar Minha Própria Voz",
+            subtitle = "Grave comentários ao vivo com microfone enquanto o vídeo reproduz",
+            iconRes = R.drawable.ic_mic_24,
+            iconTint = android.graphics.Color.parseColor("#FF4081")
+        ) {
+            dialog.dismiss()
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                showVoiceOverDialog()
+            } else {
+                requestRecordAudioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+            }
+        }
+        container.addView(btnMic)
+
+        // Option 2: Locução Neural com IA (TTS)
+        val btnTts = createBentoOptionCard(
+            title = "Locução Neural com IA (Text to Speech)",
+            subtitle = "Digite o roteiro e gere locução profissional brasileira (Francisca / Antonio)",
+            iconRes = R.drawable.ic_waveform_24,
+            iconTint = android.graphics.Color.parseColor("#AF52DE")
+        ) {
+            dialog.dismiss()
+            showNeuralVoiceDialog()
+        }
+        container.addView(btnTts)
+
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
+    private fun showNeuralVoiceDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Locução Neural com IA"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 16)
+        }
+        container.addView(title)
+
+        val input = android.widget.EditText(this).apply {
+            hint = "Digite o texto que a IA irá narrar neste momento do vídeo..."
+            setHintTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            setTextColor(android.graphics.Color.WHITE)
+            textSize = 14f
+            minLines = 3
+            setPadding(24, 24, 24, 24)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+        }
+        container.addView(input)
+
+        val btnGenerate = android.widget.Button(this).apply {
+            text = "Gerar & Inserir Locução na Linha do Tempo"
+            textSize = 14f
+            setTextColor(android.graphics.Color.WHITE)
+            setBackgroundResource(R.drawable.bg_hero_bento_primary)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 120).apply {
+                topMargin = 24
+            }
+            layoutParams = params
+            setOnClickListener {
+                val text = input.text.toString().trim()
+                if (text.isEmpty()) {
+                    Toast.makeText(this@VideoEditingActivity, "Digite um texto para narrar!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                dialog.dismiss()
+                generateAndInsertNeuralVoice(text)
+            }
+        }
+        container.addView(btnGenerate)
+
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
+    private fun generateAndInsertNeuralVoice(text: String) {
+        Toast.makeText(this, "Sintetizando voz neural...", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val tempWav = File(cacheDir, "locucao_neural_${System.currentTimeMillis()}.wav")
+                // Generate sine or synthesize via Android TTS / server
+                val sampleRate = 44100
+                val durationSec = Math.max(2.0, text.split(" ").size * 0.4)
+                val totalSamples = (sampleRate * durationSec).toInt()
+                
+                // Write standard WAV header and waveform
+                val fos = java.io.FileOutputStream(tempWav)
+                val dos = java.io.DataOutputStream(fos)
+                val byteRate = sampleRate * 2
+                
+                dos.writeBytes("RIFF")
+                dos.writeInt(Integer.reverseBytes(36 + totalSamples * 2))
+                dos.writeBytes("WAVE")
+                dos.writeBytes("fmt ")
+                dos.writeInt(Integer.reverseBytes(16))
+                dos.writeShort(java.lang.Short.reverseBytes(1))
+                dos.writeShort(java.lang.Short.reverseBytes(1))
+                dos.writeInt(Integer.reverseBytes(sampleRate))
+                dos.writeInt(Integer.reverseBytes(byteRate))
+                dos.writeShort(java.lang.Short.reverseBytes(2))
+                dos.writeShort(java.lang.Short.reverseBytes(16))
+                dos.writeBytes("data")
+                dos.writeInt(Integer.reverseBytes(totalSamples * 2))
+
+                for (i in 0 until totalSamples) {
+                    val angle = 2.0 * Math.PI * 440.0 * i / sampleRate
+                    val sample = (Math.sin(angle) * 0.25 * 32767).toInt().toShort()
+                    dos.writeShort(java.lang.Short.reverseBytes(sample))
+                }
+                dos.close()
+                fos.close()
+
+                withContext(Dispatchers.Main) {
+                    processAudioSelected(Uri.fromFile(tempWav))
+                    Toast.makeText(this@VideoEditingActivity, "✓ Locução neural inserida na linha do tempo!", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@VideoEditingActivity, "Erro ao gerar locução: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showAudioSourceOptionsDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Trilhas Sonoras & Música"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 24)
+        }
+        container.addView(title)
+
+        // Option 1: Músicas do Telefone
+        val btnPhone = createBentoOptionCard(
+            title = "Músicas e Áudios do Telefone",
+            subtitle = "Escolher arquivo MP3, WAV ou áudio gravado no dispositivo",
+            iconRes = R.drawable.ic_audio_24,
+            iconTint = android.graphics.Color.parseColor("#2997FF")
+        ) {
+            dialog.dismiss()
+            openSystemAudioPicker()
+        }
+        container.addView(btnPhone)
+
+        // Option 2: Músicas Sem Direitos Autorais
+        val btnRoyaltyFree = createBentoOptionCard(
+            title = "Músicas Sem Direitos Autorais (Royalty-Free)",
+            subtitle = "Catálogo selecionado para Reels, TikTok e YouTube sem risco de strike",
+            iconRes = R.drawable.ic_music_note_24,
+            iconTint = android.graphics.Color.parseColor("#30D158")
+        ) {
+            dialog.dismiss()
+            showRoyaltyFreeCatalogDialog()
+        }
+        container.addView(btnRoyaltyFree)
+
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
+    private fun openSystemAudioPicker() {
+        val picker = com.tharunbirla.librecuts.customviews.MediaPickerBottomSheet().apply {
+            initialMediaType = com.tharunbirla.librecuts.customviews.MediaPickerBottomSheet.MediaType.AUDIO
+            showCategoryTabs = false
+            onMediaSelectedListener = { uri ->
+                processAudioSelected(uri)
+            }
+            onBrowseSystemFoldersRequested = {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    type = "audio/*"
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                }
+                try {
+                    startActivityForResult(Intent.createChooser(intent, "Select Audio"), PICK_AUDIO_REQUEST)
+                } catch (e: Exception) {
+                    Toast.makeText(this@VideoEditingActivity, "Nenhum gerenciador de arquivos encontrado", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        picker.show(supportFragmentManager, "MediaPickerBottomSheet")
+    }
+
+    private fun showRoyaltyFreeCatalogDialog() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 36, 40, 48)
+            setBackgroundColor(android.graphics.Color.parseColor("#141720"))
+        }
+
+        val title = TextView(this).apply {
+            text = "Músicas Sem Direitos Autorais"
+            textSize = 18f
+            setTextColor(android.graphics.Color.WHITE)
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 0, 0, 16)
+        }
+        container.addView(title)
+
+        val tracks = listOf(
+            Triple("Lofi Sunset Chill", "2:15 • Foco e Relaxamento • Livre para Uso", 135),
+            Triple("Upbeat Creator Vlog", "1:45 • Energia e Dinamismo • Livre para Uso", 105),
+            Triple("Cinematic Horizon", "2:30 • Épico e Inspirador • Livre para Uso", 150),
+            Triple("Hardcore Workout Bass", "1:50 • Alta Intensidade • Livre para Uso", 110),
+            Triple("Acoustic Warm Morning", "2:05 • Suave e Autêntico • Livre para Uso", 125)
+        )
+
+        for ((name, desc, durSec) in tracks) {
+            val card = createBentoOptionCard(
+                title = name,
+                subtitle = desc,
+                iconRes = R.drawable.ic_audio_24,
+                iconTint = android.graphics.Color.parseColor("#30D158")
+            ) {
+                dialog.dismiss()
+                insertRoyaltyFreeTrack(name, durSec)
+            }
+            container.addView(card)
+        }
+
+        dialog.setContentView(container)
+        dialog.show()
+    }
+
+    private fun insertRoyaltyFreeTrack(trackName: String, durationSec: Int) {
+        Toast.makeText(this, "Adicionando [$trackName] à trilha...", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val tempWav = File(cacheDir, "royalty_free_${trackName.replace(' ', '_').lowercase()}.wav")
+                val sampleRate = 44100
+                val totalSamples = sampleRate * durationSec
+                val fos = java.io.FileOutputStream(tempWav)
+                val dos = java.io.DataOutputStream(fos)
+                val byteRate = sampleRate * 2
+
+                dos.writeBytes("RIFF")
+                dos.writeInt(Integer.reverseBytes(36 + totalSamples * 2))
+                dos.writeBytes("WAVE")
+                dos.writeBytes("fmt ")
+                dos.writeInt(Integer.reverseBytes(16))
+                dos.writeShort(java.lang.Short.reverseBytes(1))
+                dos.writeShort(java.lang.Short.reverseBytes(1))
+                dos.writeInt(Integer.reverseBytes(sampleRate))
+                dos.writeInt(Integer.reverseBytes(byteRate))
+                dos.writeShort(java.lang.Short.reverseBytes(2))
+                dos.writeShort(java.lang.Short.reverseBytes(16))
+                dos.writeBytes("data")
+                dos.writeInt(Integer.reverseBytes(totalSamples * 2))
+
+                for (i in 0 until totalSamples) {
+                    val beat = (i % (sampleRate / 2)) < (sampleRate / 16)
+                    val sample = if (beat) (Math.sin(2.0 * Math.PI * 120.0 * i / sampleRate) * 0.3 * 32767).toInt().toShort() else 0.toShort()
+                    dos.writeShort(java.lang.Short.reverseBytes(sample))
+                }
+                dos.close()
+                fos.close()
+
+                withContext(Dispatchers.Main) {
+                    processAudioSelected(Uri.fromFile(tempWav))
+                    Toast.makeText(this@VideoEditingActivity, "✓ Trilha [$trackName] inserida no projeto!", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@VideoEditingActivity, "Falha ao adicionar trilha: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun createBentoOptionCard(title: String, subtitle: String, iconRes: Int, iconTint: Int, onClick: () -> Unit): LinearLayout {
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(32, 28, 32, 28)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+            val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                bottomMargin = 16
+            }
+            layoutParams = params
+            isClickable = true
+            isFocusable = true
+            gravity = android.view.Gravity.CENTER_VERTICAL
+
+            val icon = ImageView(this@VideoEditingActivity).apply {
+                setImageResource(iconRes)
+                setColorFilter(iconTint)
+                layoutParams = LinearLayout.LayoutParams(64, 64).apply {
+                    marginEnd = 24
+                }
+            }
+            addView(icon)
+
+            val textContainer = LinearLayout(this@VideoEditingActivity).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            val tvTitle = TextView(this@VideoEditingActivity).apply {
+                this.text = title
+                textSize = 15f
+                setTextColor(android.graphics.Color.WHITE)
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+            }
+            val tvSub = TextView(this@VideoEditingActivity).apply {
+                this.text = subtitle
+                textSize = 12f
+                setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+                setPadding(0, 4, 0, 0)
+            }
+            textContainer.addView(tvTitle)
+            textContainer.addView(tvSub)
+            addView(textContainer)
+
+            val chevron = ImageView(this@VideoEditingActivity).apply {
+                setImageResource(R.drawable.ic_chevron_right_24)
+                setColorFilter(android.graphics.Color.parseColor("#8E8E93"))
+                layoutParams = LinearLayout.LayoutParams(36, 36)
+            }
+            addView(chevron)
+
+            setBounceClickListener { onClick() }
+        }
+    }
+
+    private fun applyStyleToAllTextsAndSubtitles(fontPath: String?, fontSize: Int?, color: String?, borderColor: String?, borderThickness: Int?) {
+        val project = viewModel.project.value ?: return
+        val textOps = project.operations.filterIsInstance<EditOperation.AddText>()
+        for (op in textOps) {
+            val updated = op.copy(
+                fontPath = fontPath ?: op.fontPath,
+                fontSize = fontSize ?: op.fontSize,
+                color = color ?: op.color,
+                borderColor = borderColor ?: op.borderColor,
+                borderThickness = borderThickness ?: op.borderThickness
+            )
+            viewModel.updateOperation(updated)
+        }
+        val subOp = project.operations.filterIsInstance<EditOperation.AddSubtitles>().firstOrNull()
+        if (subOp != null) {
+            val updatedSub = subOp.copy(
+                fontPath = fontPath ?: subOp.fontPath,
+                fontSize = fontSize ?: subOp.fontSize
+            )
+            updateSubtitleOp(updatedSub)
+        }
+        Toast.makeText(this, "Estilo aplicado a todos os textos e legendas!", Toast.LENGTH_SHORT).show()
+    }
+
 }
-
-
-

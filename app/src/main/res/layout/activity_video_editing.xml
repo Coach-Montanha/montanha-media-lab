@@ -235,7 +235,7 @@
                 android:layout_margin="12dp"
                 android:text="@string/str_preview"
                 android:textColor="@color/textColor"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:fontFamily="sans-serif-medium"
                 android:background="@drawable/rounded_time_bg"
                 android:paddingHorizontal="8dp"
@@ -295,8 +295,8 @@
 
                     <ImageButton
                         android:id="@+id/btnExpandTimeline"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_expand_24"
                         android:padding="8dp"
@@ -306,8 +306,8 @@
 
                     <ImageButton
                         android:id="@+id/btnMoveLayerUp"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:layout_marginStart="4dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_arrow_up_24"
@@ -318,8 +318,8 @@
 
                     <ImageButton
                         android:id="@+id/btnMoveLayerDown"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:layout_marginStart="4dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_arrow_down_24"
@@ -358,8 +358,8 @@
 
                     <ImageButton
                         android:id="@+id/btnCaptureFrame"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_camera_capture"
                         android:padding="8dp"
@@ -368,8 +368,8 @@
 
                     <ImageButton
                         android:id="@+id/btnMagnet"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_magnet_24"
                         android:padding="8dp"
@@ -378,8 +378,8 @@
 
                     <ImageButton
                         android:id="@+id/btnMute"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@android:color/transparent"
                         android:src="@drawable/ic_volume_up_24"
                         android:padding="8dp"
@@ -646,14 +646,14 @@
                 android:paddingHorizontal="8dp">
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnText"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_text_24"
                         android:padding="8dp"
@@ -664,20 +664,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_text"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnMediaOverlay"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_layers_24"
                         android:padding="8dp"
@@ -688,20 +688,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_overlay"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnDraw"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_brush_24"
                         android:padding="8dp"
@@ -712,7 +712,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_draw"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
@@ -720,14 +720,14 @@
 
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnAudio"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_audio_24"
                         android:padding="8dp"
@@ -738,20 +738,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_audio"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnVoiceOver"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_mic_24"
                         android:padding="8dp"
@@ -762,20 +762,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_voice"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnSubtitles"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_closed_caption_24"
                         android:padding="8dp"
@@ -786,20 +786,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_subtitles"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="60dp"
+                    android:layout_width="66dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center">
                     <ImageButton
                         android:id="@+id/btnCrop"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
                         android:background="@drawable/tool_button_inactive"
                         android:src="@drawable/ic_crop_24"
                         android:padding="8dp"
@@ -810,31 +810,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/str_crop"
-                        android:textSize="11sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:textColor="@color/toolTextInactive"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center">
-                    <ImageButton
-                        android:id="@+id/btnCanvasBackground"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="@drawable/tool_button_inactive"
-                        android:src="@drawable/ic_canvas_24"
-                        android:padding="8dp"
-                        android:scaleType="fitCenter"
-                        app:tint="@color/toolTextInactive" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Canvas"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
                         android:fontFamily="sans-serif-medium"
                         android:textColor="@color/toolTextInactive"/>
                 </LinearLayout>

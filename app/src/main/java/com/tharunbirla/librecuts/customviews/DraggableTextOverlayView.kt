@@ -496,6 +496,29 @@ class DraggableTextOverlayView @JvmOverloads constructor(
                 canvas.drawLine(videoRect.left, videoRect.centerY(), videoRect.right, videoRect.centerY(), guidelinePaint)
             }
 
+            // Check if text is touching or approaching safe boundaries
+            val snapDist = 36f
+            val isNearLeft = editText.x <= (videoRect.left + snapDist)
+            val isNearRight = (editText.x + editText.width) >= (videoRect.right - snapDist)
+            val isNearTop = editText.y <= (videoRect.top + videoRect.height() * 0.12f)
+            val isNearBottom = (editText.y + editText.height) >= (videoRect.bottom - videoRect.height() * 0.15f)
+
+            if (isDragging && (isNearLeft || isNearRight || isNearTop || isNearBottom)) {
+                val safeAreaPaint = Paint().apply {
+                    color = Color.parseColor("#FFD60A")
+                    strokeWidth = 3f
+                    style = Paint.Style.STROKE
+                    pathEffect = android.graphics.DashPathEffect(floatArrayOf(16f, 12f), 0f)
+                }
+                canvas.drawRect(
+                    videoRect.left + 24f,
+                    videoRect.top + videoRect.height() * 0.12f,
+                    videoRect.right - 24f,
+                    videoRect.bottom - videoRect.height() * 0.15f,
+                    safeAreaPaint
+                )
+            }
+
             // Draw selection border around the EditText
             selectionRect.set(
                 editText.x - 4f,

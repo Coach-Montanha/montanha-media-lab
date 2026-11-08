@@ -30,10 +30,29 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.speech.tts.TextToSpeech
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var nativeTtsEngine: TextToSpeech? = null
+    private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
+    private val fileChooserLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val intent = result.data
+            val uris = WebChromeClient.FileChooserParams.parseResult(result.resultCode, intent)
+            fileChooserCallback?.onReceiveValue(uris)
+        } else {
+            fileChooserCallback?.onReceiveValue(null)
+        }
+        fileChooserCallback = null
+    }
     private val selectVideoLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             if (uri != null) {
@@ -178,7 +197,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.cardAudio.setBounceClickListener {
-            openStudioTab("tts")
+            openStudioTab("audio")
         }
 
         binding.cardDownloader.setBounceClickListener {
@@ -521,12 +540,26 @@ class MainActivity : AppCompatActivity() {
                 databaseEnabled = true
             }
 
-            // Bridge to allow webview tool headers to navigate back to native home
+            nativeTtsEngine = TextToSpeech(this@MainActivity) { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    nativeTtsEngine?.language = Locale("pt", "BR")
+                }
+            }
+
+            // Bridge to allow webview tool headers to navigate back to native home and use native TTS
             binding.webViewStudio.addJavascriptInterface(object {
                 @android.webkit.JavascriptInterface
                 fun goNativeHome() {
                     runOnUiThread {
                         switchTab(0)
+                    }
+                }
+
+                @android.webkit.JavascriptInterface
+                fun speakText(text: String) {
+                    runOnUiThread {
+                        nativeTtsEngine?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "TTS_STUDIO")
+                        showToast("Reproduzindo fala com motor nativo...")
                     }
                 }
             }, "AndroidBridge")
@@ -543,7 +576,27 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            binding.webViewStudio.webChromeClient = android.webkit.WebChromeClient()
+            binding.webViewStudio.webChromeClient = object : WebChromeClient() {
+                override fun onShowFileChooser(
+                    webView: WebView?,
+                    filePathCallback: ValueCallback<Array<Uri>>?,
+                    fileChooserParams: FileChooserParams?
+                ): Boolean {
+                    fileChooserCallback?.onReceiveValue(null)
+                    fileChooserCallback = filePathCallback
+                    val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "*/*"
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                    }
+                    try {
+                        fileChooserLauncher.launch(intent)
+                        return true
+                    } catch (e: Exception) {
+                        fileChooserCallback = null
+                        return false
+                    }
+                }
+            }
             binding.webViewStudio.loadUrl("file:///android_asset/studio/index.html")
             isStudioLoaded = true
         }
@@ -619,6 +672,13 @@ class MainActivity : AppCompatActivity() {
                 binding.tvAboutLabel.setTextColor(activeColor)
             }
         }
+    }
+
+    override fun onDestroy() {
+        nativeTtsEngine?.stop()
+        nativeTtsEngine?.shutdown()
+        nativeTtsEngine = null
+        super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")

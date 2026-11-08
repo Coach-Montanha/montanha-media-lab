@@ -27,8 +27,8 @@ android {
         applicationId "com.montanhamedialab.app"
         minSdk 26
         targetSdk 34
-        versionCode project.hasProperty('versionCode') ? project.property('versionCode').toInteger() : 11
-        versionName "2.0.10"
+        versionCode project.hasProperty('versionCode') ? project.property('versionCode').toInteger() : 12
+        versionName "2.0.11"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
