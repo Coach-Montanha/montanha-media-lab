@@ -35,16 +35,20 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew assembleRelease --stacktrace --no-daemon -x test -x lint 2>&1 | tee build.log || {
-            echo "::error::Gradle assembleRelease failed. See build.log artifact for details."
+            echo "::error::Gradle assembleRelease failed."
             exit 1
           }
 
-      - name: Upload Build Log On Failure
+      - name: Save Failure Log to Git Branch
         if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-failure-log
-          path: build.log
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B build-logs
+          tail -n 300 build.log > failure_report.txt
+          git add failure_report.txt
+          git commit -m "chore: save failure log"
+          git push -f origin build-logs
 
       - name: Sign & Prepare Release APKs
         run: |
