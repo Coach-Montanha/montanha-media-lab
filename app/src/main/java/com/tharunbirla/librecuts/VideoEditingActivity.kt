@@ -1,5 +1,8 @@
 package com.tharunbirla.librecuts
 
+import java.net.URL
+import java.net.HttpURLConnection
+import org.json.JSONObject
 import android.widget.ImageView
 import kotlinx.coroutines.isActive
 import android.annotation.SuppressLint
