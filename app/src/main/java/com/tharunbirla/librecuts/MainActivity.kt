@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.tabStudio.setBounceClickListener {
-            switchTab(1)
+            selectVideo()
         }
         
         binding.tabSettings.setBounceClickListener {
@@ -557,6 +557,13 @@ class MainActivity : AppCompatActivity() {
                 fun goNativeHome() {
                     runOnUiThread {
                         switchTab(0)
+                    }
+                }
+
+                @android.webkit.JavascriptInterface
+                fun openNativeVideoEditor() {
+                    runOnUiThread {
+                        selectVideo()
                     }
                 }
 
