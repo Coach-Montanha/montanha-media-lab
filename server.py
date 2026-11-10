@@ -40,27 +40,20 @@ BASE_DIR = Path(__file__).parent.resolve()
 PUBLIC_DIR = BASE_DIR / "public"
 PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
-# Shared Media Storage (Termux Android & Windows fallback)
-# Storage no Android (Salva diretamente na pasta pública Downloads do celular)
-DOWNLOADS_DIR = None
-for _cand in [Path("/storage/emulated/0/Download"), Path("/sdcard/Download"), Path.home() / "storage" / "downloads"]:
-    try:
-        if _cand.exists() and os.access(_cand, os.W_OK):
-            DOWNLOADS_DIR = _cand
-            break
-    except Exception:
-        pass
-if not DOWNLOADS_DIR:
-    for _cand in [Path("/storage/emulated/0/Download"), Path("/sdcard/Download")]:
+# Shared Media Storage (Windows & Termux Android)
+if sys.platform == "win32":
+    DOWNLOADS_DIR = Path.home() / "Downloads"
+else:
+    DOWNLOADS_DIR = None
+    for _cand in [Path("/storage/emulated/0/Download"), Path("/sdcard/Download"), Path.home() / "storage" / "downloads"]:
         try:
-            _cand.mkdir(parents=True, exist_ok=True)
             if _cand.exists() and os.access(_cand, os.W_OK):
                 DOWNLOADS_DIR = _cand
                 break
         except Exception:
             pass
-if not DOWNLOADS_DIR:
-    DOWNLOADS_DIR = Path.home() / "Downloads"
+    if not DOWNLOADS_DIR:
+        DOWNLOADS_DIR = Path.home() / "Downloads"
 DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 UPLOAD_DIR = BASE_DIR / "uploads"
@@ -349,19 +342,34 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
             # Import Cloud URL (Drive, Dropbox, Photos, Web)
             if parsed.path == "/api/import-cloud-url":
                 url = body.get("url", "").strip()
+                formato = body.get("formato") or body.get("format") or "video"
                 if not url:
                     self._send_json({"status": "error", "message": "URL vazia"})
                     return
                 try:
                     import yt_dlp
-                    ydl_opts = {
-                        "outtmpl": str(DOWNLOADS_DIR / "%(title)s.%(ext)s"),
-                        "format": "best[ext=mp4]/best",
-                        "quiet": True
-                    }
+                    if formato == "audio":
+                        ydl_opts = {
+                            "outtmpl": str(DOWNLOADS_DIR / "%(title)s.%(ext)s"),
+                            "format": "bestaudio/best",
+                            "postprocessors": [{
+                                "key": "FFmpegExtractAudio",
+                                "preferredcodec": "mp3",
+                                "preferredquality": "192",
+                            }],
+                            "quiet": True
+                        }
+                    else:
+                        ydl_opts = {
+                            "outtmpl": str(DOWNLOADS_DIR / "%(title)s.%(ext)s"),
+                            "format": "best[ext=mp4]/best",
+                            "quiet": True
+                        }
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                         info = ydl.extract_info(url, download=True)
                         filename = ydl.prepare_filename(info)
+                        if formato == "audio" and not filename.lower().endswith(".mp3"):
+                            filename = str(Path(filename).with_suffix(".mp3"))
                     self._send_json({
                         "status": "success",
                         "filename": Path(filename).name,
@@ -371,7 +379,8 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                 except Exception as e:
                     # Fallback direct download
                     try:
-                        dest_file = DOWNLOADS_DIR / f"cloud_import_{int(os.times().elapsed)}.mp4"
+                        ext = ".mp3" if formato == "audio" else ".mp4"
+                        dest_file = DOWNLOADS_DIR / f"cloud_import_{int(time.time())}{ext}"
                         urllib.request.urlretrieve(url, str(dest_file))
                         self._send_json({
                             "status": "success",
@@ -468,8 +477,6 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
                     err_msg = str(e_edge)
                     # 2. Fallback robusto nativo sem dependências de compilação (Google Neural TTS pt-BR)
                     try:
-                        import re
-
                         sentences = re.split(r'([.?!,;\n]+)', text)
                         chunks = []
                         curr = ""
@@ -861,7 +868,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         # B. Multipart Form POST Requests (Media Lab: PDF Pro, Downloader, Foto & Direct Uploads)
         body = self.rfile.read(content_length)
-        boundary = content_type.split("boundary=")[-1].encode() if "boundary=" in content_type else b""
+        raw_b = content_type.split("boundary=")[-1].strip().strip('"').strip("'") if "boundary=" in content_type else ""
+        boundary = raw_b.encode("utf-8") if raw_b else b""
         partes = body.split(b"--" + boundary) if boundary else []
 
         # 0. DIRECT UPLOAD HANDLER (/api/upload for PC & Mobile)
@@ -877,22 +885,26 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                             upload_filename = Path(match.group(1)).name
                     except Exception:
                         pass
-                    uploaded_bytes = p.split(b"\r\n\r\n", 1)[1].rsplit(b"\r\n", 1)[0]
+                    if b"\r\n\r\n" in p:
+                        uploaded_bytes = p.split(b"\r\n\r\n", 1)[1].rsplit(b"\r\n", 1)[0]
+                    elif b"\n\n" in p:
+                        uploaded_bytes = p.split(b"\n\n", 1)[1].rsplit(b"\n", 1)[0]
                     break
 
-            if uploaded_bytes:
+            if uploaded_bytes is not None:
                 safe_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', upload_filename)
                 if not safe_name:
-                    safe_name = f"upload_{int(os.times().elapsed)}.mp4"
+                    safe_name = f"upload_{int(time.time())}.mp4"
                 target_file = DOWNLOADS_DIR / safe_name
                 with open(target_file, "wb") as f:
                     f.write(uploaded_bytes)
+                notify_android_media_scanner(target_file)
 
                 dur = 0.0
-                if engine and safe_name.lower().endswith((".mp4", ".mov", ".mkv", ".webm")):
+                if engine and safe_name.lower().endswith((".mp4", ".mov", ".mkv", ".webm", ".avi")):
                     try:
                         info = engine.get_video_info(str(target_file))
-                        dur = info.get("duration", 0.0)
+                        dur = float(info.get("duration", 0.0))
                     except Exception:
                         dur = 0.0
 
