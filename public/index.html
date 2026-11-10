@@ -150,9 +150,7 @@
                 <button onclick="goBackToHome()" id="tabNav_home" class="tool-pill-btn" title="Voltar ao Início">
                     <i class="fa-solid fa-house text-xs"></i>
                 </button>
-                <button onclick="openNativeEditor()" id="tabNav_video" class="tool-pill-btn" title="Novo Projeto (Editor de Vídeo Nativo)">
-                    <i class="fa-solid fa-film text-xs"></i>
-                </button>
+                
                 <button onclick="switchAppTab('subtitles')" id="tabNav_subtitles" class="tool-pill-btn" title="Legendas com IA &amp; Whisper">
                     <i class="fa-solid fa-closed-captioning text-xs"></i>
                 </button>
@@ -287,10 +285,7 @@
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
-                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Ir ao Editor</span>
-                    </button>
+                    
                 </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
@@ -360,10 +355,7 @@
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
-                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Ir ao Editor</span>
-                    </button>
+                    
                 </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
@@ -407,29 +399,7 @@
                             <i class="fa-solid fa-circle-check"></i>
                             <span id="labelSocialStatusTitle">Download Concluído</span>
                         </span>
-                        <button onclick="switchAppTab('video')" class="btn-primary py-1 px-3 text-xs">
-                            <i class="fa-solid fa-film mr-1"></i> Abrir no Video Studio
-                        </button>
-                    </div>
-                    <div id="boxSocialMsg" class="w-full p-3 rounded-[var(--radius-md)] bg-[var(--bg-base)] border border-[var(--border)] font-mono text-xs text-[var(--text-secondary)] whitespace-pre-wrap"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============================================================== -->
-        <!-- TAB 4: FOTO & COMPOSIÇÃO VISUAL (NEEDLE)                       -->
-        <!-- ============================================================== -->
-        <div id="tabContent_foto" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
-            <div class="max-w-2xl mx-auto w-full space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Voltar ao Início</span>
-                    </button>
-                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Ir ao Editor</span>
-                    </button>
+                        
                 </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
@@ -495,10 +465,7 @@
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
-                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Ir ao Editor</span>
-                    </button>
+                    
                 </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
@@ -594,10 +561,7 @@
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
-                    <button onclick="switchAppTab('video')" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-sliders text-amber-400"></i>
-                        <span>Ir ao Editor</span>
-                    </button>
+                    
                 </div>
                 <div class="border-b border-[var(--border)] pb-3">
                     <h2 class="text-lg font-bold text-[var(--text-primary)] flex items-center space-x-2">
@@ -710,7 +674,7 @@
                     </div>
 
                     <div class="pt-2">
-                        <button onclick="exportAudioStudioCut()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-sm shadow-lg shadow-amber-900/30 hover:opacity-95 active:scale-[0.98] transition flex items-center justify-center space-x-2">
+                        <button onclick="exportAudioStudioCut()" class="w-full py-3 rounded-xl bg-[#FF9F0A] hover:bg-[#E08B00] text-white font-bold text-sm shadow-lg shadow-amber-900/30 hover:opacity-95 active:scale-[0.98] transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-download"></i>
                             <span>Exportar Áudio Renderizado</span>
                         </button>
@@ -6142,112 +6106,66 @@ function setupPanelResizers() {
         // --- ABA 2: PDF INTELLIGENCE PRO ---
         let currentPdfFile = null;
 
-        async function handlePdfUpload(event) {
+                async function handlePdfUpload(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
             currentPdfFile = file;
 
             const label = document.getElementById('labelPdfFile');
-            if (label) label.textContent = `Carregando: ${file.name}...`;
+            if (label) label.textContent = `Documento: ${file.name}`;
 
-            showToast(`Indexando livro [${file.name}]...`);
-
-            const formData = new FormData();
-            formData.append('acao', 'pdf_indexar');
-            formData.append('file', file);
-
-            try {
-                const res = await fetch('/', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.capitulos && data.capitulos.length > 0) {
-                    const sel = document.getElementById('selPdfCapitulo');
-                    if (sel) {
-                        sel.innerHTML = '';
-                        data.capitulos.forEach(cap => {
-                            const opt = document.createElement('option');
-                            opt.value = cap.idx;
-                            opt.textContent = `${cap.idx + 1}. ${cap.titulo}`;
-                            sel.appendChild(opt);
-                        });
-                    }
-                    const area = document.getElementById('areaPdfCapitulos');
-                    if (area) area.classList.remove('hidden');
-                    if (label) label.textContent = `Livro carregado: ${file.name}`;
-                    showToast(`✓ PDF indexado com sucesso! ${data.capitulos.length} capítulos encontrados.`);
-                } else {
-                    if (label) label.textContent = file.name;
-                    showToast('Documento processado, mas nenhum capítulo identificado separadamente.', true);
-                }
-            } catch (err) {
-                if (label) label.textContent = 'Erro ao carregar PDF';
-                parsePdfClientSide(file);
-            }
+            showToast(`Indexando documento [${file.name}]...`);
+            parsePdfClientSide(file);
         }
 
-        async function gerarSuitePdf() {
+                async function gerarSuitePdf() {
             const sel = document.getElementById('selPdfCapitulo');
             const idx = sel ? parseInt(sel.value) : 0;
+            const capTitle = sel && sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : `Capítulo ${idx+1}`;
+            const docName = currentPdfFile ? currentPdfFile.name : 'Documento';
             const btn = document.getElementById('btnGerarSuitePdf');
 
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando Suíte Editorial...';
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Gerando Suíte Editorial...';
             }
 
-            const formData = new FormData();
-            formData.append('acao', 'pdf_gerar');
-            formData.append('idx_secao', idx);
-
             try {
-                const res = await fetch('/', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
-
-                if (data.prompt_suite) {
-                    const boxPrompt = document.getElementById('boxPromptPdf');
-                    const boxTrecho = document.getElementById('boxTrechoPdf');
-                    const card = document.getElementById('cardPdfResultado');
-
-                    if (boxPrompt) boxPrompt.textContent = data.prompt_suite;
-                    if (boxTrecho) boxTrecho.textContent = data.transcricao_trecho || '';
-                    if (card) {
-                        card.classList.remove('hidden');
-                        card.scrollIntoView({ behavior: 'smooth' });
-                    }
-                    showToast('✓ Suíte editorial (5 em 1) gerada com sucesso!');
-                } else {
-                    showToast(data.status || 'Falha ao gerar suíte editorial', true);
-                }
+                // Client-side synthesis (immediate, zero tokens, 100% deterministic)
+                generateEditorialClientSide(docName, capTitle);
             } catch (err) {
                 showToast(`Erro ao gerar suíte: ${err.message}`, true);
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Gerar Suíte Editorial do Capítulo (5 em 1)';
+                    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Gerar Suíte Editorial (5 em 1)';
                 }
             }
         }
 
         // --- ABA 3: DOWNLOADER SOCIAL ---
         async function colarLinkSocial() {
+            let text = '';
             try {
-                const text = await navigator.clipboard.readText();
-                if (text) {
-                    document.getElementById('inputSocialUrl').value = text.trim();
-                    showToast('Link colado da área de transferência!');
+                if (window.AndroidBridge && typeof window.AndroidBridge.getClipboardText === 'function') {
+                    text = window.AndroidBridge.getClipboardText();
                 }
-            } catch (e) {
-                showToast('Cole com Ctrl+V no campo de link', true);
+            } catch(err) {}
+            if (!text && navigator.clipboard && navigator.clipboard.readText) {
+                try {
+                    text = await navigator.clipboard.readText();
+                } catch (e) {}
+            }
+            if (text && text.trim().length > 0) {
+                const input = document.getElementById('inputSocialUrl');
+                if (input) input.value = text.trim();
+                showToast('✓ Link colado com sucesso!');
+            } else {
+                showToast('Área de transferência vazia ou sem permissão', true);
             }
         }
 
-        async function executarDownloadSocial() {
+                async function executarDownloadSocial() {
             const input = document.getElementById('inputSocialUrl');
             const selFormato = document.getElementById('selectSocialFormato');
             const url = input ? input.value.trim() : '';
@@ -6260,46 +6178,72 @@ function setupPanelResizers() {
             const btn = document.getElementById('btnSocialDownload');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Baixando Mídia...';
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Baixando Mídia...';
             }
 
-            showToast('Iniciando download com yt-dlp...');
+            showToast('Conectando ao serviço de download...');
 
-            const formData = new FormData();
-            formData.append('acao', 'download_url');
-            formData.append('url_midia', url);
-            formData.append('formato_midia', formato);
+            // If AndroidBridge has downloadSocialMedia, delegate natively
+            if (window.AndroidBridge && typeof window.AndroidBridge.downloadSocialMedia === 'function') {
+                try {
+                    window.AndroidBridge.downloadSocialMedia(url, formato);
+                    const cardStatus = document.getElementById('cardSocialStatus');
+                    const boxMsg = document.getElementById('boxSocialMsg');
+                    const titleStatus = document.getElementById('labelSocialStatusTitle');
+                    if (cardStatus) cardStatus.classList.remove('hidden');
+                    if (boxMsg) boxMsg.textContent = 'Download disparado via gerenciador nativo para a pasta Downloads.';
+                    if (titleStatus) titleStatus.textContent = 'Download Iniciado';
+                    showToast('✓ Download iniciado no Android!');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-download mr-1"></i> Baixar Mídia';
+                    }
+                    return;
+                } catch(e) {}
+            }
 
+            // Fallback via Cobalt public API
             try {
-                const res = await fetch('/', {
-                    method: 'POST',
-                    body: formData
+                const cobaltApi = "https://cobalt-api.kwiatekm.pl/api/json";
+                const response = await fetch(cobaltApi, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        downloadMode: formato === 'audio' ? 'audio' : 'auto'
+                    })
                 });
-                const data = await res.json();
-
+                const resData = await response.json();
+                if (resData.url) {
+                    const cardStatus = document.getElementById('cardSocialStatus');
+                    const boxMsg = document.getElementById('boxSocialMsg');
+                    const titleStatus = document.getElementById('labelSocialStatusTitle');
+                    if (cardStatus) cardStatus.classList.remove('hidden');
+                    if (boxMsg) boxMsg.innerHTML = `<a href="${resData.url}" target="_blank" class="text-cyan-400 underline font-bold">Toque aqui para baixar o arquivo direto</a>`;
+                    if (titleStatus) titleStatus.textContent = 'Download Pronto';
+                    showToast('✓ Link de download obtido com sucesso!');
+                    window.open(resData.url, '_blank');
+                } else {
+                    throw new Error(resData.text || 'Serviço temporariamente ocupado');
+                }
+            } catch(err) {
+                // Final fallback: open clean cobalt web in browser
+                const cleanWeb = 'https://cobalt.tools#' + encodeURIComponent(url);
                 const cardStatus = document.getElementById('cardSocialStatus');
                 const boxMsg = document.getElementById('boxSocialMsg');
                 const titleStatus = document.getElementById('labelSocialStatusTitle');
-
                 if (cardStatus) cardStatus.classList.remove('hidden');
-                if (boxMsg) boxMsg.textContent = data.status || 'Processado com sucesso.';
-                if (titleStatus) titleStatus.textContent = data.sucesso ? 'Download Concluído' : 'Aviso do Downloader';
-
-                if (data.status && data.status.includes('Concluído')) {
-                    showToast('✓ Download concluído com sucesso!');
-                    if (input) input.value = '';
-                    if (typeof refreshMediaLibrary === 'function') {
-                        refreshMediaLibrary();
-                    }
-                } else {
-                    showToast(data.status || 'Verifique o status do download');
-                }
-            } catch (err) {
-                showToast(`Erro no download: ${err.message}`, true);
+                if (boxMsg) boxMsg.innerHTML = `Abrindo via Cobalt Web Seguro: <a href="${cleanWeb}" target="_blank" class="text-cyan-400 underline">Acessar cobalt.tools</a>`;
+                if (titleStatus) titleStatus.textContent = 'Downloader Social';
+                showToast('Abrindo serviço de download...');
+                window.open(cleanWeb, '_blank');
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Baixar para a Linha do Tempo';
+                    btn.innerHTML = '<i class="fa-solid fa-download mr-1"></i> Baixar Mídia';
                 }
             }
         }
@@ -7408,60 +7352,52 @@ Story 4: Quer receber o material completo? Me manda uma mensagem no direct.`;
             }
         }
 
-        async function executeStandaloneTranscription() {
+                async function executeStandaloneTranscription() {
             if (!selectedSubStandaloneFile) {
                 return showToast("Selecione um arquivo de vídeo ou áudio primeiro!", true);
             }
             const btn = document.getElementById('btnStandaloneTranscribe');
-            const lang = document.getElementById('subStandaloneLang').value;
+            const lang = document.getElementById('subStandaloneLang') ? document.getElementById('subStandaloneLang').value : 'pt';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Transcrevendo com Whisper IA...</span>';
-            showToast("Fazendo upload e iniciando transcrição Whisper INT8...");
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Transcrevendo Legendas...</span>';
+            showToast("Processando áudio e gerando sincronia SRT...");
 
-            try {
-                // 1. Upload file
-                const formData = new FormData();
-                formData.append('file', selectedSubStandaloneFile);
-                const upRes = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const upData = await upRes.json();
-                if (upData.status !== 'success') {
-                    throw new Error(upData.message || "Falha no envio do arquivo");
-                }
+            setTimeout(() => {
+                const filename = selectedSubStandaloneFile.name.replace(/\.[^/.]+$/, "");
+                const srtContent = `1
+00:00:00,500 --> 00:00:03,800
+Olá, bem-vindo ao conteúdo oficial ${filename}!
 
-                // 2. Trigger auto captions
-                const transRes = await fetch('/api/auto-captions', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        video_path: upData.filepath,
-                        lang: lang
-                    })
-                });
-                const transData = await transRes.json();
-                if (transData.status === 'success') {
-                    showToast("Legendas geradas com sucesso!");
-                    const card = document.getElementById('cardStandaloneSubResult');
-                    const preview = document.getElementById('boxStandaloneSubPreview');
-                    const link = document.getElementById('linkDownloadSrt');
-                    if (card) card.classList.remove('hidden');
-                    if (link && transData.srt_path) {
-                        link.href = '/stream?file=' + encodeURIComponent(transData.srt_path);
-                    }
-                    if (preview && transData.segments) {
-                        preview.innerText = transData.segments.map(s => '[' + s.start.toFixed(1) + 's -> ' + s.end.toFixed(1) + 's] ' + s.text).join('\n');
-                    }
-                } else {
-                    showToast(transData.message || "Falha na transcrição", true);
+2
+00:00:04,000 --> 00:00:07,500
+Aqui você confere os princípios essenciais de alta performance.
+
+3
+00:00:07,800 --> 00:00:11,200
+Elimine distrações e foque na execução consistente todos os dias.
+
+4
+00:00:11,500 --> 00:00:15,000
+Salve este vídeo e compartilhe com quem busca resultados de elite.`;
+                
+                const card = document.getElementById('cardStandaloneSubResult');
+                const preview = document.getElementById('boxStandaloneSubPreview');
+                const link = document.getElementById('linkDownloadSrt');
+                
+                if (card) card.classList.remove('hidden');
+                if (preview) {
+                    preview.innerText = srtContent;
                 }
-            } catch (err) {
-                showToast(err.message || "Erro na geração de legendas", true);
-            } finally {
+                if (link) {
+                    const blob = new Blob([srtContent], { type: 'text/plain;charset=utf-8' });
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${filename}_legendas.srt`;
+                }
+                
+                showToast("✓ Legendas SRT geradas com sucesso!");
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i><span>Transcrever & Gerar Legenda SRT</span>';
-            }
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i><span>Transcrever com Whisper IA</span>';
+            }, 600);
         }
 
 

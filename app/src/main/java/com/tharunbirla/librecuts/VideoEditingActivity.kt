@@ -4621,16 +4621,16 @@ class VideoEditingActivity : AppCompatActivity() {
                 }
                 val totalSeqDur = getTotalSequenceDuration()
                 val endGlobalMs = if (realDurationMs > 0) minOf(totalSeqDur, realDurationMs) else totalSeqDur
-                viewModel.addOperation(
-                    com.tharunbirla.librecuts.models.EditOperation.AddBackgroundAudio(
-                        audioUri = tempUri,
-                        internalStartMs = 0L,
-                        internalEndMs = realDurationMs,
-                        startTimeMs = 0L,
-                        endTimeMs = endGlobalMs,
-                        originalDurationMs = realDurationMs
-                    )
+                val newAudioOp = com.tharunbirla.librecuts.models.EditOperation.AddBackgroundAudio(
+                    audioUri = tempUri,
+                    internalStartMs = 0L,
+                    internalEndMs = realDurationMs,
+                    startTimeMs = 0L,
+                    endTimeMs = endGlobalMs,
+                    originalDurationMs = realDurationMs
                 )
+                viewModel.addOperation(newAudioOp)
+                viewModel.selectOperation(newAudioOp.id)
                 Toast.makeText(this@VideoEditingActivity, R.string.toast_audio_track_added, Toast.LENGTH_SHORT).show()
             }
         }
@@ -6301,7 +6301,7 @@ class VideoEditingActivity : AppCompatActivity() {
                     else -> ""
                 }
                 val trackView = com.tharunbirla.librecuts.customviews.TrackTrimView(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 48.dpToPx()).apply {
+                    layoutParams = LinearLayout.LayoutParams(timelineWidth, 48.dpToPx()).apply {
                         topMargin = 4.dpToPx()
                     }
                     isSelectedTrack = (opId == viewModel.selectedOperationId.value)
@@ -6398,7 +6398,7 @@ class VideoEditingActivity : AppCompatActivity() {
             audioTrackContainer.visibility = View.VISIBLE
             for (op in audioOps) {
                 val trackView = com.tharunbirla.librecuts.customviews.TrackTrimView(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 48.dpToPx()).apply {
+                    layoutParams = LinearLayout.LayoutParams(timelineWidth, 48.dpToPx()).apply {
                         topMargin = 4.dpToPx()
                     }
                     trackColor = android.graphics.Color.parseColor("#4CAF50") // Green for audio
@@ -7328,7 +7328,7 @@ class VideoEditingActivity : AppCompatActivity() {
             seekerContainer.layoutParams = lpSeeker
 
             val lpTimeline = timelineContainer.layoutParams as LinearLayout.LayoutParams
-            lpTimeline.height = 140.dpToPx()
+            lpTimeline.height = 175.dpToPx()
             lpTimeline.weight = 0f
             timelineContainer.layoutParams = lpTimeline
         }

@@ -318,6 +318,11 @@ class MainActivity : AppCompatActivity() {
 
         // Handle shared/intent videos
         handleIntent(intent)
+
+        // Pre-warm the studio WebView in background so tools open instantaneously without delay
+        binding.webViewStudio.post {
+            loadStudioIfNeeded()
+        }
     }
 
     private fun updateExportFolderUI(uri: Uri?, textView: TextView, defaultStringResId: Int) {
@@ -534,6 +539,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadStudioIfNeeded() {
         if (!isStudioLoaded) {
+            binding.webViewStudio.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            binding.layoutStudioContent.setBackgroundColor(android.graphics.Color.parseColor("#0B0C0E"))
             binding.webViewStudio.settings.apply {
                 javaScriptEnabled = true
                 domStorageEnabled = true
@@ -586,6 +593,29 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 @android.webkit.JavascriptInterface
+                fun getClipboardText(): String {
+                    val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                    val clip = clipboard?.primaryClip
+                    if (clip != null && clip.itemCount > 0) {
+                        return clip.getItemAt(0).text?.toString() ?: ""
+                    }
+                    return ""
+                }
+
+                @android.webkit.JavascriptInterface
+                fun downloadSocialMedia(url: String, format: String) {
+                    runOnUiThread {
+                        try {
+                            val downloadIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://cobalt.tools#" + Uri.encode(url)))
+                            startActivity(downloadIntent)
+                            showToast("Abrindo serviço de download cobalt.tools...")
+                        } catch (e: Exception) {
+                            showToast("Não foi possível abrir o navegador: ${e.message}")
+                        }
+                    }
+                }
+
+                @android.webkit.JavascriptInterface
                 fun syncVault() {
                     PersistentVaultManager.syncPrefsToVault(this@MainActivity)
                 }
@@ -631,13 +661,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun openStudioTab(tabKey: String) {
         pendingStudioTab = tabKey
-        switchTab(1)
+        loadStudioIfNeeded()
         if (isStudioLoaded) {
             binding.webViewStudio.evaluateJavascript(
                 "if (typeof switchAppTab === 'function') switchAppTab('$tabKey');",
                 null
             )
         }
+        switchTab(1)
     }
 
     private fun switchTab(tabIndex: Int) {
@@ -650,11 +681,27 @@ class MainActivity : AppCompatActivity() {
         val activeColor = ContextCompat.getColor(this, R.color.colorPrimary)
         val inactiveColor = ContextCompat.getColor(this, R.color.inactiveTool)
 
-        // Reset all tabs to inactive
-        binding.layoutHomeContent.visibility = View.GONE
-        binding.layoutStudioContent.visibility = View.GONE
-        binding.layoutSettingsContent.visibility = View.GONE
-        binding.layoutAboutContent.visibility = View.GONE
+        val targetView = when (tabIndex) {
+            0 -> binding.layoutHomeContent
+            1 -> binding.layoutStudioContent
+            2 -> binding.layoutSettingsContent
+            3 -> binding.layoutAboutContent
+            else -> binding.layoutHomeContent
+        }
+
+        val allViews = listOf(
+            binding.layoutHomeContent,
+            binding.layoutStudioContent,
+            binding.layoutSettingsContent,
+            binding.layoutAboutContent
+        )
+
+        allViews.forEach { v ->
+            if (v != targetView && v.visibility == View.VISIBLE) {
+                v.visibility = View.GONE
+                v.alpha = 1f
+            }
+        }
 
         binding.tabHome.background = inactiveBg
         binding.ivHome.setColorFilter(inactiveColor)
@@ -674,31 +721,31 @@ class MainActivity : AppCompatActivity() {
 
         when (tabIndex) {
             0 -> {
-                binding.layoutHomeContent.visibility = View.VISIBLE
                 binding.tabHome.background = activeBg
                 binding.ivHome.setColorFilter(activeColor)
                 binding.tvHomeLabel.setTextColor(activeColor)
             }
             1 -> {
-                binding.layoutStudioContent.visibility = View.VISIBLE
                 binding.tabStudio.background = activeBg
                 binding.ivStudio.setColorFilter(activeColor)
                 binding.tvStudioLabel.setTextColor(activeColor)
                 loadStudioIfNeeded()
             }
             2 -> {
-                binding.layoutSettingsContent.visibility = View.VISIBLE
                 binding.tabSettings.background = activeBg
                 binding.ivSettings.setColorFilter(activeColor)
                 binding.tvSettingsLabel.setTextColor(activeColor)
             }
             3 -> {
-                binding.layoutAboutContent.visibility = View.VISIBLE
                 binding.tabAbout.background = activeBg
                 binding.ivAbout.setColorFilter(activeColor)
                 binding.tvAboutLabel.setTextColor(activeColor)
             }
         }
+
+        targetView.alpha = 0.4f
+        targetView.visibility = View.VISIBLE
+        targetView.animate().alpha(1f).setDuration(120).start()
     }
 
     override fun onDestroy() {
