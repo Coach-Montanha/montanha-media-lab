@@ -9269,13 +9269,51 @@ class VideoEditingActivity : AppCompatActivity() {
         }
         container.addView(input)
 
+        val labelVoice = TextView(this).apply {
+            text = "SELECIONE A VOZ NEURAL:"
+            textSize = 11f
+            setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 24, 0, 8)
+        }
+        container.addView(labelVoice)
+
+        val voiceOptions = arrayOf(
+            "pt-BR-Antonio (Masculino Enérgico / Dinâmico)",
+            "pt-BR-Francisca (Feminino Natural / Profissional)",
+            "pt-BR-Thalita (Feminino Jovem / Rápido)"
+        )
+        val spinnerVoice = android.widget.Spinner(this).apply {
+            adapter = android.widget.ArrayAdapter(this@VideoEditingActivity, android.R.layout.simple_spinner_dropdown_item, voiceOptions)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+            setPadding(16, 16, 16, 16)
+        }
+        container.addView(spinnerVoice)
+
+        val labelSpeed = TextView(this).apply {
+            text = "VELOCIDADE DA FALA:"
+            textSize = 11f
+            setTextColor(android.graphics.Color.parseColor("#8E8E93"))
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setPadding(0, 16, 0, 8)
+        }
+        container.addView(labelSpeed)
+
+        val speedOptions = arrayOf("1.0x (Normal / Equilibrado)", "0.85x (Mais Lento / Solene)", "1.15x (Dinâmico / Reels)")
+        val spinnerSpeed = android.widget.Spinner(this).apply {
+            adapter = android.widget.ArrayAdapter(this@VideoEditingActivity, android.R.layout.simple_spinner_dropdown_item, speedOptions)
+            setBackgroundResource(R.drawable.bg_aspect_ratio_item)
+            setPadding(16, 16, 16, 16)
+        }
+        container.addView(spinnerSpeed)
+
         val btnGenerate = android.widget.Button(this).apply {
             text = "Gerar & Inserir Locução na Linha do Tempo"
             textSize = 14f
             setTextColor(android.graphics.Color.WHITE)
             setBackgroundResource(R.drawable.bg_hero_bento_primary)
             val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 120).apply {
-                topMargin = 24
+                topMargin = 28
             }
             layoutParams = params
             setOnClickListener {
@@ -9284,8 +9322,15 @@ class VideoEditingActivity : AppCompatActivity() {
                     Toast.makeText(this@VideoEditingActivity, "Digite um texto para narrar!", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
+                val selectedVoice = spinnerVoice.selectedItem?.toString() ?: "antonio"
+                val speedIdx = spinnerSpeed.selectedItemPosition
+                val speedVal = when (speedIdx) {
+                    1 -> 0.85f
+                    2 -> 1.15f
+                    else -> 1.0f
+                }
                 dialog.dismiss()
-                generateAndInsertNeuralVoice(text)
+                generateAndInsertNeuralVoice(text, selectedVoice, speedVal)
             }
         }
         container.addView(btnGenerate)
@@ -9294,50 +9339,77 @@ class VideoEditingActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun generateAndInsertNeuralVoice(text: String) {
-        Toast.makeText(this, "Sintetizando voz neural...", Toast.LENGTH_SHORT).show()
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
+    private fun generateAndInsertNeuralVoice(text: String, voiceName: String = "antonio", rate: Float = 1.0f) {
+        Toast.makeText(this, "Sintetizando locução neural...", Toast.LENGTH_SHORT).show()
+        val isMale = voiceName.contains("antonio", ignoreCase = true) || voiceName.contains("masculino", ignoreCase = true)
+        val isYoung = voiceName.contains("thalita", ignoreCase = true)
+
+        var ttsInstance: TextToSpeech? = null
+        ttsInstance = TextToSpeech(this@VideoEditingActivity) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                ttsInstance?.language = Locale("pt", "BR")
+                ttsInstance?.setSpeechRate(rate)
+                if (isMale) {
+                    ttsInstance?.setPitch(0.80f)
+                } else if (isYoung) {
+                    ttsInstance?.setPitch(1.15f)
+                } else {
+                    ttsInstance?.setPitch(1.0f)
+                }
+
+                try {
+                    val voices = ttsInstance?.voices
+                    if (!voices.isNullOrEmpty()) {
+                        val ptVoices = voices.filter { it.locale.language == "pt" }
+                        val targetVoice = if (isMale) {
+                            ptVoices.firstOrNull {
+                                it.name.contains("male", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-afs#male", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-jab", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-jbc", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-jbd", ignoreCase = true)
+                            } ?: ptVoices.firstOrNull()
+                        } else {
+                            ptVoices.firstOrNull {
+                                it.name.contains("female", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-afs#female", ignoreCase = true) ||
+                                it.name.contains("pt-br-x-sfg", ignoreCase = true)
+                            } ?: ptVoices.firstOrNull()
+                        }
+                        if (targetVoice != null) {
+                            ttsInstance?.voice = targetVoice
+                        }
+                    }
+                } catch (_: Exception) {}
+
                 val tempWav = File(cacheDir, "locucao_neural_${System.currentTimeMillis()}.wav")
-                // Generate sine or synthesize via Android TTS / server
-                val sampleRate = 44100
-                val durationSec = Math.max(2.0, text.split(" ").size * 0.4)
-                val totalSamples = (sampleRate * durationSec).toInt()
-                
-                // Write standard WAV header and waveform
-                val fos = java.io.FileOutputStream(tempWav)
-                val dos = java.io.DataOutputStream(fos)
-                val byteRate = sampleRate * 2
-                
-                dos.writeBytes("RIFF")
-                dos.writeInt(Integer.reverseBytes(36 + totalSamples * 2))
-                dos.writeBytes("WAVE")
-                dos.writeBytes("fmt ")
-                dos.writeInt(Integer.reverseBytes(16))
-                dos.writeShort(java.lang.Short.reverseBytes(1.toShort()).toInt())
-                dos.writeShort(java.lang.Short.reverseBytes(1.toShort()).toInt())
-                dos.writeInt(Integer.reverseBytes(sampleRate))
-                dos.writeInt(Integer.reverseBytes(byteRate))
-                dos.writeShort(java.lang.Short.reverseBytes(2.toShort()).toInt())
-                dos.writeShort(java.lang.Short.reverseBytes(16.toShort()).toInt())
-                dos.writeBytes("data")
-                dos.writeInt(Integer.reverseBytes(totalSamples * 2))
+                val utteranceId = "TTS_SYNTH_${System.currentTimeMillis()}"
 
-                for (i in 0 until totalSamples) {
-                    val angle = 2.0 * Math.PI * 440.0 * i / sampleRate
-                    val sample = (Math.sin(angle) * 0.25 * 32767).toInt().toShort()
-                    dos.writeShort(java.lang.Short.reverseBytes(sample).toInt())
+                ttsInstance?.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+                    override fun onStart(id: String?) {}
+                    override fun onDone(id: String?) {
+                        runOnUiThread {
+                            processAudioSelected(Uri.fromFile(tempWav))
+                            val label = if (isMale) "Masculina (Antonio)" else if (isYoung) "Feminina (Thalita)" else "Feminina (Francisca)"
+                            Toast.makeText(this@VideoEditingActivity, "✓ Locução [$label] inserida na timeline!", Toast.LENGTH_LONG).show()
+                            ttsInstance?.shutdown()
+                        }
+                    }
+                    override fun onError(id: String?) {
+                        runOnUiThread {
+                            Toast.makeText(this@VideoEditingActivity, "Erro ao sintetizar locução de voz.", Toast.LENGTH_SHORT).show()
+                            ttsInstance?.shutdown()
+                        }
+                    }
+                })
+                ttsInstance?.synthesizeToFile(text, null, tempWav, utteranceId)
+            } else {
+                runOnUiThread {
+                    Toast.makeText(this@VideoEditingActivity, "Motor de voz não disponível no momento.", Toast.LENGTH_SHORT).show()
                 }
-                dos.close()
-                fos.close()
-
-                withContext(Dispatchers.Main) {
-                    processAudioSelected(Uri.fromFile(tempWav))
-                    Toast.makeText(this@VideoEditingActivity, "✓ Locução neural inserida na linha do tempo!", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@VideoEditingActivity, "Erro ao gerar locução: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
                 }
             }
         }

@@ -21,10 +21,142 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;600;700;900&family=Montserrat:wght@700;900&family=Outfit:wght@700;900&family=Bangers&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/theme.css?v=2.4">
+    <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+
+        /* ==========================================================================
+           MONTANHA MEDIA LAB - APPLE BENTO ULTRA-CRISP DESIGN SYSTEM
+           ========================================================================== */
+        :root {
+            --bg-base: #000000;
+            --bg-panel: #1C1C1E;
+            --bg-elevated: #2C2C2E;
+            --bg-hover: #3A3A3C;
+            --border: #2C2C2E;
+            --border-subtle: #242426;
+            --border-hover: #3A3A3C;
+            --border-accent: rgba(10, 132, 255, 0.5);
+
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --text-muted: #636366;
+
+            --accent: #0A84FF;
+            --accent-hover: #0071E3;
+            --accent-glow: rgba(10, 132, 255, 0.25);
+            --danger: #FF453A;
+            --success: #30D158;
+            --warning: #FFD60A;
+            --amber: #FF9F0A;
+            --purple: #BF5AF2;
+
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition: 150ms ease-out;
+        }
+
+        /* Solid Dark Background & High Contrast Typography */
+        body {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-tab-panel {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+        }
+
+        /* Apple Bento Cards */
+        .bento-card, .apple-card,
+        .app-tab-panel .bg-\[var\(--bg-panel\)\],
+        .app-tab-panel .p-5.rounded-\[var\(--radius-lg\)\],
+        .app-tab-panel .p-6.rounded-2xl {
+            background-color: #1C1C1E !important;
+            border: 1px solid #2C2C2E !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        /* Headings & Text */
+        .app-tab-panel h2, .app-tab-panel h3, .app-tab-panel .text-lg.font-bold {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.01em !important;
+        }
+
+        .app-tab-panel p, .app-tab-panel .text-xs.text-\[var\(--text-secondary\)\] {
+            color: #8E8E93 !important;
+            font-size: 13px !important;
+            line-height: 1.45 !important;
+        }
+
+        /* Input Labels */
+        .label-caps, .app-tab-panel label {
+            color: #8E8E93 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        /* Crisp Inputs, Textareas and Selects */
+        .app-tab-panel input[type="text"],
+        .app-tab-panel input[type="number"],
+        .app-tab-panel textarea,
+        .app-tab-panel select {
+            background-color: #0E0F12 !important;
+            border: 1px solid #3A3A3C !important;
+            color: #FFFFFF !important;
+            border-radius: 12px !important;
+            padding: 12px 14px !important;
+            font-size: 13px !important;
+            transition: border-color var(--transition);
+        }
+
+        .app-tab-panel input:focus,
+        .app-tab-panel textarea:focus,
+        .app-tab-panel select:focus {
+            border-color: #0A84FF !important;
+            outline: none !important;
+        }
+
+        /* Dropzones */
+        .dropzone-box,
+        .app-tab-panel .border-2.border-dashed {
+            background-color: #141518 !important;
+            border: 2px dashed #3A3A3C !important;
+            border-radius: 18px !important;
+            transition: all var(--transition) !important;
+        }
+        .app-tab-panel .border-2.border-dashed:hover {
+            border-color: #0A84FF !important;
+            background-color: #191B20 !important;
+        }
+
+        /* Back to Home Button */
+        .btn-back-home {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            border-radius: 12px !important;
+            padding: 8px 14px !important;
+            font-size: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            transition: all 120ms ease-out !important;
+        }
+        .btn-back-home:active {
+            transform: scale(0.96) !important;
+            background-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
         /* Component Specific Overrides matching DaVinci/Premiere visual hierarchy */
         .header-bar {
             height: 48px;
@@ -1686,7 +1818,7 @@
         <div id="tabContent_pdf" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-3xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -1756,7 +1888,7 @@
         <div id="tabContent_downloader" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -1816,7 +1948,7 @@
         <div id="tabContent_foto" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -1886,7 +2018,7 @@
         <div id="tabContent_tts" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -1982,7 +2114,7 @@
         <div id="tabContent_subtitles" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-2xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -2043,7 +2175,7 @@
         <div id="tabContent_audio" class="app-tab-panel hidden flex-1 flex flex-col w-full h-full overflow-y-auto p-4 md:p-8 bg-[var(--bg-base)]">
             <div class="max-w-3xl mx-auto w-full space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-                    <button onclick="goBackToHome()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center space-x-2 transition active:scale-95 shadow">
+                    <button onclick="goBackToHome()" class="btn-back-home">
                         <i class="fa-solid fa-arrow-left"></i>
                         <span>Voltar ao Início</span>
                     </button>
@@ -2108,14 +2240,8 @@
             </div>
         </div>
 
-        </div>
-        </div>
-
-
-
-
-    <!-- ============================================================== -->
-    <!-- ARTCRAFT BENCHMARK: MODAL MEUS PROJETOS (MULTI-PROJECTS)       -->
+        <!-- ============================================================== -->
+        <!-- ARTCRAFT BENCHMARK: MODAL MEUS PROJETOS (MULTI-PROJECTS)       -->
     <!-- ============================================================== -->
     <div id="projectsModal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center hidden p-3 md:p-6 select-none">
         <div class="bg-[#15171D] border border-[#2B2F3A] rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
@@ -8752,11 +8878,23 @@ Story 4: Quer receber o material completo? Me manda uma mensagem no direct.`;
             if (!text) return showToast("Digite um texto para narrar!", true);
             const voice = document.getElementById('standaloneTtsVoice').value;
             const rateVal = parseInt(document.getElementById('standaloneTtsRate').value || 0);
+            const rateMultiplier = (rateVal / 100.0) + 1.0;
             const rateStr = `${rateVal >= 0 ? '+' : ''}${rateVal}%`;
             const btn = document.getElementById('btnStandaloneTts');
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i><span>Sintetizando Voz Neural...</span>';
 
+            // 1. Tentar chamar AndroidBridge nativo com seleção de voz se estiver no app mobile
+            if (window.AndroidBridge && typeof window.AndroidBridge.speakTextWithVoice === 'function') {
+                try {
+                    window.AndroidBridge.speakTextWithVoice(text, voice, rateMultiplier);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-waveform-lines mr-1"></i><span>Gerar Áudio MP3 Agora</span>';
+                    return;
+                } catch(e) {}
+            }
+
+            // 2. Chamar endpoint local de síntese /api/tts
             try {
                 const res = await fetch('/api/tts', {
                     method: 'POST',
@@ -8770,7 +8908,7 @@ Story 4: Quer receber o material completo? Me manda uma mensagem no direct.`;
                 });
                 const data = await res.json();
                 if (data.status === 'success') {
-                    showToast("Áudio MP3 gerado e salvo em Downloads!");
+                    showToast("✓ Áudio narrado gerado com sucesso!");
                     const card = document.getElementById('cardStandaloneTtsResult');
                     const player = document.getElementById('playerStandaloneTts');
                     const link = document.getElementById('linkDownloadStandaloneTts');
@@ -8779,30 +8917,37 @@ Story 4: Quer receber o material completo? Me manda uma mensagem no direct.`;
                     if (pathTxt) pathTxt.innerText = data.server_path || ('/sdcard/Download/' + data.filename);
                     if (copyBtn) copyBtn.dataset.path = data.server_path || ('/sdcard/Download/' + data.filename);
                     if (card) card.classList.remove('hidden');
-                    const downloadUrl = `/download?file=${encodeURIComponent(data.server_path)}&name=${encodeURIComponent(data.filename || 'locucao_neural.mp3')}&download=1`;
-                    if (player) { player.src = data.download_url; player.play(); }
+                    const downloadUrl = `/stream?file=${encodeURIComponent(data.server_path)}&download=1`;
+                    if (player) { player.src = data.download_url || downloadUrl; player.play(); }
                     if (link) {
                         link.href = downloadUrl;
                         link.setAttribute('download', data.filename || 'locucao_neural.mp3');
-                        link.onclick = (e) => {
-                            e.preventDefault();
-                            downloadAudioFileDirectly(downloadUrl, data.filename || 'locucao_neural.mp3');
-                        };
                     }
-                } else {
-                    showToast(data.message || "Erro ao sintetizar áudio", true);
+                    return;
                 }
             } catch (err) {
-                if (window.AndroidBridge && typeof window.AndroidBridge.speakText === 'function') {
-                    window.AndroidBridge.speakText(text);
-                    showToast("✓ Locução reproduzida via motor nativo de IA do celular!");
-                } else if ('speechSynthesis' in window) {
+                // Fallback SpeechSynthesis web com distinção de timbre masculino vs feminino
+                if ('speechSynthesis' in window) {
                     const u = new SpeechSynthesisUtterance(text);
                     u.lang = 'pt-BR';
+                    u.rate = rateMultiplier;
+                    const isMale = voice.toLowerCase().includes('antonio') || voice.toLowerCase().includes('masculino');
+                    const isYoung = voice.toLowerCase().includes('thalita');
+                    u.pitch = isMale ? 0.8 : (isYoung ? 1.15 : 1.0);
+                    
+                    const voices = window.speechSynthesis.getVoices();
+                    if (voices && voices.length > 0) {
+                        const ptVoices = voices.filter(v => v.lang.startsWith('pt'));
+                        const chosen = isMale ? ptVoices.find(v => v.name.toLowerCase().includes('male')) : ptVoices.find(v => v.name.toLowerCase().includes('female'));
+                        if (chosen) u.voice = chosen;
+                    }
                     window.speechSynthesis.speak(u);
-                    showToast("✓ Locução reproduzida via síntese de voz local!");
+                    showToast(`✓ Locução [${isMale ? 'Masculina (Antonio)' : 'Feminina'}] reproduzida!`);
+                } else if (window.AndroidBridge && typeof window.AndroidBridge.speakText === 'function') {
+                    window.AndroidBridge.speakText(text);
+                    showToast("✓ Locução reproduzida via motor nativo!");
                 } else {
-                    showToast("Erro ao conectar ao servidor de TTS", true);
+                    showToast("Erro ao sintetizar áudio", true);
                 }
             } finally {
                 btn.disabled = false;

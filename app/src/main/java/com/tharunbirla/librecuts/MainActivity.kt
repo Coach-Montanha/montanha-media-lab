@@ -577,8 +577,14 @@ class MainActivity : AppCompatActivity() {
                 @android.webkit.JavascriptInterface
                 fun speakText(text: String) {
                     runOnUiThread {
-                        nativeTtsEngine?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "TTS_STUDIO")
-                        showToast("Reproduzindo fala com motor nativo...")
+                        speakTextWithVoice(text, null, 1.0f)
+                    }
+                }
+
+                @android.webkit.JavascriptInterface
+                fun speakTextWithVoice(text: String, voiceName: String?, rate: Float) {
+                    runOnUiThread {
+                        this@MainActivity.speakTextWithVoice(text, voiceName, rate)
                     }
                 }
 
@@ -605,12 +611,100 @@ class MainActivity : AppCompatActivity() {
                 @android.webkit.JavascriptInterface
                 fun downloadSocialMedia(url: String, format: String) {
                     runOnUiThread {
+                        showToast("Iniciando download interno na pasta Downloads...")
+                    }
+                    lifecycleScope.launch(Dispatchers.IO) {
                         try {
-                            val downloadIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://cobalt.tools#" + Uri.encode(url)))
-                            startActivity(downloadIntent)
-                            showToast("Abrindo serviço de download cobalt.tools...")
+                            var directMediaUrl: String? = null
+                            var outputFilename = "social_media_${System.currentTimeMillis()}.${if (format == "audio") "mp3" else "mp4"}"
+
+                            // 1. Tentar resolver via servidor local (se ativo no dispositivo)
+                            try {
+                                val srvUrl = URL("http://127.0.0.1:4190/api/import-cloud-url")
+                                val conn = srvUrl.openConnection() as HttpURLConnection
+                                conn.connectTimeout = 1500
+                                conn.readTimeout = 60000
+                                conn.requestMethod = "POST"
+                                conn.doOutput = true
+                                conn.setRequestProperty("Content-Type", "application/json")
+                                val jsonBody = JSONObject().apply {
+                                    put("url", url)
+                                    put("formato", format)
+                                }
+                                conn.outputStream.write(jsonBody.toString().toByteArray())
+                                if (conn.responseCode == 200) {
+                                    val respText = conn.inputStream.bufferedReader().readText()
+                                    val respJson = JSONObject(respText)
+                                    if (respJson.optString("status") == "success") {
+                                        withContext(Dispatchers.Main) {
+                                            showToast("✓ Vídeo baixado localmente na pasta Downloads!")
+                                        }
+                                        return@launch
+                                    }
+                                }
+                            } catch (_: Exception) {}
+
+                            // 2. Resolver em segundo plano via endpoints diretos de extração (zero redirect para navegador)
+                            val endpoints = listOf(
+                                "https://cobalt-api.kwiatekm.pl/api/json",
+                                "https://api.cobalt.tools/api/json"
+                            )
+                            for (api in endpoints) {
+                                try {
+                                    val u = URL(api)
+                                    val conn = u.openConnection() as HttpURLConnection
+                                    conn.connectTimeout = 4000
+                                    conn.readTimeout = 20000
+                                    conn.requestMethod = "POST"
+                                    conn.doOutput = true
+                                    conn.setRequestProperty("Content-Type", "application/json")
+                                    conn.setRequestProperty("Accept", "application/json")
+                                    val payload = JSONObject().apply {
+                                        put("url", url)
+                                        put("downloadMode", if (format == "audio") "audio" else "auto")
+                                    }
+                                    conn.outputStream.write(payload.toString().toByteArray())
+                                    if (conn.responseCode == 200) {
+                                        val resp = JSONObject(conn.inputStream.bufferedReader().readText())
+                                        val fetchedUrl = resp.optString("url")
+                                        if (fetchedUrl.isNotEmpty()) {
+                                            directMediaUrl = fetchedUrl
+                                            resp.optString("filename").let { fn ->
+                                                if (fn.isNotEmpty()) outputFilename = fn
+                                            }
+                                            break
+                                        }
+                                    }
+                                } catch (_: Exception) {}
+                            }
+
+                            if (!directMediaUrl.isNullOrEmpty()) {
+                                withContext(Dispatchers.Main) {
+                                    try {
+                                        val dm = getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
+                                        val req = android.app.DownloadManager.Request(Uri.parse(directMediaUrl)).apply {
+                                            setTitle(outputFilename)
+                                            setDescription("Montanha Media Lab - Download Concluído")
+                                            setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                                            setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, outputFilename)
+                                            setAllowedOverMetered(true)
+                                            setAllowedOverRoaming(true)
+                                        }
+                                        dm.enqueue(req)
+                                        showToast("✓ Download iniciado em segundo plano na pasta Downloads!")
+                                    } catch (e: Exception) {
+                                        showToast("Erro ao agendar download: ${e.message}")
+                                    }
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    showToast("Não foi possível extrair a mídia diretamente. Verifique se o link é público.")
+                                }
+                            }
                         } catch (e: Exception) {
-                            showToast("Não foi possível abrir o navegador: ${e.message}")
+                            withContext(Dispatchers.Main) {
+                                showToast("Falha no download direto: ${e.message}")
+                            }
                         }
                     }
                 }
@@ -746,6 +840,53 @@ class MainActivity : AppCompatActivity() {
         targetView.alpha = 0.4f
         targetView.visibility = View.VISIBLE
         targetView.animate().alpha(1f).setDuration(120).start()
+    }
+
+    private fun speakTextWithVoice(text: String, voiceName: String? = null, rate: Float = 1.0f) {
+        val tts = nativeTtsEngine ?: return
+        try {
+            tts.setSpeechRate(if (rate > 0f) rate else 1.0f)
+            val isMale = voiceName?.contains("antonio", ignoreCase = true) == true ||
+                         voiceName?.contains("masculino", ignoreCase = true) == true
+            val isYoungFemale = voiceName?.contains("thalita", ignoreCase = true) == true
+
+            if (isMale) {
+                tts.setPitch(0.80f)
+            } else if (isYoungFemale) {
+                tts.setPitch(1.15f)
+            } else {
+                tts.setPitch(1.0f)
+            }
+
+            val voices = tts.voices
+            if (!voices.isNullOrEmpty()) {
+                val ptVoices = voices.filter { it.locale.language == "pt" }
+                val targetVoice = if (isMale) {
+                    ptVoices.firstOrNull { 
+                        it.name.contains("male", ignoreCase = true) || 
+                        it.name.contains("pt-br-x-afs#male", ignoreCase = true) ||
+                        it.name.contains("pt-br-x-jab", ignoreCase = true) ||
+                        it.name.contains("pt-br-x-jbc", ignoreCase = true) ||
+                        it.name.contains("pt-br-x-jbd", ignoreCase = true)
+                    } ?: ptVoices.firstOrNull()
+                } else {
+                    ptVoices.firstOrNull { 
+                        it.name.contains("female", ignoreCase = true) || 
+                        it.name.contains("pt-br-x-afs#female", ignoreCase = true) ||
+                        it.name.contains("pt-br-x-sfg", ignoreCase = true)
+                    } ?: ptVoices.firstOrNull()
+                }
+                if (targetVoice != null) {
+                    tts.voice = targetVoice
+                }
+            }
+
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "TTS_STUDIO")
+            val label = if (isMale) "Masculina (Antonio)" else if (isYoungFemale) "Feminina (Thalita)" else "Feminina (Francisca)"
+            showToast("✓ Reproduzindo voz [$label]")
+        } catch (e: Exception) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "TTS_STUDIO")
+        }
     }
 
     override fun onDestroy() {
