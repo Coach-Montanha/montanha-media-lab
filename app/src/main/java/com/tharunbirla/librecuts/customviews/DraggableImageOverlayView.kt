@@ -431,6 +431,7 @@ class DraggableImageOverlayView @JvmOverloads constructor(
         scaleDetector.onTouchEvent(ev)
 
         if (scaleDetector.isInProgress || ev.pointerCount > 1) {
+            parent?.requestDisallowInterceptTouchEvent(true)
             return true
         }
 
@@ -438,13 +439,14 @@ class DraggableImageOverlayView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 val touchX = ev.x
                 val touchY = ev.y
-                val imgLeft = imageView.left.toFloat()
-                val imgTop = imageView.top.toFloat()
-                val imgRight = imageView.right.toFloat()
-                val imgBottom = imageView.bottom.toFloat()
+                val imgLeft = imageView.x
+                val imgTop = imageView.y
+                val imgRight = imgLeft + imageView.width
+                val imgBottom = imgTop + imageView.height
 
                 // Check if touch is inside the image bounds
                 if (touchX in imgLeft..imgRight && touchY in imgTop..imgBottom) {
+                    parent?.requestDisallowInterceptTouchEvent(true)
                     if (isColorPickingMode) {
                         return true
                     }
@@ -466,11 +468,13 @@ class DraggableImageOverlayView @JvmOverloads constructor(
 
         if (scaleDetector.isInProgress || event.pointerCount > 1) {
             isDragging = false
+            parent?.requestDisallowInterceptTouchEvent(true)
             return true
         }
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                parent?.requestDisallowInterceptTouchEvent(true)
                 if (isColorPickingMode) {
                     pickColorAt(event.x, event.y)
                     return true
@@ -487,6 +491,7 @@ class DraggableImageOverlayView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_MOVE -> {
                 if (isDragging) {
+                    parent?.requestDisallowInterceptTouchEvent(true)
                     if (isMaskEditingMode) {
                         val dx = event.x - dragOffsetX
                         val dy = event.y - dragOffsetY
@@ -595,13 +600,24 @@ class DraggableImageOverlayView @JvmOverloads constructor(
         chromaJob?.cancel()
         chromaJob = scope.launch {
             if (originalBitmapForChroma == null) {
-                imageView.isDrawingCacheEnabled = true
-                imageView.buildDrawingCache(true)
-                val cache = imageView.getDrawingCache(true)
-                if (cache != null) {
-                    originalBitmapForChroma = cache.copy(Bitmap.Config.ARGB_8888, true)
+                val d = imageView.drawable
+                if (d != null) {
+                    val w = if (d.intrinsicWidth > 0) d.intrinsicWidth else imageView.width.coerceAtLeast(1)
+                    val h = if (d.intrinsicHeight > 0) d.intrinsicHeight else imageView.height.coerceAtLeast(1)
+                    val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                    val canvas = Canvas(bmp)
+                    d.setBounds(0, 0, w, h)
+                    d.draw(canvas)
+                    originalBitmapForChroma = bmp
+                } else if (imageUri != null) {
+                    try {
+                        context.contentResolver.openInputStream(imageUri!!)?.use { stream ->
+                            originalBitmapForChroma = BitmapFactory.decodeStream(stream)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("DraggableImage", "Error loading bitmap for chroma: ${e.message}")
+                    }
                 }
-                imageView.isDrawingCacheEnabled = false
             }
             val base = originalBitmapForChroma ?: return@launch
             

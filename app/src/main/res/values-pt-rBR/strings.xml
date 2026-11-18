@@ -61,7 +61,7 @@
     <string name="str_2x">2x</string>
     <string name="str_0_1">0°</string>
     <string name="str_100">100%</string>
-    <string name="str_audio_segment">Segmento de Áudio</string>
+    <string name="str_audio_segment">Ajustar Trecho do Áudio (Corte/Duração)</string>
     <string name="str_0_0s_0_0s">0.0s - 0.0s</string>
     <string name="str_beats">Beats</string>
     <string name="str_ducking">Esquivar-se</string>

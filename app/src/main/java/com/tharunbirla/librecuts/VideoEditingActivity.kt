@@ -647,13 +647,21 @@ class VideoEditingActivity : AppCompatActivity() {
             isMagnetEnabled = !isMagnetEnabled
             if (isMagnetEnabled) {
                 btnMagnet.setImageResource(R.drawable.ic_magnet_24)
-                Toast.makeText(this, R.string.toast_snapping_enabled, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "🧲 Alinhamento Magnético ATIVADO: clipes, áudios e textos se encaixam automaticamente nos cortes", Toast.LENGTH_SHORT).show()
             } else {
                 btnMagnet.setImageResource(R.drawable.ic_magnet_off_24)
-                Toast.makeText(this, R.string.toast_snapping_disabled, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Alinhamento Magnético DESATIVADO: movimento livre", Toast.LENGTH_SHORT).show()
             }
             draggableTextOverlay?.isSnappingEnabled = isMagnetEnabled
             draggableImageOverlay?.isSnappingEnabled = isMagnetEnabled
+        }
+        btnMagnet.setOnLongClickListener {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("🧲 Alinhamento Magnético (Snapping)")
+                .setMessage("O Imã alinha automaticamente o corte de vídeos, fotos, legendas e faixas de áudio com precisão milimétrica, evitando espaços vazios ou desencaixes na linha do tempo.")
+                .setPositiveButton("Entendido", null)
+                .show()
+            true
         }
 
         btnMoveLayerUp = findViewById(R.id.btnMoveLayerUp)
@@ -2904,28 +2912,32 @@ class VideoEditingActivity : AppCompatActivity() {
 
         btnToggle.setBounceClickListener {
             if (!isRecordingVoiceOver) {
-                // Start Recording
+                // Start Recording with High-Fidelity 44.1kHz 192kbps AAC Studio Quality
                 voiceOverFile = File(cacheDir, "voice_over_${System.currentTimeMillis()}.m4a")
                 try {
                     mediaRecorder = android.media.MediaRecorder().apply {
-                        setAudioSource(android.media.MediaRecorder.AudioSource.MIC)
+                        setAudioSource(android.media.MediaRecorder.AudioSource.VOICE_RECOGNITION)
                         setOutputFormat(android.media.MediaRecorder.OutputFormat.MPEG_4)
                         setAudioEncoder(android.media.MediaRecorder.AudioEncoder.AAC)
+                        setAudioEncodingBitRate(192000)
+                        setAudioSamplingRate(44100)
+                        setAudioChannels(2)
                         setOutputFile(voiceOverFile?.absolutePath)
                         prepare()
                         start()
                     }
                     
                     isRecordingVoiceOver = true
-                    tvStatus.text = "Recording... Tap to stop"
+                    tvStatus.text = "Gravando voz limpa... Toque para finalizar"
                     btnToggle.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FF4081"))
                     
                     rippleAnimator.start()
                     rippleAnimator2.start()
                     
-                    // Play video while recording
+                    // Silenciar alto-falantes durante a gravação para eliminar microfonia, robótica e eco
                     voiceOverStartTimeMs = getGlobalPosition()
                     if (::player.isInitialized) {
+                        player.volume = 0f
                         player.play()
                         btnPlayPause.setImageResource(R.drawable.ic_pause_24)
                     }
@@ -2953,8 +2965,9 @@ class VideoEditingActivity : AppCompatActivity() {
                 ripple2.scaleX = 1f
                 ripple2.scaleY = 1f
                 
-                // Pause video
+                // Restaurar volume do vídeo original e pausar
                 if (::player.isInitialized) {
+                    player.volume = mainVideoVolume
                     player.pause()
                     btnPlayPause.setImageResource(R.drawable.ic_play_24)
                 }
@@ -5105,10 +5118,8 @@ class VideoEditingActivity : AppCompatActivity() {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
                     if (isPlaying) {
                         syncBackgroundAudio()
-                        bgAudioPlayer?.play()
                         startProgressUpdater()
                     } else {
-                        bgAudioPlayer?.pause()
                         stopProgressUpdater()
                     }
                 }
@@ -5842,16 +5853,10 @@ class VideoEditingActivity : AppCompatActivity() {
         val mediaSourceFactory = com.google.android.exoplayer2.source.DefaultMediaSourceFactory(this)
         
         val exoAudioOps = viewModel.project.value?.operations?.filterIsInstance<com.tharunbirla.librecuts.models.EditOperation.AddBackgroundAudio>() ?: emptyList()
-        val firstBgOp = exoAudioOps.firstOrNull()
-        if (firstBgOp != null && bgAudioPlayer != null) {
-            val mediaItem = com.google.android.exoplayer2.MediaItem.fromUri(firstBgOp.audioUri)
-            bgAudioPlayer?.setMediaItem(mediaItem)
-            bgAudioPlayer?.volume = firstBgOp.volume
-            bgAudioPlayer?.prepare()
-        } else {
-            bgAudioPlayer?.stop()
-            bgAudioPlayer?.clearMediaItems()
-        }
+        // Stop secondary player to prevent dual playback / echo / reverb,
+        // since main player handles background audio via MergingMediaSource.
+        bgAudioPlayer?.stop()
+        bgAudioPlayer?.clearMediaItems()
         
         val boundaries = mutableSetOf<Long>()
         boundaries.add(0L)
@@ -7587,24 +7592,9 @@ class VideoEditingActivity : AppCompatActivity() {
 
 
     private fun syncBackgroundAudio(globalPosMs: Long = getGlobalPosition()) {
-        val bgOps = viewModel.project.value?.operations?.filterIsInstance<EditOperation.AddBackgroundAudio>() ?: return
-        val firstOp = bgOps.firstOrNull()
-        if (firstOp != null && bgAudioPlayer != null) {
-            val startMs = firstOp.startTimeMs ?: 0L
-            val endMs = firstOp.endTimeMs ?: Long.MAX_VALUE
-            if (globalPosMs in startMs..endMs) {
-                val audioOffset = (globalPosMs - startMs) + firstOp.internalStartMs
-                bgAudioPlayer?.seekTo(audioOffset)
-                bgAudioPlayer?.volume = firstOp.volume
-                if (player.isPlaying && bgAudioPlayer?.isPlaying == false) {
-                    bgAudioPlayer?.play()
-                }
-            } else {
-                bgAudioPlayer?.pause()
-            }
-        } else {
-            bgAudioPlayer?.pause()
-        }
+        // Background audio tracks are merged directly into the main ExoPlayer pipeline.
+        // Keep secondary player stopped to prevent reverb / echo.
+        bgAudioPlayer?.stop()
     }
 
     private fun showMainVideoVolumeDialog() {
@@ -9350,11 +9340,11 @@ class VideoEditingActivity : AppCompatActivity() {
                 ttsInstance?.language = Locale("pt", "BR")
                 ttsInstance?.setSpeechRate(rate)
                 if (isMale) {
-                    ttsInstance?.setPitch(0.80f)
+                    ttsInstance?.setPitch(0.72f)
                 } else if (isYoung) {
-                    ttsInstance?.setPitch(1.15f)
+                    ttsInstance?.setPitch(1.22f)
                 } else {
-                    ttsInstance?.setPitch(1.0f)
+                    ttsInstance?.setPitch(1.05f)
                 }
 
                 try {
@@ -9363,17 +9353,22 @@ class VideoEditingActivity : AppCompatActivity() {
                         val ptVoices = voices.filter { it.locale.language == "pt" }
                         val targetVoice = if (isMale) {
                             ptVoices.firstOrNull {
-                                it.name.contains("male", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-afs#male", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-jab", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-jbc", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-jbd", ignoreCase = true)
+                                it.name.contains("jab", ignoreCase = true) ||
+                                it.name.contains("jbc", ignoreCase = true) ||
+                                it.name.contains("jbd", ignoreCase = true) ||
+                                it.name.contains("antonio", ignoreCase = true) ||
+                                it.name.contains("male", ignoreCase = true)
+                            } ?: ptVoices.firstOrNull()
+                        } else if (isYoung) {
+                            ptVoices.firstOrNull {
+                                it.name.contains("thalita", ignoreCase = true) ||
+                                it.name.contains("sfg", ignoreCase = true)
                             } ?: ptVoices.firstOrNull()
                         } else {
                             ptVoices.firstOrNull {
-                                it.name.contains("female", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-afs#female", ignoreCase = true) ||
-                                it.name.contains("pt-br-x-sfg", ignoreCase = true)
+                                it.name.contains("francisca", ignoreCase = true) ||
+                                it.name.contains("afs", ignoreCase = true) ||
+                                it.name.contains("female", ignoreCase = true)
                             } ?: ptVoices.firstOrNull()
                         }
                         if (targetVoice != null) {
@@ -9410,10 +9405,6 @@ class VideoEditingActivity : AppCompatActivity() {
             }
         }
     }
-                }
-            }
-        }
-    }
 
     private fun showAudioSourceOptionsDialog() {
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
@@ -9431,6 +9422,27 @@ class VideoEditingActivity : AppCompatActivity() {
             setPadding(0, 0, 0, 24)
         }
         container.addView(title)
+
+        // Option 0: Mudar volume / Silenciar Áudio do Vídeo Original (Evita eco/reverb com a música)
+        val isMuted = mainVideoVolume <= 0.05f
+        val btnToggleMuteVideo = createBentoOptionCard(
+            title = if (isMuted) "Ativar Som do Vídeo Original" else "Silenciar Áudio Original do Vídeo",
+            subtitle = if (isMuted) "Áudio original desativado. Somente a música selecionada tocará" else "Recomendado ao adicionar música para evitar eco, reverberação e choque de sons",
+            iconRes = if (isMuted) R.drawable.ic_mute_24 else R.drawable.ic_volume_up_24,
+            iconTint = if (isMuted) android.graphics.Color.parseColor("#FF453A") else android.graphics.Color.parseColor("#30D158")
+        ) {
+            dialog.dismiss()
+            if (isMuted) {
+                mainVideoVolume = 1.0f
+                player.volume = 1.0f
+                Toast.makeText(this, "Áudio original do vídeo ATIVADO (100%)", Toast.LENGTH_SHORT).show()
+            } else {
+                mainVideoVolume = 0.0f
+                player.volume = 0.0f
+                Toast.makeText(this, "Áudio original SILENCIADO (elimina eco com a música)", Toast.LENGTH_SHORT).show()
+            }
+        }
+        container.addView(btnToggleMuteVideo)
 
         // Option 1: Músicas do Telefone
         val btnPhone = createBentoOptionCard(
@@ -9549,10 +9561,57 @@ class VideoEditingActivity : AppCompatActivity() {
                 dos.writeBytes("data")
                 dos.writeInt(Integer.reverseBytes(totalSamples * 2))
 
+                // Polyphonic Harmonic Chord Progression per Track Style
+                val chords: Array<DoubleArray> = when {
+                    trackName.contains("Lofi", ignoreCase = true) -> arrayOf(
+                        doubleArrayOf(130.81, 196.00, 246.94, 329.63), // Cmaj7
+                        doubleArrayOf(110.00, 196.00, 261.63, 329.63), // Am7
+                        doubleArrayOf(87.31, 220.00, 261.63, 329.63),  // Fmaj7
+                        doubleArrayOf(98.00, 174.61, 246.94, 293.66)   // G7
+                    )
+                    trackName.contains("Cinematic", ignoreCase = true) -> arrayOf(
+                        doubleArrayOf(73.42, 146.83, 220.00, 293.66, 349.23), // Dm
+                        doubleArrayOf(58.27, 116.54, 174.61, 233.08, 293.66), // Bb
+                        doubleArrayOf(87.31, 174.61, 220.00, 261.63, 349.23), // F
+                        doubleArrayOf(65.41, 130.81, 196.00, 261.63, 329.63)  // C
+                    )
+                    trackName.contains("Workout", ignoreCase = true) -> arrayOf(
+                        doubleArrayOf(82.41, 164.81, 246.94, 329.63), // Em
+                        doubleArrayOf(73.42, 146.83, 220.00, 293.66), // D
+                        doubleArrayOf(87.31, 174.61, 261.63, 349.23), // F
+                        doubleArrayOf(82.41, 164.81, 246.94, 392.00)  // Em7
+                    )
+                    trackName.contains("Acoustic", ignoreCase = true) -> arrayOf(
+                        doubleArrayOf(82.41, 164.81, 207.65, 329.63), // E
+                        doubleArrayOf(110.00, 164.81, 220.00, 277.18),// A
+                        doubleArrayOf(138.59, 207.65, 277.18, 329.63),// C#m
+                        doubleArrayOf(123.47, 185.00, 246.94, 370.00) // B
+                    )
+                    else -> arrayOf(
+                        doubleArrayOf(130.81, 196.00, 261.63, 329.63), // C
+                        doubleArrayOf(98.00, 196.00, 246.94, 293.66),  // G
+                        doubleArrayOf(110.00, 164.81, 220.00, 261.63), // Am
+                        doubleArrayOf(87.31, 174.61, 220.00, 261.63)   // F
+                    )
+                }
+
+                val samplesPerChord = (sampleRate * 2.0).toInt()
                 for (i in 0 until totalSamples) {
-                    val beat = (i % (sampleRate / 2)) < (sampleRate / 16)
-                    val sample = if (beat) (Math.sin(2.0 * Math.PI * 120.0 * i / sampleRate) * 0.3 * 32767).toInt().toShort() else 0.toShort()
-                    dos.writeShort(java.lang.Short.reverseBytes(sample).toInt())
+                    val chordIdx = (i / samplesPerChord) % chords.size
+                    val currentNotes = chords[chordIdx]
+                    val tChord = (i % samplesPerChord).toDouble() / sampleRate.toDouble()
+                    val env = Math.exp(-tChord * 1.4)
+
+                    var sum = 0.0
+                    for (freq in currentNotes) {
+                        val phase = 2.0 * Math.PI * freq * (i.toDouble() / sampleRate.toDouble())
+                        sum += Math.sin(phase) + 0.35 * Math.sin(2.0 * phase)
+                    }
+
+                    // Gentle subtle warm pulse for tempo
+                    val pulse = if ((i % (sampleRate / 2)) < (sampleRate / 32)) 0.15 else 0.0
+                    val sampleVal = ((sum * env * 2200.0) + (pulse * 3000.0)).toInt().coerceIn(-32000, 32000).toShort()
+                    dos.writeShort(java.lang.Short.reverseBytes(sampleVal).toInt())
                 }
                 dos.close()
                 fos.close()

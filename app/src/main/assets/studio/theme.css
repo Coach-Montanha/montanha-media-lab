@@ -876,3 +876,141 @@ input:checked + .slider-toggle:before {
     pointer-events: none;
     z-index: 100;
 }
+
+
+/* ==========================================================================
+   OFFLINE & ZERO-CDN ROBUST APPLE BENTO CORE STYLES (theme.css)
+   Guarantees 100% crystal-clear contrast and layout on Mobile WebView & Desktop
+   ========================================================================== */
+
+html, body {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+#mainContainer {
+    display: flex !important;
+    flex: 1 1 0% !important;
+    width: 100% !important;
+    height: calc(100vh - 48px) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    background-color: #000000 !important;
+}
+
+.app-tab-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    box-sizing: border-box !important;
+}
+
+.app-tab-panel.hidden {
+    display: none !important;
+}
+
+/* Bulletproof Contrast & Typography */
+.app-tab-panel h1,
+.app-tab-panel h2,
+.app-tab-panel h3,
+.app-tab-panel .text-primary,
+.app-tab-panel [class*="text-[var(--text-primary)]"] {
+    color: #FFFFFF !important;
+}
+
+.app-tab-panel p,
+.app-tab-panel .text-secondary,
+.app-tab-panel [class*="text-[var(--text-secondary)]"] {
+    color: #8E8E93 !important;
+}
+
+.app-tab-panel .label-caps,
+.app-tab-panel label,
+.app-tab-panel .text-muted,
+.app-tab-panel [class*="text-[var(--text-muted)]"] {
+    color: #A1A1A6 !important;
+}
+
+/* Apple Bento Cards */
+.app-tab-panel .card-bento,
+.app-tab-panel [class*="bg-[var(--bg-panel)]"],
+.app-tab-panel [class*="bg-[#181A20]"],
+.app-tab-panel [class*="bg-[#15171D]"] {
+    background-color: #1C1C1E !important;
+    border: 1px solid #2C2C2E !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.app-tab-panel [class*="bg-[var(--bg-elevated)]"] {
+    background-color: #2C2C2E !important;
+    border: 1px solid #3A3A3C !important;
+}
+
+.app-tab-panel [class*="bg-[var(--bg-base)]"] {
+    background-color: #121316 !important;
+}
+
+/* Inputs, Textareas, Selects */
+.app-tab-panel input[type="text"],
+.app-tab-panel input[type="number"],
+.app-tab-panel input[type="url"],
+.app-tab-panel textarea,
+.app-tab-panel select {
+    background-color: #121316 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #3A3A3C !important;
+    border-radius: 10px !important;
+    box-sizing: border-box !important;
+}
+
+.app-tab-panel select option {
+    background-color: #1C1C1E !important;
+    color: #FFFFFF !important;
+}
+
+.app-tab-panel input:focus,
+.app-tab-panel textarea:focus,
+.app-tab-panel select:focus {
+    border-color: #0A84FF !important;
+    outline: none !important;
+}
+
+/* Back Button Pill */
+.btn-back-home {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 20px !important;
+    padding: 6px 14px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.btn-back-home:hover {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.btn-back-home:active {
+    transform: scale(0.96) !important;
+}

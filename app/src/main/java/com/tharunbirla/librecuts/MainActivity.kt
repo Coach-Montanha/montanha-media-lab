@@ -851,11 +851,11 @@ class MainActivity : AppCompatActivity() {
             val isYoungFemale = voiceName?.contains("thalita", ignoreCase = true) == true
 
             if (isMale) {
-                tts.setPitch(0.80f)
+                tts.setPitch(0.72f)
             } else if (isYoungFemale) {
-                tts.setPitch(1.15f)
+                tts.setPitch(1.22f)
             } else {
-                tts.setPitch(1.0f)
+                tts.setPitch(1.05f)
             }
 
             val voices = tts.voices
@@ -863,17 +863,22 @@ class MainActivity : AppCompatActivity() {
                 val ptVoices = voices.filter { it.locale.language == "pt" }
                 val targetVoice = if (isMale) {
                     ptVoices.firstOrNull { 
-                        it.name.contains("male", ignoreCase = true) || 
-                        it.name.contains("pt-br-x-afs#male", ignoreCase = true) ||
-                        it.name.contains("pt-br-x-jab", ignoreCase = true) ||
-                        it.name.contains("pt-br-x-jbc", ignoreCase = true) ||
-                        it.name.contains("pt-br-x-jbd", ignoreCase = true)
+                        it.name.contains("jab", ignoreCase = true) || 
+                        it.name.contains("jbc", ignoreCase = true) || 
+                        it.name.contains("jbd", ignoreCase = true) || 
+                        it.name.contains("antonio", ignoreCase = true) || 
+                        it.name.contains("male", ignoreCase = true)
+                    } ?: ptVoices.firstOrNull()
+                } else if (isYoungFemale) {
+                    ptVoices.firstOrNull { 
+                        it.name.contains("thalita", ignoreCase = true) || 
+                        it.name.contains("sfg", ignoreCase = true)
                     } ?: ptVoices.firstOrNull()
                 } else {
                     ptVoices.firstOrNull { 
-                        it.name.contains("female", ignoreCase = true) || 
-                        it.name.contains("pt-br-x-afs#female", ignoreCase = true) ||
-                        it.name.contains("pt-br-x-sfg", ignoreCase = true)
+                        it.name.contains("francisca", ignoreCase = true) || 
+                        it.name.contains("afs", ignoreCase = true) || 
+                        it.name.contains("female", ignoreCase = true)
                     } ?: ptVoices.firstOrNull()
                 }
                 if (targetVoice != null) {

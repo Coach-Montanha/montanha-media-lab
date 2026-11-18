@@ -6335,39 +6335,11 @@ function setupPanelResizers() {
         }
 
         function setUIMode(mode) {
-            currentMode = mode;
-            const isMobile = mode === 'mobile';
+            currentMode = 'desktop';
             const desk = document.getElementById('desktopLayout');
-            const mob = document.getElementById('mobileLayout');
-
-            document.body.classList.toggle('mode-mobile', isMobile);
-            document.body.classList.toggle('mode-desktop', !isMobile);
-
-            if (isMobile) {
-                if (desk) desk.style.display = 'none';
-                if (mob) {
-                    mob.style.display = 'flex';
-                    mob.classList.remove('hidden');
-                }
-            } else {
-                if (mob) mob.style.display = 'none';
-                if (desk) {
-                    desk.style.display = 'flex';
-                    desk.classList.remove('hidden');
-                }
-            }
-
-            // Sync video playback between views
-            const deskVid = document.getElementById('studioVideo');
-            const mobVid = document.getElementById('mobileVideo');
-            if (deskVid && mobVid && deskVid.src) {
-                if (isMobile) {
-                    mobVid.currentTime = deskVid.currentTime;
-                    if (!deskVid.paused) mobVid.play().catch(()=>{});
-                } else {
-                    deskVid.currentTime = mobVid.currentTime;
-                    if (!mobVid.paused) deskVid.play().catch(()=>{});
-                }
+            if (desk) {
+                desk.style.display = 'flex';
+                desk.classList.remove('hidden');
             }
         }
 
@@ -7747,12 +7719,16 @@ function setupPanelResizers() {
                     text = await navigator.clipboard.readText();
                 } catch (e) {}
             }
+            const input = document.getElementById('inputSocialUrl');
+            if (!text || text.trim().length === 0) {
+                const manual = prompt('Cole o link do Reels, Shorts ou TikTok:');
+                if (manual) text = manual;
+            }
             if (text && text.trim().length > 0) {
-                const input = document.getElementById('inputSocialUrl');
                 if (input) input.value = text.trim();
                 showToast('✓ Link colado com sucesso!');
             } else {
-                showToast('Área de transferência vazia ou sem permissão', true);
+                showToast('Nenhum link fornecido', true);
             }
         }
 
@@ -7793,7 +7769,7 @@ function setupPanelResizers() {
                 } catch(e) {}
             }
 
-            // Direct local download via server.py with yt-dlp
+            // Direct local download via server.py with yt-dlp, with client-side fallback
             try {
                 const resp = await fetch('/api/import-cloud-url', {
                     method: 'POST',
@@ -7823,9 +7799,67 @@ function setupPanelResizers() {
                     showToast('✓ Vídeo baixado com sucesso!');
                     if (typeof refreshMediaLibrary === 'function') refreshMediaLibrary();
                     loadDownloadedVideoIntoEditor(resData.path, resData.url, resData.filename);
-                } else {
-                    throw new Error(resData.message || 'Erro no download');
+                    return;
                 }
+            } catch(_) {}
+
+            // Client-side extraction fallback via direct JSON API (Zero website redirect)
+            try {
+                const apis = [
+                    'https://cobalt-api.kwiatekm.pl/api/json',
+                    'https://api.cobalt.tools/api/json'
+                ];
+                let extractedMediaUrl = null;
+                let extractedFilename = 'midia_social_' + Date.now() + (formato === 'audio' ? '.mp3' : '.mp4');
+
+                for (const api of apis) {
+                    try {
+                        const cResp = await fetch(api, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: JSON.stringify({
+                                url: url,
+                                downloadMode: formato === 'audio' ? 'audio' : 'auto'
+                            })
+                        });
+                        if (cResp.ok) {
+                            const cData = await cResp.json();
+                            if (cData.url) {
+                                extractedMediaUrl = cData.url;
+                                if (cData.filename) extractedFilename = cData.filename;
+                                break;
+                            }
+                        }
+                    } catch(__) {}
+                }
+
+                if (extractedMediaUrl) {
+                    const cardStatus = document.getElementById('cardSocialStatus');
+                    const boxMsg = document.getElementById('boxSocialMsg');
+                    const titleStatus = document.getElementById('labelSocialStatusTitle');
+                    if (cardStatus) cardStatus.classList.remove('hidden');
+                    if (titleStatus) titleStatus.textContent = 'Mídia Pronta no Estúdio!';
+                    if (boxMsg) {
+                        boxMsg.innerHTML = `<div class="space-y-2 pt-1">
+                            <div class="font-bold text-white text-xs truncate">${extractedFilename}</div>
+                            <div class="text-[11px] text-emerald-400">Download extraído com sucesso direto no app.</div>
+                            <div class="pt-2 flex flex-wrap gap-2">
+                                <a href="${extractedMediaUrl}" download="${extractedFilename}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-black font-bold text-xs flex items-center space-x-1.5 transition active:scale-95 shadow">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Baixar Arquivo</span>
+                                </a>
+                                <button onclick="loadDownloadedVideoIntoEditor('${extractedMediaUrl}', '${extractedMediaUrl}', '${extractedFilename}')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center space-x-1.5 transition active:scale-95 shadow">
+                                    <i class="fa-solid fa-play"></i>
+                                    <span>Carregar no Editor</span>
+                                </button>
+                            </div>
+                        </div>`;
+                    }
+                    showToast('✓ Mídia extraída com sucesso!');
+                    loadDownloadedVideoIntoEditor(extractedMediaUrl, extractedMediaUrl, extractedFilename);
+                    return;
+                }
+                throw new Error('Serviço de download temporariamente indisponível para este link');
             } catch(err) {
                 showToast('Falha no download: ' + (err.message || err), true);
                 const cardStatus = document.getElementById('cardSocialStatus');
@@ -7833,7 +7867,7 @@ function setupPanelResizers() {
                 const titleStatus = document.getElementById('labelSocialStatusTitle');
                 if (cardStatus) cardStatus.classList.remove('hidden');
                 if (titleStatus) titleStatus.textContent = 'Erro no Download';
-                if (boxMsg) boxMsg.textContent = 'Não foi possível baixar o vídeo localmente. Verifique se o link é público.';
+                if (boxMsg) boxMsg.textContent = 'Não foi possível baixar o vídeo diretamente. Verifique se o perfil é público.';
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -8926,23 +8960,31 @@ Story 4: Quer receber o material completo? Me manda uma mensagem no direct.`;
                     return;
                 }
             } catch (err) {
-                // Fallback SpeechSynthesis web com distinção de timbre masculino vs feminino
+                // Fallback SpeechSynthesis web com distinção real de timbre masculino vs feminino
                 if ('speechSynthesis' in window) {
                     const u = new SpeechSynthesisUtterance(text);
                     u.lang = 'pt-BR';
                     u.rate = rateMultiplier;
                     const isMale = voice.toLowerCase().includes('antonio') || voice.toLowerCase().includes('masculino');
                     const isYoung = voice.toLowerCase().includes('thalita');
-                    u.pitch = isMale ? 0.8 : (isYoung ? 1.15 : 1.0);
+                    u.pitch = isMale ? 0.72 : (isYoung ? 1.22 : 1.05);
                     
                     const voices = window.speechSynthesis.getVoices();
                     if (voices && voices.length > 0) {
                         const ptVoices = voices.filter(v => v.lang.startsWith('pt'));
-                        const chosen = isMale ? ptVoices.find(v => v.name.toLowerCase().includes('male')) : ptVoices.find(v => v.name.toLowerCase().includes('female'));
+                        const chosen = isMale 
+                            ? ptVoices.find(v => {
+                                const n = v.name.toLowerCase();
+                                return n.includes('antonio') || n.includes('jab') || n.includes('jbc') || n.includes('jbd') || n.includes('daniel') || n.includes('male');
+                            }) || ptVoices[0]
+                            : ptVoices.find(v => {
+                                const n = v.name.toLowerCase();
+                                return n.includes('francisca') || n.includes('maria') || n.includes('afs') || n.includes('sfg') || n.includes('female');
+                            }) || ptVoices[0];
                         if (chosen) u.voice = chosen;
                     }
                     window.speechSynthesis.speak(u);
-                    showToast(`✓ Locução [${isMale ? 'Masculina (Antonio)' : 'Feminina'}] reproduzida!`);
+                    showToast(`✓ Locução [${isMale ? 'Masculina (Antonio)' : (isYoung ? 'Feminina (Thalita)' : 'Feminina (Francisca)')}] reproduzida!`);
                 } else if (window.AndroidBridge && typeof window.AndroidBridge.speakText === 'function') {
                     window.AndroidBridge.speakText(text);
                     showToast("✓ Locução reproduzida via motor nativo!");
