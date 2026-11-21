@@ -243,7 +243,7 @@ class UnifiedMediaStudioHandler(BaseHTTPRequestHandler):
         # 3. Stream Video/Audio with HTTP 206 Byte-Range (Zero-Buffer Streaming)
         elif parsed.path in ["/stream", "/download"]:
             query = urllib.parse.parse_qs(parsed.query)
-            file_param = query.get("file", [""])[0]
+            file_param = query.get("file", [""])[0] or query.get("path", [""])[0]
             if not file_param:
                 self.send_error(400, "Missing file parameter")
                 return
