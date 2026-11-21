@@ -1,5 +1,5 @@
 """
-Montanha Media Lab - Milestone M1 Adversarial Verification Suite
+Montanha Media - Milestone M1 Adversarial Verification Suite
 Empirically stress-tests:
 1. Port resolution precedence: sys.argv[1] vs PORT env vs platform (Termux vs win32 vs linux fallback).
 2. Live port binding & concurrency under ThreadingHTTPServer.
@@ -285,7 +285,7 @@ class TestM1AdversarialChallenge(unittest.TestCase):
         """
         import edge_tts
         temp_mp3 = Path(tempfile.gettempdir()) / f"adv_tts_probe_{int(time.time())}.mp3"
-        test_text = "Montanha Media Lab teste de integridade profunda com ffprobe e medição de duração."
+        test_text = "Montanha Media teste de integridade profunda com ffprobe e medição de duração."
 
         async def _synth():
             comm = edge_tts.Communicate(test_text, "pt-BR-FranciscaNeural", rate="+0%", pitch="+0Hz")

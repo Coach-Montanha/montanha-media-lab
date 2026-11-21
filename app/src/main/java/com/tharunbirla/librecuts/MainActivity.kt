@@ -684,7 +684,7 @@ class MainActivity : AppCompatActivity() {
                                         val dm = getSystemService(Context.DOWNLOAD_SERVICE) as android.app.DownloadManager
                                         val req = android.app.DownloadManager.Request(Uri.parse(directMediaUrl)).apply {
                                             setTitle(outputFilename)
-                                            setDescription("Montanha Media Lab - Download Concluído")
+                                            setDescription("Montanha Media - Download Concluído")
                                             setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                                             setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, outputFilename)
                                             setAllowedOverMetered(true)
@@ -1060,7 +1060,7 @@ class MainActivity : AppCompatActivity() {
         container.addView(title)
 
         val desc = TextView(this).apply {
-            text = "As informações salvas aqui ficam gravadas no armazenamento permanente do telefone (Documentos/MontanhaMediaLab/.vault/) com criptografia AES-256 e retornam automaticamente mesmo se você desinstalar o aplicativo."
+            text = "As informações salvas aqui ficam gravadas no armazenamento permanente do telefone (Documentos/MontanhaMedia/.vault/) com criptografia AES-256 e retornam automaticamente mesmo se você desinstalar o aplicativo."
             textSize = 12f
             setTextColor(android.graphics.Color.parseColor("#8E8E93"))
             setPadding(0, 0, 0, 20)

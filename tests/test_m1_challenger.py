@@ -1,5 +1,5 @@
 """
-Montanha Media Lab - Milestone M1 Empirical Adversarial Challenge Suite
+Montanha Media - Milestone M1 Empirical Adversarial Challenge Suite
 Role: Empirical Challenger (Adversarial stress-testing M1 TTS & Silence Detection)
 
 Stress-tests:
@@ -186,7 +186,7 @@ class TestM1EmpiricalChallenger(unittest.TestCase):
         - XML/HTML sensitive characters: & < >
         """
         complex_text = (
-            "Montanha Media Lab: Áudio & Vídeo com <Clipchamp> e vozes neurais! 🚀🎙️\n"
+            "Montanha Media: Áudio & Vídeo com <Clipchamp> e vozes neurais! 🚀🎙️\n"
             "Parágrafo com acentuação: Ação, você, café, amanhã, ímpar, saúde.\r\n"
             "\tCitação: \"A simplicidade é o último grau de sofisticação\" — Leonardo da Vinci."
         )

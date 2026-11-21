@@ -2425,7 +2425,7 @@ class VideoEditingActivity : AppCompatActivity() {
     }
 
     private fun saveBitmapToGallery(bitmap: android.graphics.Bitmap) {
-        val filename = "MontanhaMediaLabs_Frame_${System.currentTimeMillis()}.png"
+        val filename = "MontanhaMedia_Frame_${System.currentTimeMillis()}.png"
         var fos: java.io.OutputStream? = null
         var imageUri: Uri? = null
         try {
@@ -2457,7 +2457,7 @@ class VideoEditingActivity : AppCompatActivity() {
                     val contentValues = android.content.ContentValues().apply {
                         put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, filename)
                         put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
-                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/MontanhaMediaLabs")
+                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_PICTURES + "/MontanhaMedia")
                     }
                     imageUri = resolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
                     fos = imageUri?.let { resolver.openOutputStream(it) }
@@ -4876,7 +4876,7 @@ class VideoEditingActivity : AppCompatActivity() {
                     
                     val mimeType = if (isAudioOnly) "audio/mpeg" else "video/mp4"
                     val ext = if (isAudioOnly) ".mp3" else ".mp4"
-                    val prefix = if (isAudioOnly) "MontanhaMediaLabs_Audio_" else "MontanhaMediaLabs_"
+                    val prefix = if (isAudioOnly) "MontanhaMedia_Audio_" else "MontanhaMedia_"
 
                     if (customUriString != null) {
                         try {
@@ -4942,7 +4942,7 @@ class VideoEditingActivity : AppCompatActivity() {
                         val displayPath = if (customFileUri != null) {
                             "Custom Folder"
                         } else {
-                            outputFile?.absolutePath ?: "Downloads/MontanhaMediaLabs"
+                            outputFile?.absolutePath ?: "Downloads/MontanhaMedia"
                         }
                         Toast.makeText(
                             this@VideoEditingActivity,
@@ -5006,7 +5006,7 @@ class VideoEditingActivity : AppCompatActivity() {
             pathView.text = customUri.path ?: customUriString
         } else {
             titleView.text = "LibreCuts (Default)"
-            pathView.text = if (isAudioOnly) "Music/MontanhaMediaLabs" else "Movies/MontanhaMediaLabs"
+            pathView.text = if (isAudioOnly) "Music/MontanhaMedia" else "Movies/MontanhaMedia"
         }
     }
 
@@ -7354,7 +7354,7 @@ class VideoEditingActivity : AppCompatActivity() {
         val isAudioOnly = videoFile.name.endsWith(".mp3")
         val mimeType = if (isAudioOnly) "audio/mpeg" else "video/mp4"
         val ext = if (isAudioOnly) ".mp3" else ".mp4"
-        val prefix = if (isAudioOnly) "MontanhaMediaLabs_Audio_" else "MontanhaMediaLabs_"
+        val prefix = if (isAudioOnly) "MontanhaMedia_Audio_" else "MontanhaMedia_"
         
         val sharedPreferences = getSharedPreferences("librecuts_prefs", Context.MODE_PRIVATE)
         val prefKey = if (isAudioOnly) "export_audio_directory_uri" else "export_directory_uri"
@@ -7383,15 +7383,15 @@ class VideoEditingActivity : AppCompatActivity() {
             }
         }
 
-        // Fallback or Default to Movies/MontanhaMediaLabs
+        // Fallback or Default to Movies/MontanhaMedia
         return try {
             val contentValues = android.content.ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, "${prefix}${System.currentTimeMillis()}$ext")
                 put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
                 if (isAudioOnly) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC + "/MontanhaMediaLabs")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MUSIC + "/MontanhaMedia")
                 } else {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/MontanhaMediaLabs")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/MontanhaMedia")
                 }
             }
             val collectionUri = if (isAudioOnly) MediaStore.Audio.Media.EXTERNAL_CONTENT_URI else MediaStore.Video.Media.EXTERNAL_CONTENT_URI

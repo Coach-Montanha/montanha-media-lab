@@ -1,7 +1,7 @@
 {
   "name": "montanha-media-lab",
   "version": "1.0.0",
-  "description": "Montanha Media Lab - Processamento Criativo Offline, Transcrição Whisper, Mídia FFmpeg & IA Local (Helio G88 / Vercel)",
+  "description": "Montanha Media - Processamento Criativo Offline, Transcrição Whisper, Mídia FFmpeg & IA Local (Helio G88 / Vercel)",
   "main": "api/index.py",
   "scripts": {
     "start": "python server.py"

@@ -25,16 +25,17 @@ import javax.crypto.spec.SecretKeySpec
  * do usuário permaneçam salvos permanentemente no armazenamento do telefone.
  * 
  * Mesmo que o aplicativo seja atualizado ou completamente desinstalado/excluído,
- * ao ser reinstalado, o Vault detecta o arquivo persistente em Documentos/MontanhaMediaLab/.vault/
+ * ao ser reinstalado, o Vault detecta o arquivo persistente em Documentos/MontanhaMedia/.vault/
  * e restaura todas as informações automaticamente sem intervenção manual.
  */
 object PersistentVaultManager {
 
     private const val TAG = "PersistentVault"
     private const val PREFS_NAME = "librecuts_prefs"
-    private const val VAULT_DIR_NAME = "MontanhaMediaLab/.vault"
+    private const val VAULT_DIR_NAME = "MontanhaMedia/.vault"
     private const val VAULT_FILE_NAME = "montanha_profile.vault"
-    private const val INTERNAL_SALT = "MontanhaMediaLab_Autonomous_Vault_Salt_2026_Key"
+    private const val INTERNAL_SALT = "MontanhaMedia_Autonomous_Vault_Salt_2026_Key"
+    private const val LEGACY_SALT = "MontanhaMediaLab_Autonomous_Vault_Salt_2026_Key"
 
     private var isInitialized = false
     private var isRestoring = false
@@ -73,6 +74,7 @@ object PersistentVaultManager {
         try {
             val docs = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             dirs.add(File(docs, VAULT_DIR_NAME))
+            dirs.add(File(docs, "MontanhaMediaLab/.vault"))
         } catch (_: Exception) {}
 
         try {
@@ -144,7 +146,7 @@ object PersistentVaultManager {
             val timestamp = System.currentTimeMillis()
             rootJson.put("timestamp", timestamp)
             rootJson.put("version", 2)
-            rootJson.put("app", "MontanhaMediaLab")
+            rootJson.put("app", "MontanhaMedia")
             rootJson.put("payload", dataJson)
 
             val plaintext = rootJson.toString()
@@ -264,8 +266,34 @@ object PersistentVaultManager {
             val decryptedBytes = cipher.doFinal(ciphertext)
             String(decryptedBytes, Charsets.UTF_8)
         } catch (e: Exception) {
-            Log.e(TAG, "Erro na descriptografia do vault", e)
-            null
+            try {
+                // Fallback com chave legada para manter 100% dos dados anteriores
+                val legacyKey = getLegacyDeviceSecretKey(context)
+                val iv = ByteArray(16)
+                val ciphertext = ByteArray(data.size - 16)
+                System.arraycopy(data, 0, iv, 0, 16)
+                System.arraycopy(data, 16, ciphertext, 0, ciphertext.size)
+
+                val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+                cipher.init(Cipher.DECRYPT_MODE, legacyKey, IvParameterSpec(iv))
+                val decryptedBytes = cipher.doFinal(ciphertext)
+                String(decryptedBytes, Charsets.UTF_8)
+            } catch (e2: Exception) {
+                Log.e(TAG, "Erro na descriptografia do vault", e2)
+                null
+            }
         }
+    }
+
+    private fun getLegacyDeviceSecretKey(context: Context): SecretKeySpec {
+        val androidId = try {
+            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "DefaultAndroidId"
+        } catch (_: Exception) {
+            "FallbackId"
+        }
+        val seed = "$androidId:$LEGACY_SALT:${context.packageName}"
+        val sha256 = MessageDigest.getInstance("SHA-256")
+        val keyBytes = sha256.digest(seed.toByteArray(Charsets.UTF_8))
+        return SecretKeySpec(keyBytes, "AES")
     }
 }

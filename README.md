@@ -1,7 +1,7 @@
-# Montanha Media Lab
+# Montanha Media
 
 <p align="center">
-  <img src="public/favicon.svg" width="120" height="120" alt="Montanha Media Lab Logo">
+  <img src="public/favicon.svg" width="120" height="120" alt="Montanha Media Logo">
 </p>
 
 > **Laboratório de Processamento Criativo Local, Extração Visual, Transcrição Whisper & Automação de Conteúdo.**
@@ -11,7 +11,7 @@
 
 ## ⚡ Visão Geral do Projeto
 
-O **Montanha Media Lab** é um ecossistema híbrido que opera tanto localmente no smartphone (otimizado para processadores ARM64 como o MediaTek Helio G88 no Xiaomi Redmi 12 com HyperOS) quanto em ambiente serverless na **Vercel** ou servidores headless.
+O **Montanha Media** é um ecossistema híbrido que opera tanto localmente no smartphone (otimizado para processadores ARM64 como o MediaTek Helio G88 no Xiaomi Redmi 12 com HyperOS) quanto em ambiente serverless na **Vercel** ou servidores headless.
 
 ### 🎯 Funcionalidades Principais:
 1. **🎬 Vídeo, Transcrição & Legendas (.SRT):**

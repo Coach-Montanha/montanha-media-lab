@@ -1,5 +1,5 @@
 """
-Montanha Media Lab - E2E Test Suite on Microsoft Edge (Official Channel)
+Montanha Media - E2E Test Suite on Microsoft Edge (Official Channel)
 ========================================================================
 Test Framework: Python unittest + Playwright sync_api
 Target Browser: Microsoft Edge ('msedge'), Headless
@@ -25,7 +25,7 @@ from playwright.sync_api import sync_playwright
 BASE_URL = "http://localhost:4190"
 
 
-class TestMontanhaMediaLabE2E(unittest.TestCase):
+class TestMontanhaMediaE2E(unittest.TestCase):
     """
     Comprehensive End-to-End Test Suite running exclusively on Microsoft Edge.
     """
@@ -161,7 +161,7 @@ class TestMontanhaMediaLabE2E(unittest.TestCase):
         Checks HTTP 200, status 'success', duration > 0, and accessible media URL.
         """
         payload = {
-            "text": "Olá! Teste de síntese neural no Montanha Media Lab.",
+            "text": "Olá! Teste de síntese neural no Montanha Media.",
             "voice": "pt-BR-FranciscaNeural",
             "rate": "+0%",
             "pitch": "+0Hz",
@@ -661,7 +661,7 @@ class TestMontanhaMediaLabE2E(unittest.TestCase):
         # Step 2: Configure TTS parameters
         tts_input = self.page.locator("#ttsTextInput, #ttsInputText, textarea[id*='tts']").first
         self.assertTrue(tts_input.is_visible(), "TTS textarea must be available")
-        tts_input.fill("Bem-vindos à demonstração de ponta a ponta do Montanha Media Lab.")
+        tts_input.fill("Bem-vindos à demonstração de ponta a ponta do Montanha Media.")
 
         voice_select = self.page.locator("#ttsVoiceSelect, select[id*='voice']").first
         if voice_select.is_visible():

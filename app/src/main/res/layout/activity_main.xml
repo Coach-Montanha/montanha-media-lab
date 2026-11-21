@@ -695,7 +695,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="✓ Ativo no telefone: Documentos/MontanhaMediaLab/.vault"
+                    android:text="✓ Ativo no telefone: Documentos/MontanhaMedia/.vault"
                     android:textColor="#30D158"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-medium" />

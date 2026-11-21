@@ -1,5 +1,5 @@
 """
-Montanha Media Lab & Video Studio — Unified 24/7 Local & Cloud Server
+Montanha Media — Unified 24/7 Local & Cloud Server
 Consolidates:
 - HTTP 206 Byte-Range Streaming (Zero-buffer playback)
 - Multi-track Video Editor APIs (AutoCut, Export, Cloud Import, Silence Detection)
@@ -1119,7 +1119,7 @@ def run_server(port=None):
         port = get_default_port()
     server = ThreadingHTTPServer(("0.0.0.0", port), UnifiedMediaStudioHandler)
     print(f"\n=======================================================")
-    print(f"[*] MONTANHA MEDIA LAB & VIDEO STUDIO UNIFICADO ATIVO!")
+    print(f"[*] MONTANHA MEDIA UNIFICADO ATIVO!")
     print(f"[*] Local: http://localhost:{port}")
     print(f"📁 Pasta de Mídia: {DOWNLOADS_DIR}")
     print(f"=======================================================\n")

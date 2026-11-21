@@ -1,3 +1,3 @@
 """
-Montanha Media Lab - E2E Test Suite Package
+Montanha Media - E2E Test Suite Package
 """

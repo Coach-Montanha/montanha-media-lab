@@ -1,10 +1,10 @@
-# Dossiê Técnico Completo: Montanha Media Lab
+# Dossiê Técnico Completo: Montanha Media
 **Documento de Continuidade de Conversa (Handoff & Context Export)**
 
 ---
 
 ## 1. Visão Geral do Projeto e Identidade
-- **Nome Oficial:** Montanha Media Lab
+- **Nome Oficial:** Montanha Media
 - **Diretório Local (Windows):** `C:\Users\Administrator\Documents\Projetos\montanha-media-lab\`
 - **Repositório GitHub:** `https://github.com/Coach-Montanha/montanha-media-lab.git` (ou legado: `montanha-studio.git`)
 - **Deploy Nuvem:** Pronto para Vercel via `vercel.json` e `api/index.py` (Python Serverless + Static Edge).
@@ -18,11 +18,11 @@
 - **Processador:** MediaTek Helio G88 (2x Cortex-A75 @ 2.0 GHz + 6x Cortex-A55 @ 1.8 GHz, GPU Mali-G52 MC2)
 - **Sistema Operacional:** Xiaomi HyperOS 2.0 / Android 15 (115 GB livres)
 - **Ambiente de Execução:** Termux (ARM64 v8a oficial via GitHub/F-Droid) + Python 3.11/3.12 + FFmpeg + Whisper.cpp + Poppler + yt-dlp.
-- **Pasta de Mídia Acessível na Galeria:** `/sdcard/Download/MontanhaMediaLab`
+- **Pasta de Mídia Acessível na Galeria:** `/sdcard/Download/MontanhaMedia`
 
 ---
 
-## 3. Arquitetura dos Módulos do Montanha Media Lab
+## 3. Arquitetura dos Módulos do Montanha Media
 
 ### A. Módulo 1: Vídeo, Transcrição & Legendas (.SRT)
 - **Motor:** `whisper.cpp` compilado localmente em C++ (`~/whisper.cpp/build/bin/whisper-cli`) com modelo `ggml-base.bin` (~140 MB em português).
@@ -46,7 +46,7 @@
 
 ### C. Módulo 3: Downloader Rápido (TikTok, Instagram, YouTube)
 - **Motor:** `yt-dlp` com aceleração por fragmentos paralelos (`--concurrent-fragments 4`) e formato nativo pré-mesclado (`b[ext=mp4]`).
-- **Salvamento:** Direto na pasta da Galeria (`/sdcard/Download/MontanhaMediaLab`), sem travar o processador com recompreensão desnecessária.
+- **Salvamento:** Direto na pasta da Galeria (`/sdcard/Download/MontanhaMedia`), sem travar o processador com recompreensão desnecessária.
 
 ### D. Módulo 4: Foto & Composição Visual (Needle Local)
 - **Motor:** Pillow (`PIL`) com amostragem algorítmica ultrarrápida (32x32 pixels).
@@ -86,7 +86,7 @@ montanha-media-lab/
 | **Ligar o Estúdio** | `ligar` *(sobe o servidor na porta 8080)* |
 | **Acessar Interface Web** | Navegador Edge em `http://localhost:8080` |
 | **Abrir App Nativo** | Toque no ícone do **Montanha Studio / Media Lab** na tela inicial |
-| **Baixar Vídeos Manual** | `yt-dlp -P /sdcard/Download/MontanhaMediaLab "URL"` |
+| **Baixar Vídeos Manual** | `yt-dlp -P /sdcard/Download/MontanhaMedia "URL"` |
 | **Cortar Vídeo 9:16** | `~/scripts/clip916.sh video.mp4` |
 | **Extrair Áudio MP3** | `~/scripts/extract_audio.sh video.mp4` |
 

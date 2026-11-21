@@ -1,5 +1,5 @@
 """
-Montanha Media Lab - Milestone M1 Backend & Engine Verification Test Suite
+Montanha Media - Milestone M1 Backend & Engine Verification Test Suite
 Verifies:
 1. Python syntax validity of server.py and engine.py
 2. engine.detect_silence_points functionality with synthetic audio
@@ -202,7 +202,7 @@ class TestM1BackendAndEngine(unittest.TestCase):
         import asyncio
 
         out_path = os.path.join(tempfile.gettempdir(), f"test_direct_tts_{int(time.time())}.mp3")
-        text = "Montanha Media Lab texto de teste para síntese de voz neural."
+        text = "Montanha Media texto de teste para síntese de voz neural."
 
         async def _test_tts():
             comm = edge_tts.Communicate(text, "pt-BR-FranciscaNeural", rate="+10%", pitch="+0Hz")
